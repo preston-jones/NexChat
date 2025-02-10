@@ -1,0 +1,61 @@
+@if(this.showSearchDialog){
+<div class="search-container">
+    <div class="search-dialog">
+        @if(mainSearchList.length > 0){
+        @for(result of mainSearchList; track result; let index = $index){
+        @if(result.channelAuthor && result.name){
+        <div id="{{index}}" class="filtered-channel" (click)="this.openChannel(result, index)">
+            <span>Dein Kanal :</span>
+            <span class="filtered-channel-name">#{{result.name}}</span>
+            <span class="separator-bar"></span>
+        </div>
+        }
+        @else if(result.name && result.avatarPath){
+        <div id="{{index}}" class="filtered-user-container" (click)="this.getSelectedUserInfo(result.uid)">
+            <span>Benutzer :</span>
+            <div class="filtered-user">
+                <img src="{{result.avatarPath}}" alt="">
+                <span>{{result.name}}</span>
+            </div>
+            <span class="separator-bar"></span>
+        </div>
+        }
+        @else if(result.message && result.channelId){
+        <!-- <div id="{{index}}" class="filtered-chat-container">
+            <span> #{{getChannelName(result.channelId)}} :</span>
+            <div class="filtered-message">
+                <span>" {{result.message.slice(0, 20)}}... "</span>
+            </div>
+            <span class="separator-bar"></span>
+        </div> -->
+        }
+        @else if(result.conversation){
+        @if (result.senderId === this.authService.currentUserUid){
+        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessage(result.receiverId)">
+            <span>Direkt Nachricht :</span>
+            <div class="filtered-user">
+                <img src="{{filterUserById(result.receiverId)?.avatarPath}}" alt="">
+                <span>{{filterUserById(result.receiverId)?.name}}</span>
+            </div>
+            <span class="separator-bar"></span>
+        </div>
+        }
+        @else if (result.receiverId === this.authService.currentUserUid){
+        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessage(result.senderId)">
+            <span>Direkt Nachricht :</span>
+            <div class="filtered-user">
+                <img src="{{filterUserById(result.senderId)?.avatarPath}}" alt="">
+                <span>{{filterUserById(result.senderId)?.name}}</span>
+            </div>
+            <span class="separator-bar"></span>
+        </div>
+        }
+        }
+        }
+        }
+        @else {
+        <span>Keine Ergebnisse gefunden</span>
+        }
+    </div>
+</div>
+}

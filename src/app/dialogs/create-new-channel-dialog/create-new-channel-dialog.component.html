@@ -1,0 +1,56 @@
+<div class="dialog-content">
+    <section class="header">
+        <h1 mat-dialog-title>Channel erstellen</h1>
+        <a class="close-btn" mat-dialog-close mat-icon-button><mat-icon class="icon">close</mat-icon></a>
+    </section>
+    <mat-dialog-content>
+    
+        <span>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein  #marketing zum Beispiel.</span>
+    
+        <form #channelForm="ngForm" class="create-channel-form">
+            <div class="channel-name">
+                <h2>Channel-Name</h2>
+                <mat-form-field appearance="outline">
+                    <mat-icon class="icon" svgIcon="hashtag" aria-hidden="false" aria-label="Workspace icon"></mat-icon>
+                    <input matInput required
+                           placeholder="z.B. Kooperationsobjekte"
+                           name="channelName"
+                           [(ngModel)]="newChannelName"
+                           [errorStateMatcher]="matcher"
+                           maxlength="20"
+                           >
+                           @if (nameFormControl.hasError('required')) {
+                            <mat-error>Bitte geben Sie einen Namen ein.</mat-error>
+                            }
+                </mat-form-field>
+            </div>
+            <div class="channel-description">
+                <div class="channel-description-header">
+                    <h2>Beschreibung</h2>
+                    <span>(optional)</span>
+                </div>
+                <mat-form-field appearance="outline">
+                    <input matInput 
+                           placeholder="Dein Text hier"
+                           name="channelDescription"
+                           [(ngModel)]="newChannelDescription"
+                           maxlength="200"
+                           >
+                </mat-form-field>
+            </div>
+        </form>
+        
+    </mat-dialog-content>
+    
+    <div class="dialog-footer">
+        <mat-dialog-actions>
+            <button mat-flat-button 
+            [disabled]="!isValid()" 
+            (click)="openNextDialog()">
+            Erstellen
+        </button>
+        </mat-dialog-actions>
+    </div>
+    
+</div>
+

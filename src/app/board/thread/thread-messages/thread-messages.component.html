@@ -1,0 +1,348 @@
+<div class="thread-content">
+  <div class="thread-message-container" *ngIf="selectedMessage && !selectedMessage.isOwnMessage">
+    <img
+      [src]="selectedMessage.senderAvatar"
+      alt="Profile Image"
+      class="avatar"
+    />
+    <div class="thread-message-details">
+      <div class="thread-message-info">
+        <span class="thread-message-sender">{{ selectedMessage.senderName }}</span>
+        <span class="thread-message-time">{{ selectedMessage.formattedTimestamp }}</span>
+      </div>
+      <div class="thread-message-bubble">
+        <p>
+          {{ selectedMessage.message }}
+          <a
+            *ngIf="sendMessageService.isImageFile(selectedMessage.fileURL)"
+            [href]="selectedMessage.fileURL"
+            target="_blank"
+          >
+            <img
+              class="image-preview"
+              [src]="selectedMessage.fileURL"
+              alt="Bildvorschau"
+              width="100%"
+            />
+          </a>
+          <a
+            *ngIf="
+              selectedMessage.fileURL &&
+              !sendMessageService.isImageFile(selectedMessage.fileURL) &&
+              !selectedMessage.fileURL?.endsWith('.pdf')
+            "
+            class="file-link"
+            [href]="selectedMessage.fileURL"
+            target="_blank"
+          >
+            {{sendMessageService.getFileNameFromURL(selectedMessage.fileURL)}}
+          </a>
+        </p>
+      </div>
+      <div class="thread-show-reactions">
+        <div
+          class="thread-reaction-icon-button"
+          *ngFor="let reaction of selectedMessage.reactions"
+          (click)="addOrUpdateReaction(selectedMessage, reaction.emoji)"
+        >
+          <div class="thread-reaction-name-popup">
+            <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+              <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+          </ng-container>
+          <ng-template #emojiText>
+              {{ reaction.emoji }}
+          </ng-template>
+            <h3>{{ formatSenderNames(reaction.senderName, reaction.senderID) }}</h3>
+            <span>{{ getReactionVerb(reaction.senderName, reaction.senderID) }}</span>
+          </div>
+          <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+            <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+        </ng-container>
+        <ng-template #emojiText>
+            {{ reaction.emoji }}
+        </ng-template>
+          {{ reaction.count }}
+        </div>
+      </div>
+    </div>
+    <div class="emoji-box">
+      <mat-icon (click)="showEmoji(selectedMessage.messageId)" class="message-icon"
+        >add_reaction</mat-icon
+      >
+    </div>
+  </div>
+
+  <div style="width: 100%">
+    <div class="thread-message-container user-message-container" *ngIf="selectedMessage && selectedMessage.isOwnMessage">
+      <img
+        [src]="selectedMessage.senderAvatar"
+        alt="Profile Image"
+        class="avatar"
+      />
+      <div class="thread-message-details" *ngIf="!isEditing(selectedMessage.messageId)">
+        <div class="emoji-box user-emoji-box">
+          <mat-icon class="message-icon" (click)="showEmoji(selectedMessage.messageId)"
+            >add_reaction
+          </mat-icon>
+          <mat-icon class="message-icon" (click)="toggleEditBtn()"
+            >more_vert
+          </mat-icon>
+          <div *ngIf="showMessageEdit" class="thread-edit-message">
+            <span (click)="enableEditMode(selectedMessage.messageId, selectedMessage)"
+              >Nachricht bearbeiten
+            </span>
+          </div>
+        </div>
+        <div class="user-message-info">
+          <span class="thread-message-sender">{{ selectedMessage.senderName }}</span>
+          <span class="thread-message-time">{{ selectedMessage.formattedTimestamp }}</span>
+        </div>
+        <div class="user-message-bubble">
+          <p>
+            {{ selectedMessage.message }}
+            <a
+              *ngIf="sendMessageService.isImageFile(selectedMessage.fileURL)"
+              [href]="selectedMessage.fileURL"
+              target="_blank"
+            >
+              <img
+                class="image-preview"
+                [src]="selectedMessage.fileURL"
+                alt="Bildvorschau"
+                width="100%"
+              />
+            </a>
+            <a
+              *ngIf="
+                selectedMessage.fileURL &&
+                !sendMessageService.isImageFile(selectedMessage.fileURL) &&
+                !selectedMessage.fileURL?.endsWith('.pdf')
+              "
+              class="file-link"
+              [href]="selectedMessage.fileURL"
+              target="_blank"
+            >
+              {{sendMessageService.getFileNameFromURL(selectedMessage.fileURL)}}
+            </a>
+          </p>
+        </div>
+        <div class="thread-show-reactions">
+          <div
+            class="thread-reaction-icon-button"
+            *ngFor="let reaction of selectedMessage.reactions"
+            (click)="addOrUpdateReaction(selectedMessage, reaction.emoji)"
+          >
+            <div class="thread-reaction-name-popup">
+              <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+                <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+            </ng-container>
+            <ng-template #emojiText>
+                {{ reaction.emoji }}
+            </ng-template>
+              <h3>{{ formatSenderNames(reaction.senderName, reaction.senderID) }}</h3>
+              <span>{{ getReactionVerb(reaction.senderName, reaction.senderID) }}</span>
+            </div>
+            <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+              <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+          </ng-container>
+          <ng-template #emojiText>
+              {{ reaction.emoji }}
+          </ng-template>
+            {{ reaction.count }}
+          </div>
+          <div>
+            <mat-icon>add_reaction</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isEditing(selectedMessage.messageId)" class="thread-message-edit-container">
+        <textarea
+          class="thread-edit-textarea"
+          [(ngModel)]="selectedMessage.message"
+          required=""
+        ></textarea>
+        <div class="thread-message-edit-buttons">
+          <div (click)="showEmoji(selectedMessage.messageId)" class="thread-message-icon">
+            <mat-icon fontIcon="sentiment_satisfied"></mat-icon>
+          </div>
+          <div class="thread-message-edit-action">
+            <button (click)="cancelEditMode(selectedMessage)">Abbrechen</button>
+            <button
+              class="save-btn"
+              (click)="saveEditedMessage(selectedMessage)"
+              [disabled]="!selectedMessage.message || selectedMessage.message.trim().length === 0"
+              [ngClass]="{disabled: !selectedMessage.message || selectedMessage.message.trim().length === 0}"
+              >
+               Speichern
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Anzahl der Antworten -->
+  <div class="answers">
+    <span>{{ selectedMessage?.answers?.length }} Antworten</span>
+    <div class="line"></div>
+  </div>
+
+  <!-- Kommentare -->
+  <div *ngFor="let message of messages; let i = index" style="width: 100%">
+    <div class="thread-message-container" *ngIf="!message.isOwnMessage">
+      <img [src]="message.senderAvatar" alt="Profile Image" class="avatar" />
+      <div class="thread-message-details">
+        <div class="emoji-box">
+          <mat-icon class="message-icon" (click)="showEmoji(message.messageId)"
+            >add_reaction</mat-icon
+          >
+        </div>
+        <div class="thread-message-info">
+          <span class="thread-message-sender">{{ message.senderName }}</span>
+          <span class="thread-message-time">{{ message.formattedTimestamp }}</span>
+        </div>
+        <div class="thread-message-bubble">
+          <p class="thread-message-text">
+            {{ message.message }}
+            <a
+              *ngIf="sendMessageService.isImageFile(message.fileURL)"
+              [href]="message.fileURL"
+              target="_blank"
+            >
+              <img
+                class="image-preview"
+                [src]="message.fileURL"
+                alt="Bildvorschau"
+                width="100%"
+              />
+            </a>
+            <a
+              *ngIf="message.fileURL && !sendMessageService.isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
+              class="file-link"
+              [href]="message.fileURL"
+              target="_blank"
+            >
+              {{ sendMessageService.getFileNameFromURL(message.fileURL) }}</a
+            >
+          </p>
+        </div>
+        <div class="thread-show-reactions">
+          <div
+            class="thread-reaction-icon-button"
+            *ngFor="let reaction of message.reactions"
+            (click)="addOrUpdateReaction(message, reaction.emoji)"
+          >
+            <div class="thread-reaction-name-popup">
+              <span>{{ reaction.emoji }}</span>
+              <h3>{{ formatSenderNames(reaction.senderName, reaction.senderID) }}</h3>
+              <span>{{ getReactionVerb(reaction.senderName, reaction.senderID) }}</span>
+            </div>
+            <span>{{ reaction.emoji }}</span>
+            {{ reaction.count }}
+          </div>
+          <div class="emoji-btn">
+            <mat-icon (click)="showEmoji(message.messageId)"
+              >add_reaction</mat-icon
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngFor="let message of messages; let i = index" style="width: 100%">
+    <div class="thread-message-container user-message-container" *ngIf="message.isOwnMessage">
+      <img [src]="message.senderAvatar" alt="Profile Image" class="avatar" />
+      <div class="thread-message-details" *ngIf="!isEditing(message.messageId)">
+        <div class="emoji-box user-emoji-box">
+          <mat-icon class="message-icon" (click)="showEmoji(message.messageId)">add_reaction</mat-icon>
+          <mat-icon class="message-icon" (click)="toggleEditBtn()">more_vert</mat-icon>
+          <div *ngIf="showMessageEdit" class="thread-edit-message">
+            <span (click)="enableEditMode(message.messageId, message)"
+              >Nachricht bearbeiten</span
+            >
+          </div>
+        </div>
+        <div class="user-message-info">
+          <span class="thread-message-sender">{{ message.senderName }}</span>
+          <span class="thread-message-time">{{ message.formattedTimestamp }}</span>
+        </div>
+        <div class="user-message-bubble">
+          <p>
+            {{ message.message }}
+            <a
+              *ngIf="sendMessageService.isImageFile(message.fileURL)"
+              [href]="message.fileURL"
+              target="_blank"
+            >
+              <img
+                class="image-preview"
+                [src]="message.fileURL"
+                alt="Bildvorschau"
+                width="100%"
+              />
+            </a>
+            <a
+              *ngIf="message.fileURL && !sendMessageService.isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
+              class="file-link"
+              [href]="message.fileURL"
+              target="_blank"
+            >
+              {{ sendMessageService.getFileNameFromURL(message.fileURL) }}</a
+            >
+          </p>
+        </div>
+        <div class="thread-show-reactions">
+          <div
+            class="thread-reaction-icon-button"
+            *ngFor="let reaction of message.reactions"
+            (click)="addOrUpdateReaction(message, reaction.emoji)"
+          >
+            <div class="thread-reaction-name-popup">
+              <span>{{ reaction.emoji }}</span>
+              <h3>{{ formatSenderNames(reaction.senderName, reaction.senderID) }}</h3>
+              <span>{{ getReactionVerb(reaction.senderName, reaction.senderID) }}</span>
+            </div>
+            <span>{{ reaction.emoji }}</span>
+            {{ reaction.count }}
+          </div>
+          <div class="emoji-btn">
+            <mat-icon (click)="showEmoji(message.messageId)">add_reaction</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isEditing(message.messageId)" class="thread-message-edit-container">
+        <textarea
+          class="thread-edit-textarea"
+          [(ngModel)]="message.message"
+          required=""
+        ></textarea>
+        <div class="thread-message-edit-buttons">
+          <div (click)="showEmoji(message.messageId)" class="thread-message-icon">
+            <mat-icon fontIcon="sentiment_satisfied"></mat-icon>
+          </div>
+          <div class="thread-message-edit-action">
+            <button (click)="cancelEditMode(message)">Abbrechen</button>
+            <button
+              class="save-btn"
+              (click)="saveEditedMessage(message)"
+              [disabled]="!message.message || message.message.trim().length === 0"
+              [ngClass]="{disabled:!message.message || message.message.trim().length === 0}"
+            >
+              Speichern
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<emoji-mart
+  *ngIf="showEmojiPicker"
+  (emojiSelect)="addEmoji($event)"
+  [darkMode]="false"
+  title="Pick your emoji…"
+  emoji="point_up"
+></emoji-mart>

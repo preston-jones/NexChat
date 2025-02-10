@@ -1,0 +1,33 @@
+<div class="container">
+    <div class="headline">
+        <h3>Profil</h3>
+        <img src="../../../assets/images/icons/close.png" alt="" (click)="closeUserProfile()">
+    </div>
+    <img src="{{ this.authService.currentUser()?.avatarPath }}" alt="" class="avatar-img">
+    <div class="name-container">
+            <h2>{{ this.authService.currentUser()?.name }}</h2>
+            <span (click)="openUserEditor($event)">Bearbeiten</span>
+    </div>
+    <div class="status-container">
+        @if (this.authService.currentUser()?.loginState == 'loggedIn') {
+            <span class="status">
+                <img src="../../../assets/images/icons/Online.png" alt="" class="state-icon"> Online
+            </span>
+            } @else if (this.authService.currentUser()?.loginState == 'inactive') {
+            <span class="status">
+                <img src="../../../assets/images/icons/inactive.png" alt="" class="state-icon"> Abwesend
+            </span>
+            } @else if (this.authService.currentUser()?.loginState == 'loggedOut') {
+            <span class="status">
+                <img src="../../../assets/images/icons/offline.png" alt="" class="state-icon"> Offline
+            </span>
+            }
+    </div>
+    <div class="email-container">
+        <img src="../../../assets/images/icons/mail.png" alt="">
+        <div>
+            <span>Email Adresse</span>
+            <span class="email-address">{{ this.authService.currentUser()?.email }}</span>
+        </div>
+    </div>
+</div>

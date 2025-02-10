@@ -1,0 +1,221 @@
+.sign-in-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 18px;
+
+    >h1 {
+        font-size: 46px;
+        font-weight: 700;
+        line-height: 55.2px;
+        color: #444DF2;
+        text-align: center;
+        margin: 0;
+    }
+
+    >span {
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 24px;
+        text-align: center;
+        padding: 20px 0 20px 0;
+    }
+}
+
+.sign-in-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+
+    >mat-form-field {
+        width: 100%;
+    }
+}
+
+.or-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    >span {
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 24.55px;
+        color: #000000;
+        padding: 5px 15px;
+    }
+
+    >mat-divider {
+        width: 100%;
+        border: 1px solid rgba(104, 104, 104, 0.2);
+    }
+}
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    width: 100%;
+    background-color: rgba(236, 238, 254, 1) !important;
+    border-radius: 100px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    transition: border 0.3s ease;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 21.6px;
+
+    &:hover {
+        background-color: rgba(236, 238, 254, 1) !important;
+        border: 1px solid rgba(104, 104, 104, 1) !important;
+    }
+
+    &:focus-within,
+    &:focus,
+    &:active {
+        background-color: rgba(236, 238, 254, 1) !important;
+        border: 1px solid rgba(83, 90, 241, 1) !important;
+    }
+}
+
+.mat-mdc-form-field-infix {
+    display: flex;
+    gap: 30px;
+    color: rgba(104, 104, 104, 1);
+
+    >mat-icon {
+        overflow: visible;
+    }
+
+    &:focus-within,
+    &:focus,
+    &:active {
+        color: black;
+    }
+}
+
+.reset-password-link {
+    text-decoration: none;
+    padding: 5px 15px;
+    font-family: Figtree;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 21.6px;
+    color: #797EF3;
+    border-radius: 50px;
+    padding: 5px 15px;
+    border: 1px solid transparent;
+    transition: background-color 0.125s ease-in-out;
+
+    &:hover {
+        cursor: pointer;
+        font-weight: 600;
+        background-color: #eceefe;
+        transition: background-color 0.125s ease-in-out;
+    }
+}
+
+
+
+.mdc-line-ripple {
+    display: none;
+}
+
+.sign-in-btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 20px 0;
+
+    >.sign-in-btn {
+        color: white;
+        background-color: #444DF2;
+        border: 1px solid #444DF2;
+        transition: all 0.125s ease-in-out;
+
+        &:hover {
+            background-color: #797EF3;
+            border: 1px solid #797EF3;
+            transition: all 0.125s ease-in-out;
+        }
+    }
+
+    >.guest-sign-in-btn {
+        color: #444DF2;
+        background-color: transparent;
+        border: 1px solid #797EF3;
+        transition: all 0.125s ease-in-out;
+
+        &:hover {
+            background-color: #444DF2;
+            color: white;
+            transition: all 0.125s ease-in-out;
+        }
+    }
+}
+
+.btn {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24.55px;
+    padding: 12px 24px;
+}
+
+.google-btn {
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+    background-color: #ECEEFE;
+    border: unset;
+    transition: all 0.125s ease-in-out;
+    padding: 11px 0;
+    gap: 30px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 21.6px;
+    color: #444DF2;
+    border: 1px solid transparent;
+
+    &:hover {
+        border: 1px solid #444DF2;
+        font-weight: 700;
+        transition: all 0.125s ease-in-out;
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    .sign-in-content {
+
+        span {
+            font-size: 16px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .btn {
+        padding: 12px 14px;
+    }
+}
+
+@media (max-width: 375px) {
+  
+    .btn {
+        font-size: 16px;
+    }
+
+    .sign-in-btn-container {
+        gap: 18px;
+    }
+}

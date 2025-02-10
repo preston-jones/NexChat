@@ -1,0 +1,51 @@
+<div class="sign-in-content">
+  <h1>Anmeldung</h1>
+  <span>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
+    verwendest.</span>
+  <form class="sign-in-form">
+    <mat-form-field>
+      <mat-icon>mail_outline</mat-icon>
+      <input type="email" matInput [formControl]="emailFormControl" [errorStateMatcher]="matcher"
+        placeholder="beispielname@email.com">
+      @if (emailFormControl.hasError('email') &&
+      !emailFormControl.hasError('required')) {
+      <mat-error>Diese E-Mail-Adresse ist leider ungültig</mat-error>
+      } @if (emailFormControl.hasError('required')) {
+      <mat-error>Bitte geben Sie eine E-Mail ein.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-icon>lock_outline</mat-icon>
+      <input [type]="passwordVisible ? 'text' : 'password'" matInput [formControl]="passwordFormControl"
+        [errorStateMatcher]="matcher" placeholder="Passwort"> <mat-icon (click)="showPassword()"
+        fontIcon="{{ passwordVisible ? 'visibility_off' : 'visibility' }}"></mat-icon>
+      @if (passwordFormControl.hasError('required')) {
+      <mat-error>Bitte geben Sie ein Passwort ein.</mat-error>
+      }
+    </mat-form-field>
+
+    <a class="reset-password-link" (click)="resetPassword()">
+      Passwort vergessen?
+    </a>
+
+    <div class="or-container">
+      <mat-divider></mat-divider>
+      <span>ODER</span>
+      <mat-divider></mat-divider>
+    </div>
+
+    <a class="google-btn" (click)="googleLogin()">
+      <img src="../../../assets/images/google_logo.png" />
+      <span>Anmelden mit Google</span>
+    </a>
+    <div class="sign-in-btn-container">
+      <div class="btn sign-in-btn" (click)="emailLogin(emailFormControl.value || '', passwordFormControl.value || '')">
+        Anmelden</div>
+      <div class="btn guest-sign-in-btn" (click)="guestLogin()">Gäste-Login</div>
+    </div>
+    @if (loginError) {
+    <mat-error>Ungültiges Passwort oder Email.</mat-error>
+    }
+  </form>
+</div>

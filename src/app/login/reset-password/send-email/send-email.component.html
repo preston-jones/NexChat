@@ -1,0 +1,30 @@
+<div class="send-mail-content">
+  <button (click)="goBack()" class="back-button" mat-icon-button>
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <h1>Passwort zurücksetzen</h1>
+  <span class="first-info-text">Bitte geben Sie Ihre E-Mail-Adresse ein.</span>
+
+  <form (ngSubmit)="sendPasswordResetEmail($event)">
+    <mat-form-field>
+      <mat-icon>mail_outline</mat-icon>
+      <input type="email" matInput [formControl]="emailFormControl" [errorStateMatcher]="matcher"
+        placeholder="example@example.com" pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" />
+      @if (emailFormControl.hasError('email') &&
+      !emailFormControl.hasError('required')) {
+      <mat-error>Diese E-Mail-Adresse ist leider ungültig</mat-error>
+      } @if (emailFormControl.hasError('required')) {
+      <mat-error>Bitte geben Sie eine E-Mail ein.</mat-error>
+      }
+    </mat-form-field>
+
+    <span class="second-info-text">Wir senden Ihnen eine E-Mail, über die Sie Ihr Passwort ändern
+      können.</span>
+    <div class="btn-div">
+      <button mat-flat-button color="primary" [disabled]="isButtonDisabled()"
+        [ngClass]="{ 'disabled-button': isButtonDisabled() }" type="submit" (click)="sendPasswordResetEmail($event)">
+        E-Mail senden
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,25 @@
+.snackbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: white;
+    color: white;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 8px;
+    text-align: center;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+mat-icon {
+    color: white;
+    /* Grün für Erfolg */
+}

@@ -1,0 +1,122 @@
+<div class="board-container">
+    <header>
+        <div class="back-btn-logo">
+            <div (click)="toggleWorkspaceMobile()" class="mobile-back-arrow">
+                <img src="./../../assets/images/icons/mobile_arrow_back.svg" alt="Back">
+            </div>
+            <div class="group-logo" style="display: none;">
+                <div>
+                    <img src="../../../assets/images/workspace/Group.svg" alt="" class="mobile-group-img">
+                </div>
+                <div>
+                    <span>DevSpace</span>
+                </div>
+            </div>
+            <div class="logo-container">
+                <img src="./../../assets/images/main_logo.png" alt="DABubble Logo">
+            </div>
+        </div>
+        <div class="input-search-container">
+            <input name="searchText" type="text" placeholder="Devspace durchsuchen" [(ngModel)]="searchInput">
+            <img src="../../assets/images/icons/search.png" alt="search icon">
+            <app-search-dialog [searchValue]="searchInput" (openChannelEvent)="openChannelMessage()" (clickUserEvent)="openDirectMessage()"></app-search-dialog>
+        </div>
+        <div class="profile-menu-container" (click)="toggleProfileMenu()">
+            <span>{{ currentUser()?.name }}</span>
+            <div class="avatar-container">
+                <img src="{{ currentUser()?.avatarPath }}" alt="Profil Icon"
+                    *ngIf="currentUser()?.loginState === 'loggedIn'">
+                <img src="../../assets/images/icons/Online.png" alt="state Icon"
+                    *ngIf="currentUser()?.loginState === 'loggedIn'" class="state-icon">
+                <img src="../../assets/images/icons/offline.png" alt="state Icon"
+                    *ngIf="currentUser()?.loginState === 'loggedOut'" class="state-icon">
+                <img src="../../assets/images/icons/inactive.png" alt="state Icon"
+                    *ngIf="currentUser()?.loginState === 'inactive'" class="state-icon">
+                <mat-icon>keyboard_arrow_down</mat-icon>
+                <div class="overlay" *ngIf="this.userService.showOverlay()" (click)="closeAllDialogs()">
+                    <div class="profile-menu" (click)="stopPropagation($event)">
+                        <div class="profil-menu-link-container"
+                            *ngIf="!this.userService.showProfile() && !this.userService.showProfileEditor()">
+                            <div class="profil-menu-links" (click)="openUserProfile($event)">Profil</div>
+                            <div class="profil-menu-links" (click)="authService.logout()">Log Out</div>
+                        </div>
+                        <app-profile-dialog class="profil-details" *ngIf="this.userService.showProfile()">
+                        </app-profile-dialog>
+                        <app-profile-editor-dialog class="profil-editor" *ngIf="this.userService.showProfileEditor()">
+                        </app-profile-editor-dialog>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <mat-drawer-container class="mat-drawer-container" autosize>
+        <mat-drawer #drawer class="sidenav" [opened]="true" mode="side">
+            <app-workspace (openChannelEvent)="openChannelMessage()" (clickUserEvent)="openDirectMessage()"
+                [openChatWindow]="openChatWindow.bind(this)"></app-workspace>
+        </mat-drawer>
+        <div class="sidenav-content">
+            <mat-card class="chat-window-container" appearance="outlined">
+                <mat-card-content>
+                    <ng-container *ngIf="this.showChatWindow">
+                        <app-chat-window
+                            (openDirectMessageFromChatEvent)="openDirectMessageFromChat($event.selectedUser, $event.index)"
+                            (openChannelMessageFromChatEvent)="openChannelMessageFromChat($event.selectedChannel, $event.index)"
+                            (openChannelMessageEvent)="openChannelMessage()"></app-chat-window>
+                    </ng-container>
+                    <ng-container *ngIf="this.showChannelMessage">
+                        <app-channel-message (showThreadEvent)="showThread($event)"></app-channel-message>
+                    </ng-container>
+                    <ng-container *ngIf="this.showDirectMessage">
+                        <app-direct-message [selectedUser]="chatUtilityService.directMessageUser"></app-direct-message>
+                    </ng-container>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        <mat-drawer class="thread-drawer" mode="side" position="end" [opened]="showThreadComponent">
+            <mat-card-content appearance="outlined">
+                <app-thread [selectedMessage]="selectedMessage" (closeThreadEvent)="closeThread()"></app-thread>
+            </mat-card-content>
+        </mat-drawer>
+
+    </mat-drawer-container>
+    <div class="navigation-toggle-btn" (click)="toggleWorkspace()"
+        [ngStyle]="{ 'display': workspaceOpen ? 'flex' : 'none' }">
+        <mat-icon class="icon" svgIcon="close-menu" aria-hidden="false" aria-label="Workspace icon"></mat-icon>
+        <span>Workspace-Menü schließen</span>
+    </div>
+    <div class="navigation-toggle-btn" (click)="toggleWorkspace()"
+        [ngStyle]="{ 'display': workspaceOpen ? 'none' : 'flex' }">
+        <mat-icon class="icon" svgIcon="open-menu" aria-hidden="false" aria-label="Workspace icon"></mat-icon>
+        <span>Workspace-Menü öffnen</span>
+    </div>
+
+    <div class="userInfoOverlay" *ngIf="this.userService.showUserInfo()" (click)="closeUserInfoDialog()">
+        <app-user-info-dialog class="profil-details user-info">
+        </app-user-info-dialog>
+    </div>
+
+    <div class="overlay" *ngIf="this.channelsService.showMembersInfo()"
+        (click)="this.channelsService.closeMembersDialog()">
+        <app-members-dialog class="show-members-dialog" (click)="$event.stopPropagation()">
+        </app-members-dialog>
+    </div>
+
+    <div class="overlay" *ngIf="this.channelsService.showAddMemberDialog()"
+        (click)="this.channelsService.closeAddMemberDialog()">
+        <app-add-member-dialog class="add-members-dialog" (click)="$event.stopPropagation()">
+        </app-add-member-dialog>
+    </div>
+
+    <div class="overlay" *ngIf="this.channelsService.memberAddedInfo"
+        (click)="this.channelsService.closeMemberAddedInfo()">
+        <app-member-added-info>
+        </app-member-added-info>
+    </div>
+
+    <div class="overlay" *ngIf="this.channelsService.channelCreatedInfo"
+        (click)="this.channelsService.closeChannelCreatedInfo()">
+        <app-channel-created-info>
+        </app-channel-created-info>
+    </div>
+
+</div>

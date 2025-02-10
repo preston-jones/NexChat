@@ -1,0 +1,61 @@
+<div class="add-people-dialog-content">
+    <section class="header-add-people-dialog">
+        <h1 mat-dialog-title>Leute hinzufügen</h1>
+        <a class="close-btn" mat-dialog-close mat-icon-button (click)="this.channelsService.closeAddMemberDialog()"><mat-icon class="icon">close</mat-icon></a>
+    </section>
+    <div class="current-channel-name">
+        <mat-icon class="icon" svgIcon="hashtag" aria-hidden="false" aria-label="Workspace icon"></mat-icon>
+        <span>{{ currentChannelName }}</span>
+    </div>
+    <mat-dialog-content>
+        <form #channelForm="ngForm" (ngSubmit)="onSubmit(channelForm)" class="radio-group-container">
+            
+                <mat-form-field appearance="outline">
+                    <div class="selected-users">
+                        <div *ngFor="let user of selectedUsers.slice().reverse()" class="selected-user">
+                            <img [src]="user.avatarPath" alt="{{ user.name }}" class="contact-avatar">
+                            <span class="contact-name">{{ user.name }}</span>
+                            <button (click)="deleteUser(user.id)" mat-icon-button>
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <input matInput required
+                        class="search-input"
+                        type="search" 
+                        [(ngModel)]="memberName" 
+                        (input)="filterUsers()" 
+                        (click)="showUsers()" 
+                        placeholder="Suche nach Benutzern"
+                        [ngModelOptions]="{standalone: true}"
+                        #searchInput="ngModel"
+                        [ngStyle]="{ 'margin-left': selectedUsers.length >=3 ? '-10px' : '0' }"
+                        >
+                        <mat-error *ngIf="ownUserError">
+                            Der ausgewählte Nutzer ist bereits Mitglied.
+                        </mat-error>
+                </mat-form-field>
+            <div 
+                *ngIf="filteredUsers.length > 0 && userSelected" 
+                class="show-contacts-container" 
+                [ngStyle]="{ 'display': !memberName ? 'none' : 'flex' }">
+                <div *ngFor="let user of filteredUsers">
+                    <a class="contact-container" (click)="selectUser(user)">
+                        <img [src]="user.avatarPath" alt="">
+                        <span>{{ user.name }}</span>
+                    </a>
+                </div>
+            </div>
+            <mat-dialog-actions>
+                <button class="add-people-button"
+                mat-flat-button
+                type="submit"
+                [disabled]="channelForm.invalid">
+                Hinzufügen
+            </button>
+            </mat-dialog-actions>
+        </form>
+    </mat-dialog-content>
+</div>
+
+

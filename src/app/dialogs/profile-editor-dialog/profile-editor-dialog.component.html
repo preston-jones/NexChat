@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="headline">
+        <h3>Dein Profil bearbeiten</h3>
+        <img src="../../../assets/images/icons/close.png" alt="" (click)="closeUserProfileEditor()">
+    </div>
+    <img src="{{ this.authService.currentUser()?.avatarPath }}" alt="" class="avatar-img">
+    <div class="name-container">
+            <h2>{{ this.authService.currentUser()?.name }}</h2>
+    </div>
+    <form (ngSubmit)="onSubmit(editForm)" #editForm="ngForm">
+        <div class="input-container">
+            <label for="name"><img src="../../../assets/images/icons/account_circle.png">Vollständiger Name</label>
+            <input type="text" id="name" name="name" [(ngModel)]="fullname" #name="ngModel" placeholder="{{ this.authService.currentUser()?.name }}">
+        </div>
+        <div class="input-container">
+            <label for="name"><img src="../../../assets/images/icons/mail.png" alt="">E-Mail-Adresse</label>
+            <input type="email" id="email" name="email" #email="ngModel" [(ngModel)]="mail"
+            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" placeholder="{{ this.authService.currentUser()?.email }}">
+        </div>
+        @if (email.touched && !email.valid) {
+        <span class="error-message">Bitte geben sie eine gültige E-Mail-Adresse ein</span>
+        }
+        @else if (authService.errorCode == 'auth/requires-recent-login') {
+        <span class="error-message">Ihr letzter Login ist zu lange her<br> Bitte loggen sie nich erneut ein.</span>
+        } @else if (authService.errorCode == 'no error') {
+        <span class="error-message">Eine Email zum Bestätigen der Änderung <br> wurde an ihre E-Mail-Adresse
+            gesendet</span>
+        } @else if (changesSuccessful()) {
+        <span class="error-message" style="color: #444DF2;">Ihre Änderungen wurden erfolgreich gespeichert</span>
+        }
+
+        <div class="form-actions">
+            <div class="btn-no-style cancel-btn" (click)="closeUserProfileEditor()">Abbrechen
+            </div>
+            <input type="submit" value="Speichern" class="btn-no-style submit-btn">
+        </div>
+    </form>
+</div>

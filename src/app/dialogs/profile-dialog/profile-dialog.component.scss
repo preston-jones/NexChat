@@ -1,0 +1,139 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 38px;
+    font-family: 'Nunito', sans-serif;
+    width: 420px;
+}
+
+.headline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    >h3 {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 32.74px;
+        margin: 0;
+    }
+
+    >img {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+    }
+}
+
+.avatar-img {
+    object-fit: cover;
+    object-position: center;
+    width: 200px;
+    height: 200px;
+    border-radius: 500px;
+}
+
+.name-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    >h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    >span {
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 600;
+        color: #535AF1;
+        transition: all .125s ease-in-out;
+
+        &:hover {
+            color: #444DF2;
+            font-weight: 700;
+        }
+    }
+}
+
+.headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 38px;
+    width: 100%;
+    font-size: 24px;
+    font-weight: 700;
+
+    >img {
+        cursor: pointer;
+        border-radius: 20px;
+        padding: 5px;
+        transition: all .125s ease-in-out;
+
+        &:hover {
+            background-color: #ECEEFD;
+        }
+    }
+}
+
+.status-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 15px;
+
+    >span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        color: #92C83E;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 27.28px;
+    }
+
+    .state-icon {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.email-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 15px;
+
+    >img {
+        align-self: flex-start;
+    }
+
+    >div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 15px;
+
+        >span:first-child {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .email-address {
+            color: #1381FF;
+            font-size: 18px;
+            font-weight: 500;
+        }
+    }
+}

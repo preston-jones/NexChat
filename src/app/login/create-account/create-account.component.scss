@@ -1,0 +1,145 @@
+.create-account-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 0 32px 0 32px;
+    max-width: 500px;
+
+    h1 {
+        font-weight: 700;
+        font-size: 46px;
+        color: rgba(68, 77, 242, 1);
+        margin: 0;
+        padding: 10px;
+        text-align: center;
+    }
+
+    >span {
+        text-align: center;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 24px;
+        padding: 20px 0 20px 0;
+    }
+}
+
+.back-button {
+    position: absolute !important;
+    top: 34px;
+    left: 88px;
+    float: left;
+}
+
+.create-account-inputs {
+    width: 100%;
+}
+
+.create-account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    width: 100%;
+    background-color: rgba(236, 238, 254, 1) !important;
+    border-radius: 100px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    transition: border 0.3s ease;
+
+    &:hover {
+        background-color: rgba(236, 238, 254, 1) !important;
+        border: 1px solid rgba(104, 104, 104, 1) !important;
+    }
+
+    &:focus-within,
+    &:focus,
+    &:active {
+        background-color: rgba(236, 238, 254, 1) !important;
+        border: 1px solid rgba(83, 90, 241, 1) !important;
+    }
+}
+
+.mat-mdc-form-field-infix {
+    display: flex;
+    gap: 30px;
+    color: rgba(104, 104, 104, 1);
+
+    &:hover {
+        color: black;
+    }
+}
+
+.mat-icon {
+    width: 32px !important;
+}
+
+.mdc-line-ripple {
+    display: none;
+}
+
+.mdc-checkbox .mdc-checkbox__native-control:enabled:focus:checked~.mdc-checkbox__background {
+    background-color: blue !important;
+    border-color: rgba(121, 126, 243, 1);
+}
+
+.mdc-label {
+    >span {
+        font-size: 16px !important;
+
+        >a {
+            font-size: 18px !important;
+            text-decoration: none;
+        }
+    }
+}
+
+.mdc-button {
+    border-radius: 100px !important;
+    position: relative !important;
+    bottom: 10px;
+    right: 0;
+    float: right;
+    background-color: rgba(68, 77, 242, 1) !important;
+    width: 107px;
+    height: 49px !important;
+    color: white !important;
+    margin-top: 20px;
+
+    &:disabled {
+        background-color: gray !important;
+    }
+}
+
+.create-account-container {
+    display: none !important;
+}
+
+@media screen and (max-width: 768px) {
+    .back-button {
+        left: 14px;
+    }
+
+    .create-account-content {
+        padding: 0;
+        >h1 {
+            font-size: 32px;
+            padding: 10px 18px 0 18px;
+        }
+
+        span {
+            font-size: 16px;
+        }
+    }
+}
+
+@media screen and (max-width: 375px) {
+    
+}
+
+.intro-animation-container {
+    display: none !important;
+}

@@ -1,0 +1,20 @@
+@import '../../../mixin.scss';
+
+.member-added-info-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    justify-content: center;
+    width: 240px;
+    bottom: 40px;
+    left: calc(50% - 120px);
+    background: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: $purple;
+    span {
+        font-size: 20px;
+        font-weight: 700;
+        cursor: default;
+    } 
+}

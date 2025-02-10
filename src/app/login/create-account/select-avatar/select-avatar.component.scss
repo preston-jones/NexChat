@@ -1,0 +1,233 @@
+@import '../../../../mixin.scss';
+
+.mat-typography h1 {
+  font-size: 46px;
+  color: $dark-purple;
+  font-weight: 700;
+  margin-top: 12px;
+  line-height: 55.2px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    width: 240px;
+    font-size: 28px;
+    line-height: 32px;
+  }
+}
+
+.mat-typography h2 {
+  font-weight: 700;
+  font-size: 32px;
+  text-align: center;
+}
+
+.mat-typography span {
+  margin-block-end: 0;
+  font-weight: 400;
+  font-size: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 14px !important;
+  }
+}
+
+.select-avatar-content {
+  @include dFlex($jc: flex-start, $fd: column);
+  max-width: 500px;
+  margin-top: -32px;
+
+  @media (max-width: 768px) {
+    min-width: 280px;
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 280px;
+  }
+}
+
+.mat-mdc-card {
+  height: auto;
+  box-shadow: none;
+  padding: 0px 32px 0px 32px;
+
+  @media (max-width: 480px) {
+    padding: 0 16px 0 16px;
+  }
+
+  @include dFlex($g: 32px, $fd: column);
+}
+
+.back-button {
+  position: absolute !important;
+  top: 45px !important;
+  left: 32px !important;
+
+  @media (max-width: 375px) {
+    .mat-icon {
+      left: -12px;
+      top: 0px;
+      position: absolute;
+    }
+  }
+}
+
+.mat-mdc-card-content {
+  @include dFlex($fd: column, $g: 32px);
+  padding: 0;
+
+  >div:nth-of-type(1) {
+    @include dFlex($jc: center);
+    height: 180px;
+    width: 180px;
+    border-radius: 100%;
+    transition: background-color 0.25s ease-in-out;
+
+    &:hover {
+      background-color: $light-grey;
+      cursor: pointer;
+    }
+
+    div {
+      height: 168px;
+      width: 168px;
+      background-color: $purple;
+      border-radius: 100%;
+      @include dFlex();
+    }
+
+    img {
+      height: 90.67px;
+      width: 90.67px;
+    }
+  }
+
+  >div:nth-of-type(2) {
+    @include dFlex($fd: column, $g: 8px);
+    width: 100%;
+
+    >div:nth-of-type(1) {
+      width: 100%;
+      @include dFlex($g: 8px, $fd: column);
+
+      >div:nth-of-type(1) {
+        @include dFlex();
+      }
+
+      >div:nth-of-type(2) {
+        @include dFlex($jc: flex-start);
+        width: 100%;
+
+        @media (max-width: 480px) {
+          justify-content: center;
+        }
+      }
+    }
+
+    >div:nth-of-type(2) {
+      @include dFlex($g: 8px, $jc: flex-start);
+
+      div {
+        @include dFlex();
+        padding: 4px;
+        border-radius: 100%;
+        transition: background-color 0.25s ease-in-out;
+
+        img {
+          height: 64px;
+          width: 64px;
+        }
+
+        &:hover {
+          cursor: pointer;
+          background-color: $light-grey;
+        }
+      }
+
+      @media (max-width: 768px) {
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 480px) {
+        justify-content: center;
+      }
+    }
+  }
+
+  >div:nth-of-type(3) {
+    @include dFlex($g: 24px, $jc: flex-start);
+    width: 100%;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+
+    >div:nth-of-type(1) {
+      @include dFlex();
+      flex: 1;
+    }
+
+    button {
+      height: 49px;
+      border-radius: 25px;
+      padding: 12px 25px 12px 25px;
+      border: 1px solid $purple;
+      color: $dark-purple;
+      font-size: 18px;
+      transition: background-color 0.5s ease-in-out;
+
+      @media (max-width: 768px) {
+        padding: 6px 12px 6px 12px;
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: $dark-purple;
+        color: white;
+      }
+
+      .mdc-button__label {
+        font-weight: 700;
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+.mat-mdc-card-footer {
+  @include dFlex($jc: flex-end);
+  width: 100%;
+
+  a {
+    width: 107px;
+    height: 49px;
+    background-color: $dark-purple;
+    border-radius: 25px;
+    padding: 12px 25px 12px 25px;
+    font-size: 18px;
+    transition: background-color 0.25s ease-in-out;
+
+    &:hover {
+      cursor: pointer;
+      background-color: $purple;
+    }
+
+    .mdc-button__label {
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+    }
+  }
+}
+
+.create-account-container {
+  display: none !important;
+}
+
+.file-input {
+  display: none;
+}
+
+.intro-animation-container {
+  display: none !important;
+}

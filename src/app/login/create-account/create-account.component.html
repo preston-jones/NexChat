@@ -1,0 +1,55 @@
+<div class="create-account-content">
+    <button (click)="goBack()" class="back-button" mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="headline">Konto erstellen</h1>
+    <span>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</span>
+    <div class="create-account-inputs">
+        <form class="create-account-form">
+
+            <mat-form-field>
+                <mat-icon fontIcon="person"></mat-icon>
+                <input type="text" matInput [formControl]="nameFormControl" [errorStateMatcher]="matcher"
+                    placeholder="Name und Nachname">
+                @if (nameFormControl.hasError('required')) {
+                <mat-error>Bitte schreiben Sie einen Namen.</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-icon fontIcon="mail"></mat-icon>
+                <input class="login-input-fields" type="email" matInput [formControl]="emailFormControl"
+                    [errorStateMatcher]="matcher" placeholder="example@example.com" required
+                    pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
+                @if (emailFormControl.hasError('email') && !emailFormControl.hasError('required')) {
+                <mat-error>Diese E-Mail-Adresse ist leider ungültig</mat-error>
+                }
+                @if (emailFormControl.hasError('required')) {
+                <mat-error>Bitte geben Sie eine E-Mail ein.</mat-error>
+                }
+                @if (emailFormControl.hasError('emailExists')) {
+                <mat-error>Diese E-Mail-Adresse wird bereits verwendet.</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-icon fontIcon="lock"></mat-icon>
+                <input minlength="6" [type]="passwordVisible ? 'text' : 'password'" matInput
+                    [formControl]="passwordFormControl" [errorStateMatcher]="matcher" placeholder="Passwort"> <mat-icon
+                    (click)="showPassword()"
+                    fontIcon="{{ passwordVisible ? 'visibility_off' : 'visibility' }}"></mat-icon>
+                @if (passwordFormControl.hasError('required')) {
+                <mat-error>Bitte geben Sie ein Passwort ein mit mindestens 6 Zeichen.</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-checkbox color="primary" [formControl]="checkboxFormControl"><span>Ich stimme
+                    der <a href="">Datenschutzerklärung</a> zu</span>
+                @if (checkboxFormControl.hasError('required') && formSubmitted) {
+                <mat-error>Bitte akzeptieren sie die Datenschutzerklärung.</mat-error>
+                }
+            </mat-checkbox>
+        </form>
+        <button mat-flat-button [disabled]="!isFormValid()" color=" primary" (click)="nextStep()">Weiter</button>
+    </div>
+</div>

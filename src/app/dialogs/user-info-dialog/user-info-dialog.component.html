@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="headline">
+        <h3>Profil</h3>
+        <img src="../../../assets/images/icons/close.png" alt="" (click)="closeUserInfoDialog()">
+    </div>
+    <img src="{{ this.userService.selectedUser?.avatarPath }}" alt="" class="avatar-img">
+    <div class="name-container">
+            <h2>{{ this.userService.selectedUser?.name }}</h2>
+    </div>
+    <div class="status-container">
+        @if (this.userService.selectedUser?.loginState == 'loggedIn') {
+            <span class="status">
+                <img src="../../../assets/images/icons/Online.png" alt="" class="state-icon"> Online
+            </span>
+            } @else if (this.userService.selectedUser?.loginState == 'inactive') {
+            <span class="status">
+                <img src="../../../assets/images/icons/inactive.png" alt="" class="state-icon"> Abwesend
+            </span>
+            } @else if (this.userService.selectedUser?.loginState == 'loggedOut') {
+            <span class="status">
+                <img src="../../../assets/images/icons/offline.png" alt="" class="state-icon"> Offline
+            </span>
+            }
+    </div>
+    <div class="email-container">
+        <img src="../../../assets/images/icons/mail.png" alt="">
+        <div>
+            <span>Email Adresse</span>
+            <span class="email-address">{{ this.userService.selectedUser?.email }}</span>
+        </div>
+    </div>
+
+    <div class="send-message-btn">
+        <img src="../../../assets/images/icons/message.png" alt="">
+        <span (click)="message(this.userService.selectedUser?.id)">Nachricht</span>
+    </div>
+</div>

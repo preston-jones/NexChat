@@ -1,0 +1,167 @@
+@import '../../../mixin.scss';
+
+.cdk-global-scrollblock{
+    position: static !important;
+    width: initial !important;
+    overflow-y: inherit !important;
+}
+
+.dialog-content {
+    padding: 40px;
+    background-color: white;
+    max-width: 872px;
+    @include dFlex($g: 24px, $fd: column, $jc: flex-start);
+}
+
+.close-btn {
+    @include dFlex();
+    height: 40px;
+    width: 40px;
+
+    &:hover {
+        background-color: $light-purple;
+        color: $dark-purple;
+        }
+
+    .icon {
+        width: 24px;
+        height: 24px;
+    }
+}
+    
+h1 {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+}
+
+h2 {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    margin-block-end: 0 !important;
+    color: black;
+}
+
+span {
+    color: black;
+}
+
+.header {
+    width: 100%;
+    padding: 0;
+    height: 40px;
+    @include dFlex($jc: space-between);
+    .mat-mdc-dialog-title {
+        font-weight: 700;
+        font-size: 24px;
+    }
+}
+
+.mat-mdc-dialog-content {
+    @include dFlex($g: 24px, $fd: column, $ai: flex-start);
+    span {
+        font-size: 18px;
+    }
+}
+
+form {
+    width: 100%;
+}
+
+.create-channel-form {
+    width: 100%;
+}
+
+.channel-name {
+    width: 100%;
+    @include dFlex($g: 20px, $fd: column, $ai: flex-start);
+
+    .icon {
+        height: 15.79px !important;
+        width: 15.33px !important;
+    }
+}
+
+.channel-description {
+    @include dFlex($g: 20px, $fd: column, $ai: flex-start);
+    .channel-description-header {
+        @include dFlex($g: 8px, $jc: flex-start);
+        width: 100%;
+    }
+}
+
+.mat-mdc-form-field {
+    width: 100%;
+}
+
+.mat-mdc-dialog-content .mdc-dialog__content .mat-mdc-dialog-container-with-actions {
+    padding: 0;
+}
+
+.mdc-dialog .mdc-dialog__content {
+    padding: 0;
+    width: 100%;
+
+    form {
+        width: 100%;
+    }
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+    border-radius: 30px;
+}
+
+.mat-mdc-dialog-title {
+    height: 40px;
+    padding: 0;
+}
+
+.mdc-text-field--outlined .mat-mdc-form-field-infix, .mdc-text-field--no-label .mat-mdc-form-field-infix {
+    @include dFlex($g: 15px, $ai: center)
+}
+
+.mdc-text-field--outlined {
+    @include dFlex();
+    --mdc-outlined-text-field-container-shape: 40px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    min-height: 60px;
+}
+
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+  border-color: $purple !important;
+}
+
+.mdc-button {
+    height: 49px !important;
+    width: 125px !important;
+    border-radius: 25px !important;
+    background: $dark-purple !important;
+
+    &:hover {
+        cursor: pointer;
+        background-color: $purple !important;
+    }
+}
+
+.mdc-button__label {
+    color: white;
+    padding: 12px 25px 12px 25px !important;
+    font-size: 18px;
+}
+
+.mdc-dialog__actions {
+    padding: 0px !important;
+}
+
+.mat-mdc-dialog-actions {
+    padding: 0px !important;
+}
+
+.dialog-footer {
+    width: 100%;
+    height: 49px;
+    @include dFlex($jc: flex-end);
+}
+

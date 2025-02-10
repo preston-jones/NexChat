@@ -1,0 +1,19 @@
+<section class="members-dialog">
+        <div class="members-header">
+            <h1>Mitglieder</h1>
+            <a class="close-btn" mat-icon-button (click)="this.channelsService.closeMembersDialog()"><mat-icon class="icon">close</mat-icon></a>
+        </div>
+        <div class="members-dialog-container">
+            <div class="member" *ngFor="let member of channelsService.currentChannelMembers; let i = index" (click)="showProfile(channelsService.currentChannelMembers[i].id)">
+                
+                    <img [src]="member.avatarPath" alt="">
+                    <span>{{ channelsService.currentChannelMembers[i].name }}</span>
+                
+            </div>
+        </div>
+        <a class="add-member-in-dialog-button" (click)="this.channelsService.openAddMemberDialog()">
+            <mat-icon class="add-member-button" fontIcon="person_add"></mat-icon>
+            <span>Mitglieder hinzufügen</span>
+        </a>
+</section>
+

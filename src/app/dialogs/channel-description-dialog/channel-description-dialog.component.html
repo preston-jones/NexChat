@@ -1,0 +1,115 @@
+<div class="dialog-content">
+    <div class="header">
+        <div>
+            <mat-icon 
+                class="icon"
+                svgIcon="hashtag" 
+                aria-hidden="false" 
+                aria-label="Hashtag icon">
+            </mat-icon>
+            <h1>{{ channelsService.currentChannelName }}</h1>
+        </div>
+        
+        <a class="close-btn" mat-dialog-close mat-icon-button><mat-icon class="icon">close</mat-icon></a>
+    </div>
+    <section class="content">
+    
+        <form #channelForm="ngForm" class="form-content">
+            <div class="channel-name" 
+            [ngStyle]="{
+                'border': editChannelName ? 'none' : '1px solid #ADB0D9',
+                'padding': editChannelName ? '0px' : '20px'
+            }">
+
+                <div>
+                    <h2>Channel-Name</h2>
+                    <a *ngIf="!editChannelName" (click)="editName()"><span>Bearbeiten</span></a>
+                    <a *ngIf="editChannelName" (click)="updateCurrentChannel('name')"><span>Speichern</span></a>
+                </div>
+                
+                <div *ngIf="!editChannelName">
+                    <mat-icon 
+                        svgIcon="hashtag" 
+                        aria-hidden="false" 
+                        aria-label="Hashtag icon">
+                    </mat-icon>
+                    <span>
+                        {{ currentChannelName }}
+                    </span>
+                </div>
+
+            </div>
+
+             <mat-form-field *ngIf="editChannelName" appearance="outline">
+                    <mat-icon class="icon" svgIcon="hashtag" aria-hidden="false" aria-label="Workspace icon"></mat-icon>
+                    <input matInput required
+                            [placeholder]="!editName ? currentChannelName : ''" 
+                           name="channelName"
+                           [(ngModel)]="currentChannelName"
+                           [ngModelOptions]="{standalone: true}"
+                           maxlength="20"
+                           (click)="emptyInput('name')"
+                           (blur)="onBlur('name')"
+                           >
+                           @if (nameFormControl.hasError('required')) {
+                            <mat-error>Bitte geben Sie einen Namen ein.</mat-error>
+                            }
+                </mat-form-field>
+
+                <div class="channel-description" 
+                [ngStyle]="{
+                    'border': editChannelDescription ? 'none' : '1px solid #ADB0D9',
+                    'padding': editChannelDescription ? '0px' : '20px'
+                }">
+           
+               <div>
+
+                   <div>
+                       <h2>Beschreibung</h2>
+                       <a *ngIf="!editChannelDescription" (click)="editDescription()"><span>Bearbeiten</span></a>
+                       <a *ngIf="editChannelDescription" (click)="updateCurrentChannel('description')"><span>Speichern</span></a>
+                   </div>
+           
+                   <span *ngIf="!editChannelDescription"> {{ currentChannelDescription || 'Keine Beschreibung vorhanden' }}</span>
+           
+                   <div class="edit-channel-description">
+                       <mat-form-field *ngIf="editChannelDescription" appearance="outline">
+                           <input matInput 
+                                  placeholder="Dein Text hier"
+                                  name="channelDescription"
+                                  [(ngModel)]="currentChannelDescription"
+                                  (click)="emptyInput('description')"
+                                  (blur)="onBlur('description')"
+                                  maxlength="200">
+                       </mat-form-field>
+           
+                       <div class="channel-description-bottom">
+                           <div class="creator-container">
+                               <p>Erstellt von</p>
+                               <!-- <p class="creator">{{ currentUser?.name }}</p> -->
+                               <p class="creator">{{ this.currentChannel.channelAuthor }}</p>
+                           </div>
+                       </div>
+
+                   </div>
+
+               </div>
+
+           </div>
+           
+            
+        </form>
+        
+    </section>
+    
+    <div class="dialog-footer">
+        <mat-dialog-actions>
+            <button (click)="quitChannel()" mat-flat-button mat-dialog-close>
+                Channel verlassen
+            </button>
+        </mat-dialog-actions>
+    </div>
+    
+</div>
+
+

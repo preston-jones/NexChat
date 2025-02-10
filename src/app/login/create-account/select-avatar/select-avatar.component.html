@@ -1,0 +1,36 @@
+<button (click)="goBack()" class="back-button" mat-icon-button>
+    <mat-icon>arrow_back</mat-icon>
+</button>
+<div class="select-avatar-content">
+    <h1>Wähle deinen Avatar</h1>
+    <mat-card>
+        <mat-card-content>
+            <div>
+                <div>
+                    <img [src]="selectedAvatar ? selectedAvatar : './assets/images/avatars/person.svg'"
+                        alt="Selected Avatar"
+                        [ngStyle]="{'height': selectedAvatar ? '100%' : '90.67px', 'width': selectedAvatar ? '100%' : '90.67px', 'border-radius': selectedAvatar ? '50%' : '90.67px'}">
+                </div>
+            </div>
+            <div>
+                <div>
+                    <div>
+                        <h2>{{ userName }}</h2>
+                    </div>
+                    <div><span>Aus der Liste wählen</span></div>
+                </div>
+                <div>
+                    <div *ngFor="let avatar of avatars" (click)="chooseAvatar(avatar)">
+                        <img [src]="avatar" alt="Avatar">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div><span>eigenes Bild verwenden</span></div>
+                <input type="file" class="file-input" #fileUpload (change)="uploadAvatar($event)">
+                <button mat-stroked-button (click)="fileUpload.click()">Datei hochladen</button>
+            </div>
+        </mat-card-content>
+        <mat-card-footer><a (click)="finishCreateAccount()" mat-stroked-button>Weiter</a></mat-card-footer>
+    </mat-card>
+</div>

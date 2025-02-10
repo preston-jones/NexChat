@@ -1,0 +1,21 @@
+@mixin dFlex($g: 0px, $fd: row, $jc: center, $ai: center) {
+    display: flex;
+    justify-content: $jc;
+    align-items: $ai;
+    flex-direction: $fd;
+    gap: $g;
+  }
+  
+  $dark-purple: #444DF2;
+  $purple: #797EF3;
+  $light-purple: #ECEEFE;
+  $light-grey: lightgrey;
+  $purple-grey: #ADB0D9;
+
+  // $font-family: 'Nunito', sans-serif;
+  // $font-weight: 400;
+  // $border-radius: 30px;
+  // $background-color: rgb(242,242,242);
+  $background-color: rgb(236,238,254);
+  $background-image_login-animation: linear-gradient(#444DF2, #3FA9F5);
+  // $background-image_login-animation: linear-gradient(#ECEEFE, #3FA9F5);

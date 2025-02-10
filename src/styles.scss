@@ -1,0 +1,82 @@
+@import "./assets/fonts/fonts.scss";
+@import '@ctrl/ngx-emoji-mart/picker';
+@import 'mixin.scss';
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+body {
+    // background-color: rgb(236, 238, 254);
+    background-color: $background-color;
+}
+
+.max-width {
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: calc(100vh - 110px);
+}
+
+.mat-body,
+.mat-body-2,
+.mat-typography .mat-body,
+.mat-typography .mat-body-2,
+.mat-typography {
+    font-family: 'Nunito' !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Nunito' !important;
+}
+
+span {
+    font-family: 'Nunito' !important;
+}
+
+input {
+    font-family: 'Nunito' !important;
+}
+
+.d-none {
+    display: none;
+}
+
+* {
+    -webkit-overflow-scrolling: touch;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+}
+
+.emoji-mart {
+    border-radius: 30px 30px 30px 30px;
+    position: absolute;
+    bottom: 155px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 10 !important;
+}
+
+.cdk-global-scrollblock{
+    position: static !important;
+    width: initial !important;
+    overflow-y: inherit !important;
+}

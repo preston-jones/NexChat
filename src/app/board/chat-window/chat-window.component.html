@@ -1,0 +1,104 @@
+<div class="chat-container max-width">
+    <div class="chat-header">
+        <mat-form-field class="chat-search-bar">
+            <input type=" text" [(ngModel)]="searchQuery" (input)="onSearch($event)" matInput
+                placeholder="An: #channel, oder @jemand oder E-Mail-Adresse">
+        </mat-form-field>
+        <div *ngIf="selectedUser" class="search-display">
+            <img [src]="selectedUser.avatarPath" alt="Avatar" class="selected-avatar" />
+            <span>{{ selectedUser.name }}</span>
+            <mat-icon class="delete-selected-user" fontIcon="close" (click)="removeSelectedUser()"></mat-icon>
+        </div>
+        <div class="search-block-chat-window" *ngIf="isSearching">
+            <div class="found-block" *ngIf="channels.length">
+                <div class="found-users" *ngFor="let channel of channels"
+                    (click)="selectChannel({ name: channel.name, id: channel.id })">
+                    # {{ channel.name }}</div>
+            </div>
+
+            <div class="found-block" *ngIf="users.length">
+                <div class="found-users" *ngFor="let user of users" (click)="selectUser(user)"><img
+                        [src]="user.avatarPath" alt="">{{
+                    user.name }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="chat-message-input-container">
+        <textarea class="message-input" id="chatMessage" [(ngModel)]="sendMessageService.chatMessage" type="text"
+            (input)="updateSearchQuery($event)" placeholder="Schreiben Sie Ihre Nachricht"></textarea>
+
+        <!-- Datei-Vorschau -->
+        <div class="message-icon-container">
+            <div class="left-icon-container">
+                <input type="file" id="fileInput" (change)="sendMessageService.onFileSelected($event)" hidden />
+                <div class="message-icon" (click)="sendMessageService.triggerFileInput()">
+                    <mat-icon fontIcon="add"></mat-icon>
+                </div>
+                <div class="separator"></div>
+                <div (click)="messageService.showEmoji()" class="message-icon"><mat-icon
+                        fontIcon="sentiment_satisfied"></mat-icon>
+                </div>
+                <div (click)="toggleSearch()" class="message-icon"><mat-icon fontIcon="alternate_email"></mat-icon>
+                </div>
+
+                <div *ngIf="sendMessageService.filePreviewUrl" class="file-preview">
+                    <img *ngIf="sendMessageService.selectedFile && sendMessageService.selectedFile.type.startsWith('image/')"
+                        [src]="sendMessageService.filePreviewUrl" alt="Dateivorschau" />
+                    <a *ngIf="sendMessageService.selectedFile && sendMessageService.selectedFile.type === 'application/pdf'"
+                        [href]="sendMessageService.filePreviewUrl" target="_blank">PDF
+                        anzeigen</a>
+                    <mat-icon class="delete-upload" fontIcon="close"
+                        (click)="sendMessageService.deleteUpload()"></mat-icon>
+                </div>
+
+            </div>
+
+
+            <div class="right-icon-container">
+                <div (click)="sendMessageService.sendMessage()" class="message-icon send"><mat-icon
+                        fontIcon="send"></mat-icon></div>
+            </div>
+        </div>
+        <emoji-mart class="emoji-mart-chat" *ngIf="messageService.showEmojiPicker"
+            (emojiSelect)="messageService.addEmoji($event)" [darkMode]="false" title="Pick your emoji…"
+            emoji="point_up">
+        </emoji-mart>
+    </div>
+
+    <!-- <div class="search-block"
+        *ngIf="(isSearchingMessage && filteredUsers.length > 0) || (isUserSelect && filteredUsers.length > 0)">
+        <div class="found-block">
+            <div class="found-users" *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+                <img [src]="user.avatarPath" alt="">{{ user.name }}
+            </div>
+        </div>
+    </div>
+
+    <div class="search-block" *ngIf="isSearchingMessage && filteredChannels.length > 0">
+        <div class="found-block">
+            <div class="found-users" *ngFor="let channels of filteredChannels"
+                (click)="selectChannel({ name: channels.name, id: channels.id })">
+                <span>#</span>{{ channels.name }}
+            </div>
+        </div>
+    </div> -->
+
+    <div class="search-block"
+        *ngIf="(isSearchingMessage && filteredUsers.length > 0) || (isUserSelect && filteredUsers.length > 0)">
+        <div class="found-block">
+            <div class="found-users" *ngFor="let user of filteredUsers" (click)="selectUserMessage(user)">
+                <img [src]="user.avatarPath" alt="">{{ user.name }}
+            </div>
+        </div>
+    </div>
+
+    <div class="search-block" *ngIf="isSearchingMessage && filteredChannels.length > 0">
+        <div class="found-block">
+            <div class="found-users" *ngFor="let channel of filteredChannels; let i = index"
+                (click)="selectChannelMessage(channel)">
+                <span>#</span>{{ channel.name }}
+            </div>
+        </div>
+    </div>
+
+</div>

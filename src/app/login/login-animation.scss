@@ -1,0 +1,147 @@
+@import '../../mixin.scss';
+
+.intro-animation-container {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    background-image: $background-image_login-animation;
+    opacity: 1;
+    animation: background-off .225s ease-in-out forwards 2.7s;
+
+    .max-width-container {
+        // position: relative;
+        width: 100vw;
+        height: 100vh;
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .intro-logo-container {
+            position: absolute;
+            left: calc(50% - 260px); /*50% - width of big logo / 2 */
+            top: calc(50% - 92px); /*50% - height of big logo / 2 --> also in class .intro-animation */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            animation: intro-animation .5s ease-in forwards 2.2s;
+
+            >img {
+                object-fit: cover;
+                transform: translateX(154px);
+                animation-name: logo-animation, intro-logo-animation;
+                animation-duration: .7s, .5s;
+                animation-delay: .5s, 2.2s;
+                animation-timing-function: ease-in-out, ease-in-out;
+                animation-fill-mode: forwards, forwards;
+            }
+        }
+    }
+}
+
+.headline {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 184px; /*height of big logo */
+
+    >h1 {
+        font-size: 64px;
+        font-weight: 700;
+        color: white;
+        transform: translateX(-320px);
+
+        animation-name: headline-animation, intro-headline-animation;
+        animation-duration: .5s, .5s;
+        animation-delay: 1s, 2.2s;
+        animation-timing-function: ease-in-out, ease-in-out;
+        animation-fill-mode: forwards, forwards;
+    }
+}
+
+@keyframes background-off {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+        z-index: -1;
+    }
+}
+
+@keyframes intro-animation {
+    from {
+        left: calc(50% - 260px);
+        top: calc(50% - 92px);
+    }
+
+    to {
+        left: 75px; /* calculate new, cause of the auto ,argin in the header */
+        top: -20px; /* at width 557px --> calculate logo position new */
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes logo-animation {
+    from {
+        transform: translateX(154px);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes intro-logo-animation {
+    from {
+        width: 186px;
+        height: 184px;
+    }
+
+    to {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+@keyframes headline-animation {
+    from {
+
+        transform: translateX(-320px);
+    }
+
+    to {
+
+        transform: translateX(0);
+    }
+}
+
+@keyframes intro-headline-animation {
+    0% {
+        font-size: 64px;
+        color: white;
+        transform: translate(0, 0);
+    }
+
+    75% {
+        color: black;
+    }
+
+    100% {
+        font-size: 32px;
+        color: black;
+    }
+}

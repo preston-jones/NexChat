@@ -1,0 +1,346 @@
+@import '../../../mixin.scss';
+
+* {
+    box-sizing: border-box;
+}
+
+span {
+    font-size: 18px;
+}
+
+.hashtag-black {
+    color: black !important;
+}
+
+.workspace-content {
+    padding: 32px 30px 32px 30px;
+}
+
+.user-avatar-workspace {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.mat-mdc-card {
+    @include dFlex($fd: column, $g: 25px);
+    box-shadow: none;
+    width: 366px;
+    border-radius: 30px;
+}
+
+.mat-mdc-card-content {
+    padding: 0;
+    width: 100%;
+    @include dFlex($fd: column, $ai: flex-start, $g: 24px);
+}
+
+.header-workspace {
+    width: 100%;
+    padding: 0;
+    height: 60px;
+    @include dFlex($jc: space-between);
+
+    div:nth-of-type(1) {
+        @include dFlex();
+        gap: 15px;
+
+        span {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        div:nth-of-type(1) {
+            @include dFlex();
+            width: 60px;
+            height: 60px;
+            border-radius: 100%;
+            background: #010147;
+        }
+    }
+}
+
+.section {
+    width: 100%;
+    @include dFlex($jc: space-between, $ai: flex-start);
+
+    .panel-content {
+
+        .panel-container {
+            @include dFlex($g: 10px, $jc: flex-start);
+
+            span {
+                font-size: 20px;
+                font-weight: 700;
+            }
+
+            .icon {
+                width: 17.11px !important;
+                height: 16.65px !important;
+
+                &:hover {
+                    color: $purple;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .panel-container-open {
+            @include dFlex($fd: column, $g: 10px, $ai: flex-start);
+
+            >div {
+                @include dFlex($g: 15px);
+                padding: 4px 20px 4px 20px;
+                border-radius: 20px;
+
+                &:nth-child(1) {
+                    margin-top: 25px;
+                }
+
+                &:nth-last-child(1) {
+                    margin-bottom: 25px;
+                }
+
+                &:hover {
+                    background-color: $light-purple;
+                    cursor: pointer;
+
+                    .icon {
+                        color: $purple;
+                    }
+                }
+            }
+
+            .icon {
+                width: 17.11px !important;
+                height: 16.65px !important;
+
+                &:hover {
+                    color: $purple;
+                    cursor: pointer;
+                }
+            }
+
+        }
+
+        .add-channel-container {
+            @include dFlex($g: 10px, $jc: flex-start);
+            padding: 4px 20px 4px 20px;
+            border-radius: 20px;
+
+            &:hover {
+                cursor: pointer;
+
+                .icon {
+                    color: $purple;
+                }
+
+                span {
+                    color: $purple;
+                }
+            }
+
+            .icon {
+                width: 17.11px !important;
+                height: 16.65px !important;
+
+                &:hover {
+                    color: $purple;
+                    cursor: pointer;
+                }
+            }
+        }
+
+
+        .chat-container-open {
+            @include dFlex($fd: column, $g: 13px, $ai: flex-start);
+            overflow-y: auto;
+
+            >div {
+                @include dFlex($g: 15px);
+                padding: 4px 20px 4px 20px;
+                border-radius: 35px;
+
+                &:nth-child(1) {
+                    margin-top: 25px;
+                }
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: $light-purple;
+                }
+
+                >div {
+                    @include dFlex($ai: flex-end);
+
+                }
+
+                img {
+                    width: 50px;
+                    height: 50px;
+                }
+
+                >div .status {
+                    width: 14px;
+                    height: 14px;
+                    border: 2px solid white;
+                    border-radius: 100%;
+                    margin-left: -14px;
+                }
+
+                span {
+                    font-size: 18px;
+                    font-weight: 400;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 168px;
+                }
+            }
+
+        }
+    }
+}
+
+
+.arrow {
+    transform: rotate(0deg) !important;
+    width: 9.01px !important;
+    margin-right: 15px;
+}
+
+.rotated {
+    transform: rotate(-90deg) !important;
+    width: 9.01px !important;
+    margin-right: 15px;
+}
+
+.clicked {
+    color: $purple;
+    font-weight: 700;
+    background-color: $light-purple;
+    cursor: default !important;
+}
+
+.add-button {
+    height: 32px;
+    width: 32px;
+    border-radius: 100%;
+    margin-top: 6px;
+    @include dFlex();
+
+    &:hover {
+        color: $dark-purple;
+        cursor: pointer;
+        font-weight: 700;
+        background-color: $light-purple;
+    }
+}
+
+.new-chat-button {
+    height: 40px;
+    width: 40px;
+    border-radius: 100%;
+    @include dFlex();
+
+    &:hover {
+        color: $dark-purple;
+        font-weight: 700;
+        cursor: pointer;
+        background-color: $light-purple;
+    }
+
+    .new-chat-icon {
+        width: 24px !important;
+        height: 24px !important;
+    }
+}
+
+.mat-expansion-panel {
+    box-shadow: none !important;
+}
+
+.mat-expansion-panel-header.mat-expanded {
+    height: 48px !important;
+}
+
+.mat-expansion-panel-header-description,
+.mat-expansion-panel-header-title {
+    flex-grow: unset;
+    gap: 10px;
+}
+
+.mat-expansion-panel-header:focus,
+.mat-expansion-panel-header:hover {
+    color: $purple;
+    background: none !important;
+}
+
+.mat-mdc-dialog-surface {
+    border-radius: 30px !important;
+}
+
+.dialog-container .mat-dialog-container {
+    border-radius: 30px !important;
+}
+
+.mat-mdc-card {
+    box-shadow: none !important;
+}
+
+.mat-badge {
+    bottom: 42px;
+}
+
+.mat-badge-content {
+
+    background-color: red !important;
+    font-size: 14px !important;
+    text-align: center;
+}
+
+.group-logo{
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.new-chat-button-mobile{
+    display: none;
+}
+
+
+@media screen and (max-width: 1080px) {
+.hide-input-mobile{
+    display: none;
+}
+
+.flex-input-mobile{
+    display: flex !important;
+    width: 100%;
+    border: 1px solid #ADB0D9;
+    padding: 8.5px 40px 8.5px 30px;
+}
+
+.new-chat-button-mobile{
+    display: flex !important;
+    position: absolute;
+    background-color: #535AF1;
+    bottom: 30px;
+    right: 14px;
+    height: 54px !important;
+    width: 54px !important;
+}
+}
+
+@media screen and (max-width: 375px) {
+    .workspace-content {
+        padding: 14px !important;
+    }
+
+    .mat-expansion-panel-header {
+        padding: 0 12px !important;
+    }
+}

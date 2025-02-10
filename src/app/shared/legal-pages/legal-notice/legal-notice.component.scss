@@ -1,0 +1,71 @@
+h1 {
+  color: #444DF2;
+  font-size: 46px !important;
+  font-weight: 700 !important;
+  padding-top: 64px;
+  line-height: 1.2 !important;
+}
+
+h2 {
+  color: #444DF2;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  padding-top: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: rgb(71, 78, 205)
+}
+
+.contact-info,
+.email-info {
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  padding: 10px 0;
+
+  p {
+    margin: 0;
+  }
+}
+
+.back-button {
+  position: absolute !important;
+  top: 34px;
+  left: 34px;
+  float: left;
+}
+
+.create-account-container {
+  display: none !important;
+}
+
+.content {
+  overflow-y: auto;
+  border-radius: 30px;
+  word-break: break-word;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.intro-animation-container {
+  display: none !important;
+}

@@ -1,0 +1,308 @@
+@import '../../../mixin.scss';
+
+* {
+    box-sizing: border-box;
+}
+
+h1 {
+    margin: 0px !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+}
+
+h2 {
+    margin: 0px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+}
+
+.close-btn {
+    @include dFlex();
+    height: 40px;
+    width: 40px;
+
+    &:hover {
+        background-color: $light-purple;
+        color: $dark-purple;
+        }
+
+    .icon {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+
+.dialog-content {
+    padding: 40px;
+    width: 872px;
+    @include dFlex($g: 24px, $fd: column, $jc: flex-start, $ai: flex-start);
+
+        .header {
+            width: 100%;
+            @include dFlex($jc: space-between);
+
+            div {
+                @include dFlex($g: 15px);
+                padding: 2px 1px;
+
+                .mat-icon {
+                    width: 20.59px !important;
+                    height: 20px !important;
+                    font-weight: 100 !important;
+                    font-size: 28px !important;
+                    &:hover {
+                        cursor: default !important;
+                    }
+                }
+                
+            }
+               
+        }
+
+        span {
+            font-size: 18px !important;
+        }
+
+}
+
+.content {
+    width: 100%;
+    
+    .form-content {
+        width: 100%;
+        @include dFlex($g: 24px, $fd: column, $jc: flex-start);
+    }
+}
+
+.channel-name {
+    width: 100%;
+    @include dFlex($ai: flex-start, $fd: column, $g: 20px);
+    padding: 20px;
+    border: 1px solid $purple-grey;
+    border-radius: 20px;
+    // transition: border 0.3s linear, padding 0.3s linear;
+
+        > div:nth-child(1) {
+            @include dFlex($jc: space-between);
+            width: 100%;
+            > a {
+                @include dFlex();
+                height: 24px;
+                width: 100px;
+                padding: 1px 2px;
+                &:hover {
+                    cursor: pointer;
+                    font-weight: bolder;
+                }
+
+                span {
+                    color: $dark-purple;
+                    font-size: 18px;  
+                }
+            }
+        }
+
+        > div:nth-child(2) {
+            @include dFlex($jc: flex-start);
+            width: 100%;
+            padding: 2px 1px;
+            gap: 10px;
+
+            .mat-icon {
+                width: 16.47px !important;
+                height: 16px !important;
+                font-weight: 100 !important;
+                &:hover {
+                    cursor: default !important;
+                }
+            }
+        }
+}
+
+.channel-description {
+    width: 100%;
+    @include dFlex($ai: flex-start, $fd: column, $g: 20px, $jc: flex-start);
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid $purple-grey;
+    border-radius: 20px;
+
+    > div:nth-child(1) {
+        @include dFlex($jc: space-between, $fd: column, $ai: flex-start);
+        width: 100%;
+        gap: 20px;;
+
+        > div:nth-child(1) {
+            width: 100%;
+            @include dFlex($jc: space-between, $g: 20px);
+            > a {
+                @include dFlex();
+                height: 24px;
+                width: 100px;
+                padding: 1px 2px;
+                &:hover {
+                    cursor: pointer;
+                    font-weight: bolder;
+                }
+
+                span {
+                    color: $dark-purple;
+                    font-size: 18px;  
+                }
+            }
+        }
+
+        > div:nth-child(3) {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 20px;
+            > div {
+                width: 100%;
+                gap: 20px;
+                display: flex;
+                flex-direction: column;
+                // .line {
+                //     width: 100%;
+                //     height: 1px;
+                //     background-color: $purple-grey;
+                // }
+                .creator {
+                    color: $dark-purple;
+                    font-size: 24px; 
+                }
+            }
+            
+        }
+
+        > div:nth-child(4) {
+            @include dFlex($fd: column, $ai: flex-start, $g: 20px);
+
+            .creator {
+                font-size: 24px;
+                color: $dark-purple;
+                text-decoration: none;
+            }
+        }
+    }
+}
+
+.creator-container {
+    width: 100%;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    p {
+        font-size: 18px;
+        margin: 0 !important;
+    }
+    .creator {
+        color: $dark-purple;
+        font-size: 24px; 
+    }
+}
+
+.edit-channel-description {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+
+    .channel-description-bottom {
+        width: 100%;
+        border-top: 1px solid $purple-grey;
+        padding-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+.dialog-footer {
+    width: 100%;
+    height: 49px;
+
+    .mat-mdc-dialog-actions {
+        width: 100%;
+        @include dFlex($jc: flex-end)
+    }
+}
+
+.mdc-button {
+    height: 49px !important;
+    width: 214px !important;
+    border-radius: 25px !important;
+    background: $dark-purple !important;
+
+    &:hover {
+        cursor: pointer;
+        background-color: $purple !important;
+    }
+}
+
+.mdc-button__label {
+    color: white;
+    // padding: 12px 25px 12px 25px !important;
+    font-size: 18px;
+}
+
+.mdc-dialog__actions {
+    padding: 0px !important;
+}
+
+.mat-mdc-dialog-actions {
+    padding: 0px !important;
+}
+
+.mat-mdc-form-field {
+    width: 100%;
+    margin-bottom: -20px;
+}
+
+.mat-mdc-dialog-content .mdc-dialog__content .mat-mdc-dialog-container-with-actions {
+    padding: 0;
+}
+
+.mdc-dialog .mdc-dialog__content {
+    padding: 0;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+    border-radius: 30px;
+}
+
+.mat-mdc-dialog-title {
+    height: 40px;
+    padding: 0;
+}
+
+.mdc-text-field--outlined {
+    @include dFlex();
+    --mdc-outlined-text-field-container-shape: 40px !important;
+    min-height: 60px;
+}
+
+.mdc-text-field--outlined .mat-mdc-form-field-infix, .mdc-text-field--no-label .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    gap: 20px;
+    .mat-icon {
+        width: 15.79px !important;
+        height: 15.33px !important;
+    }
+}
+
+.mdc-text-field--no-label:not(.mdc-text-field--textarea) .mat-mdc-form-field-input-control.mdc-text-field__input, .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control {
+    font-size: 18px;
+    color: grey;
+}
+
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+  border-color: $purple !important;
+} 

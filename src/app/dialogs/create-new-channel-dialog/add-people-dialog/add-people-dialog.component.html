@@ -1,0 +1,71 @@
+<div class="dialog-content">
+    <section class="header-add-people-dialog">
+        <h1 mat-dialog-title>Leute hinzufügen</h1>
+        <a class="close-btn" mat-dialog-close mat-icon-button><mat-icon class="icon">close</mat-icon></a>
+    </section>
+    <mat-dialog-content>
+        <form #channelForm="ngForm" (ngSubmit)="onSubmit(channelForm)" class="radio-group-container">
+            <mat-radio-group [(ngModel)]="selectedValue" (change)="onSelectionChange($event)" name="radioGroup" required>
+                <mat-radio-button class="radio-button" color="primary" value="addAll">
+                    <span>Alle Mitglieder von <a class="group-link" href="">OfficeTeam</a> hinzufügen</span>
+                </mat-radio-button>
+                <mat-radio-button class="radio-button" color="primary" value="specific">
+                    <span>Bestimmte Leute hinzufügen</span>
+                </mat-radio-button>
+            </mat-radio-group>
+            <mat-error *ngIf="channelForm.submitted && !selectedValue">Bitte wähle eine Option aus.</mat-error>
+
+            <div *ngIf="selectedValue === 'specific'">
+            
+                <mat-form-field appearance="outline">
+                    <div class="selected-users">
+                        <div *ngFor="let user of selectedUsers.slice().reverse()" class="selected-user">
+                            <img [src]="user.avatarPath" alt="{{ user.name }}" class="contact-avatar">
+                            <span class="contact-name">{{ user.name }}</span>
+                            <button (click)="deleteUser(user.id)" mat-icon-button>
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <input matInput required
+                        class="search-input"
+                        type="search" 
+                        [(ngModel)]="searchTerm" 
+                        (input)="filterUsers()" 
+                        (click)="showUsers()" 
+                        placeholder="Suche nach Benutzern"
+                        [ngModelOptions]="{standalone: true}"
+                        #searchInput="ngModel"
+                        [ngStyle]="{ 'margin-left': selectedUsers.length >=3 ? '-10px' : '0' }"
+                        >
+                        <!-- <mat-error *ngIf="searchInput.invalid && (searchInput.dirty || channelForm.submitted)">
+                            Bitte gib einen Suchbegriff ein.
+                        </mat-error> -->
+                        <mat-error *ngIf="ownUserError">
+                            Du bist bereits Mitglied.
+                        </mat-error>
+                </mat-form-field>
+            </div>
+            <div 
+                *ngIf="searchTerm && selectedValue === 'specific' && filteredUsers.length > 0 && userSelected" 
+                class="contacts-container" 
+                [ngStyle]="{ 'display': !searchTerm && !selectedValue ? 'none' : 'flex' }">
+                <div *ngFor="let user of filteredUsers">
+                    <a class="contact-container" (click)="selectUser(user)">
+                        <img [src]="user.avatarPath" alt="">
+                        <span>{{ user.name }}</span>
+                    </a>
+                </div>
+            </div>
+            <mat-dialog-actions>
+                <button 
+                mat-flat-button 
+                mat-dialog-close 
+                type="submit"
+                [disabled]="channelForm.invalid || (selectedValue === 'specific' && selectedUsers.length < 1)">
+                Erstellen
+            </button>
+            </mat-dialog-actions>
+        </form>
+    </mat-dialog-content>
+</div>
