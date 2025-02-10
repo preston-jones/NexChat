@@ -51,7 +51,8 @@
                         <div (click)="showEmojiForReact(message)" class="reaction-icon"><mat-icon
                                 fontIcon="add_reaction"></mat-icon></div>
                         <div (click)="showThread(message)" class="reaction-icon"><mat-icon
-                                fontIcon="comment"></mat-icon></div>
+                                fontIcon="comment" style="cursor:pointer;"
+                                title="Antworten"></mat-icon></div>
                     </div>
                     <span class="message-infos-sender">
                         <span class="sender-name" (click)="this.getSelectedUserInfo(message.senderID)">
@@ -127,7 +128,8 @@
                             <div (click)="showEmojiForReact(message)" class="reaction-icon"><mat-icon
                                     fontIcon="add_reaction"></mat-icon></div>
                             <div (click)="showThread(message)" class="reaction-icon"><mat-icon
-                                    fontIcon="comment"></mat-icon></div>
+                                    fontIcon="comment" style="cursor:pointer;"
+                                    title="Antworten"></mat-icon></div>
                             <div (click)="showMessageEditToggle()" class="reaction-icon edit-message-icon"><mat-icon
                                     fontIcon="more_vert"></mat-icon></div>
                             <div *ngIf="showMessageEdit" class="edit-message">

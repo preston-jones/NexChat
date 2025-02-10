@@ -91,14 +91,14 @@
     div {
       height: 168px;
       width: 168px;
-      background-color: $purple;
+      // background-color: $purple;
       border-radius: 100%;
       @include dFlex();
     }
 
     img {
-      height: 90.67px;
-      width: 90.67px;
+      height: 168px;
+      width: 168px;
     }
   }
 
