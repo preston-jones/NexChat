@@ -22,7 +22,7 @@ export class AuthService {
   errorCode: string | null = null
   currentUserUid: string | null | undefined = null;
   currentUser = this.getUserSignal(); // Change to hold an instance of the User class
-  // GUEST_UID = 'RRRUP6BVCtgXTpni8cgrh9rW56D3';
+  // GUEST_UID = 'ZnyRrhtuIBhdU3EYhDw5DueQsi02';
 
   @Output() userUpdated: EventEmitter<User | null | undefined> = new EventEmitter();
 
@@ -128,7 +128,7 @@ export class AuthService {
 
   async guestLogin(): Promise<void> {
     const guestEmail = 'guest@test.de';
-    const guestPassword = 'gastuser';
+    const guestPassword = 'guestUser';
     let result: UserCredential = await signInWithEmailAndPassword(this.auth, guestEmail, guestPassword);
     await this.userService.updateUserLoginState(result.user.uid, 'loggedIn');
   }

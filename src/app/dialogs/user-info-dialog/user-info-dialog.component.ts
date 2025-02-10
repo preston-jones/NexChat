@@ -18,7 +18,7 @@ export class UserInfoDialogComponent {
   chatUtilityService = inject(ChatUtilityService);
   authService = inject(AuthService);
 
-  readonly GUESTID = 'y7WnIAhufRhCn54XusoiYWlXl4S2';
+  readonly GUESTID = 'ZnyRrhtuIBhdU3EYhDw5DueQsi02';
 
 
   constructor() {

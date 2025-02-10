@@ -16,8 +16,8 @@ export class ProfileDialogComponent {
   authService = inject(AuthService);
   userService = inject(UserService);
 
-  readonly GUESTID = 'y7WnIAhufRhCn54XusoiYWlXl4S2';
-
+  readonly GUESTID = 'ZnyRrhtuIBhdU3EYhDw5DueQsi02';
+  
 
   constructor() {
   }
