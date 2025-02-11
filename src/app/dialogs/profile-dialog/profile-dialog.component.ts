@@ -1,4 +1,5 @@
 import { Component, EventEmitter, inject, Input, Output, WritableSignal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../shared/services/authentication/auth-service/auth.service';
 import { UserService } from '../../shared/services/firestore/user-service/user.service';
 import { User } from '../../shared/models/user.class';
@@ -6,7 +7,9 @@ import { User } from '../../shared/models/user.class';
 @Component({
   selector: 'app-profile-dialog',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './profile-dialog.component.html',
   styleUrl: './profile-dialog.component.scss'
 })

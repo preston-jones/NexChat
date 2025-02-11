@@ -33,7 +33,8 @@ export class GoogleAuthService {
           uid: result.user.uid,
           email: result.user.email,
           name: result.user.displayName || 'No Name',
-          avatarPath: result.user.photoURL || null,
+          // avatarPath: result.user.photoURL || null,
+          avatarPath: './assets/images/avatars/avatar_default.png',
         };
 
         await this.userService.createFirestoreUser(firestoreUser)

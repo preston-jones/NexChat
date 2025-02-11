@@ -71,6 +71,7 @@ export class ChatUtilityService {
     this.userService.selectedUser = null;
   }
 
+
   setMessageId(messageId: string | null) {
     this.messageIdSubject.next(messageId);
   }

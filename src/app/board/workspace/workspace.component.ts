@@ -66,6 +66,7 @@ export class WorkspaceComponent implements OnInit {
     this.chatUtilityService.openChatWindow();
   }
 
+
   constructor(
     public dialog: MatDialog,
     private iconsService: IconsService,

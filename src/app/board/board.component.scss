@@ -115,6 +115,16 @@ header {
     z-index: 1000;
     background-color: #00000033;
     cursor: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-content {
+    position: relative;
+    width: 100%;
+    max-width: 1920px;
+    height: 100%;
 }
 
 .userInfoOverlay {
@@ -138,7 +148,7 @@ header {
 .profile-menu {
     position: absolute;
     top: 148px;
-    right: 20px;
+    right: 37px;
     z-index: 10;
     display: flex;
     justify-content: center;

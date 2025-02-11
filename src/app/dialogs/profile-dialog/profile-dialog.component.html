@@ -6,7 +6,7 @@
     <img src="{{ this.authService.currentUser()?.avatarPath }}" alt="" class="avatar-img">
     <div class="name-container">
             <h2>{{ this.authService.currentUser()?.name }}</h2>
-            <span (click)="openUserEditor($event)">Bearbeiten</span>
+            <span *ngIf="authService.currentUser()?.id != GUESTID" (click)="openUserEditor($event)">Bearbeiten</span>
     </div>
     <div class="status-container">
         @if (this.authService.currentUser()?.loginState == 'loggedIn') {
