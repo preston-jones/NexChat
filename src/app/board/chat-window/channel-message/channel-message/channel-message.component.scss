@@ -500,7 +500,7 @@
     >.message-input {
         background-color: white !important;
         border: 1px solid rgba(173, 176, 217, 1) !important;
-        border-radius: 30px;
+        border-radius: 16px;
         height: 135px;
         width: 100%;
         padding: 20px;
@@ -574,6 +574,10 @@
 @media screen and (max-width: 1080px) {
     .thread-container {
         max-width: none;
+    }
+
+    .chat-container {
+        margin-bottom: 24px;
     }
 }
 
