@@ -1,9 +1,17 @@
 <div class="chat-container max-width">
     <div class="chat-header">
         <div class="selected-user" (click)="this.getSelectedUserInfo(selectedUser?.id)"><img
-                [src]="selectedUser?.avatarPath" alt=""> {{ selectedUser?.name}}</div>
+                [src]="selectedUser?.avatarPath" alt="">
+            <span *ngIf="selectedUser?.id === this.currentUser?.id">{{ selectedUser?.name + ' (Du)' }}</span>
+            <span *ngIf="selectedUser?.id != this.currentUser?.id">{{ selectedUser?.name }}</span>
+        </div>
     </div>
     <div #chatWindow class="chat-content">
+
+        <span *ngIf="selectedUser?.id === this.currentUser?.id" class="message-received-container info-text">
+            Dies ist dein persönlicher Space. Hier kannst du dir Notizen machen, To-Dos, oder Links und Files ablegen.
+            Du kannst hier auch Dinge mit dir selbst besprechen.
+        </span>
 
         <div class="message-box" *ngFor="let messages of (messagesService.directMessages); let i = index">
             <div class="message-content" *ngFor="let message of messages.conversation; let i = index">

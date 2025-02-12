@@ -6,6 +6,7 @@ header {
     width: 100%;
     // padding: 25px 45px 0 25px;
     box-sizing: border-box;
+    z-index: 10;
 }
 
 .input-search-container {
@@ -371,12 +372,13 @@ mat-toolbar-row {
     .board-container {
         padding: 0;
         gap: 0;
+        height: 100vh;
     }
 
-    .mat-drawer-container {
-        // height: 100%;
-        height: 100%;
-    }
+    // .mat-drawer-container {
+    //     height: calc(100vh - 110px);
+    //     height: 100%;
+    // }
 
     .mat-drawer-content {
         margin-left: 0 !important;

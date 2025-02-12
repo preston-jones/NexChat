@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
-import { addDoc, arrayUnion, collection, doc, Firestore, getDoc, onSnapshot, orderBy, query, updateDoc } from '@angular/fire/firestore';
+import { addDoc, arrayUnion, collection, doc, Firestore, getDoc, onSnapshot, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { ChannelsService } from '../../../../shared/services/channels/channels.service';
@@ -47,7 +47,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   filteredUsers: User[] = [];
   filteredChannels: Channel[] = [];
   channels: Channel[] = [];
-  currentUser = this.authService.getUserSignal();
+  currentUser: User | null | undefined = null;
   showEmojiPicker = false;
   showEmojiPickerEdit: boolean = false;
   showEmojiPickerReact: boolean = false;
@@ -57,7 +57,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   directChatMessage = '';
   messageArea = true;
   editedMessage = '';
-  currentUserUid = '';
   editingMessageId: string | null = null;
   senderAvatar: string | null = null;
   senderName: string | null = null;
@@ -79,7 +78,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
   constructor(private firestore: Firestore, private auth: Auth,
     private userService: UserService, private cd: ChangeDetectorRef,
-    private authService: AuthService, private uploadFileService: UploadFileService,
+    public authService: AuthService, private uploadFileService: UploadFileService,
     public channelsService: ChannelsService, public dialog: MatDialog, public messagesService: MessagesService, private chatUtilityService: ChatUtilityService,
     private channelNavigationService: ChannelNavigationService) {
 
@@ -88,10 +87,14 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.chatUtilityService.messageId$.subscribe(id => {
       this.messageId = id;
-      // console.log('Aktuelle Message ID:', this.messageId);
+      console.log('Aktuelle Message ID:', this.messageId);
     });
     this.loadData();
+    this.currentUser = this.authService.currentUser();
+    console.log('OnInit:', this.messagesService.directMessages);
+
   }
+
 
   ngAfterViewInit() {
     const observer = new MutationObserver(() => {
@@ -114,12 +117,12 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       if (user) {
         await this.loadUsers();
         await this.loadChannels();
-
       } else {
         console.log('Kein Benutzer angemeldet');
       }
     });
   }
+
 
   async loadUsers() {
     let usersRef = collection(this.firestore, 'users');
@@ -186,30 +189,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-  // async openChannel(channel: Channel, i: number) {
-  //   const currentUser = this.currentUser();
-  //   this.isSearching = false; // Suche beenden
-  //   this.searchQuery = ''; // Suche zurücksetzen
-  //   this.channels = []; // Gefilterte Channels zurücksetzen
-  //   this.channelChatMessage = ''; // Chat-Nachricht zurücksetzen
-  //   this.channelsService.currentChannelId = channel.id;
-  //   this.channelsService.channelIsClicked = true;
-  //   this.channelsService.clickChannelContainer(channel, i);
-  //   this.channelNavigationService.selectChannel(channel, i);
-  //   if (currentUser) {
-  //     this.messagesService.loadMessages(currentUser.id, channel.id);
-  //   } else {
-  //     console.error("currentUserUid is null");
-  //   }
-  //   this.loadChannels();
-  // }
-
-  // handleOpenChannelEvent() {
-  //   // Logik zum Wechseln zur Channel-Ansicht
-  //   console.log('Channel geöffnet');
-  //   // Hier können Sie die Logik hinzufügen, um zur Channel-Ansicht zu wechseln
-  // }
 
   selectChannel(channel: Channel) {
     if (channel && channel.id) {
@@ -281,7 +260,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
     // Kanalsuche mit #
     if (!this.isUserSelect) {
-      const currentUserId = this.authService.currentUserUid || '';
+      const currentUserId = this.currentUser?.id || '';
       this.filteredChannels = this.channels.filter(channel =>
         channel.name.toLowerCase().startsWith(this.searchQuery.slice(1)) &&
         channel.memberUids &&
@@ -346,7 +325,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
   addOrUpdateReaction(message: DirectMessage, emoji: string, conversationId: string): void {
-    const currentUser = this.currentUser();
+    const currentUser = this.currentUser;
     if (!currentUser) {
       console.warn('Kein Benutzer gefunden!');
       return;
@@ -505,7 +484,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   formatSenderNames(senderNames: string, senderIDs: string): string {
     const senderIDList = senderIDs.split(', ');
     const senderNameList = senderNames.split(', ');
-    const currentUserID = this.currentUser()?.id;
+    const currentUserID = this.currentUser?.id;
     const formattedNames = senderNameList.map((name, index) => {
       return senderIDList[index] === currentUserID ? 'Du' : name;
     });
@@ -525,7 +504,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   getReactionVerb(senderNames: string, senderIDs: string): string {
     const senderIDList = senderIDs.split(', ');
     const senderNameList = senderNames.split(', ');
-    const currentUserID = this.currentUser()?.id;
+    const currentUserID = this.currentUser?.id;
     const formattedNames = senderNameList.map((name, index) => {
       return senderIDList[index] === currentUserID ? 'Du' : name;
     });
@@ -605,10 +584,20 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
   async sendMessage() {
-    if (this.directChatMessage.trim() || this.selectedFile) {
-      const currentUser = this.authService.currentUser();
 
-      if (currentUser) {
+    if (this.currentUser?.id === this.selectedUser?.id) {
+      console.log(this.currentUser?.id, this.selectedUser?.id);
+
+      this.messagesService.directMessages = [...this.messagesService.directMessages.filter(m => m.isOwnMessage), ...this.messagesService.directMessages.filter(m => !m.isOwnMessage)];
+      console.log('Nachrichten:', this.messagesService.directMessages);
+      
+    }
+
+    if (this.directChatMessage.trim() || this.selectedFile) {
+
+      // const currentUser = this.currentUser;
+
+      if (this.currentUser) {
         const messagesRef = collection(this.firestore, 'direct_messages');
         const conversationId = uuidv4();
 
@@ -618,17 +607,18 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
         }));
 
         if (this.messageId) {
+          console.log('existiert');
           // Konversation existiert, also aktualisiere sie
           const messageDocRef = doc(messagesRef, this.messageId);
 
           const newConversation = {
             conversationId: conversationId,
-            senderName: currentUser?.name || '',
+            senderName: this.currentUser?.name || '',
             message: this.directChatMessage || '',
             reactions: [],
             timestamp: new Date(),
             receiverName: this.selectedUser?.name || '',
-            senderId: currentUser?.id || null,
+            senderId: this.currentUser?.id || null,
             receiverId: this.selectedUser?.id || null,
             fileURL: '', // Platzhalter für Datei-URL
             markedUser: markedUserDetails || [],
@@ -665,15 +655,16 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
             }
           }
         } else {
+          console.log('Neu');
           // Es gibt keine Konversation, also erstelle eine neue
           const newConversation = {
             conversationId: conversationId,
-            senderName: currentUser?.name || '',
+            senderName: this.currentUser?.name || '',
             message: this.directChatMessage || '',
             reactions: [],
             timestamp: new Date(),
             receiverName: this.selectedUser?.name || '',
-            senderId: currentUser?.id || null,
+            senderId: this.currentUser?.id || null,
             receiverId: this.selectedUser?.id || null,
             fileURL: '', // Platzhalter für Datei-URL
             markedUser: markedUserDetails || [],
@@ -682,12 +673,11 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
           // Füge die neue Konversation in Firestore hinzu
           const messageDocRef = await addDoc(messagesRef, {
-            senderId: currentUser.id,
+            senderId: this.currentUser.id,
             receiverId: this.selectedUser?.id || null,
             timestamp: new Date(),
             conversation: [newConversation],
           });
-
           // Datei verarbeiten, falls vorhanden
           if (this.selectedFile) {
             try {
@@ -712,6 +702,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
         console.error('Kein Benutzer angemeldet');
       }
     }
+    console.log('AfterSend: ', this.messagesService.directMessages);
   }
 
 

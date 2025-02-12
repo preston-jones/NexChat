@@ -9,8 +9,8 @@
 }
 
 .chat-header {
-    border-top-left-radius: 30px !important;
-    border-top-right-radius: 30px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
     position: absolute;
     top: 0;
     height: 96px;
@@ -110,7 +110,7 @@
     flex-direction: column;
     align-items: center;
     margin-top: 130px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -582,9 +582,16 @@
 }
 
 
+@media screen and (max-width: 1080px) {
+    .chat-content {
+        margin-top: 90px;
+    }
+}
+
+
 @media screen and (max-width: 768px) {
     .chat-content {
-        margin-top: 48px;
+        margin-top: 54px;
     }
 
     .members-list {

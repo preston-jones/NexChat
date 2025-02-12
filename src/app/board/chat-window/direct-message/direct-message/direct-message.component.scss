@@ -166,6 +166,11 @@
     }
 }
 
+.info-text {
+    font-style: italic;
+    color: gray;
+}
+
 .message-container {
     display: flex;
     flex-direction: column;
@@ -696,10 +701,13 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 24px;
-    font-weight: 700;
-    border-radius: 30px;
+    border-radius: 100px;
     padding: 4px 20px;
+
+    >span {
+        font-size: 24px;
+        font-weight: 700;
+    }
 
     >img {
         height: 50px;

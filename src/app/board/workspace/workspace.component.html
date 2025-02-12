@@ -85,9 +85,6 @@
                                     <div *ngIf="user.unreadMessagesCount > 0" class="badge"
                                         matBadge="{{ user.unreadMessagesCount }}"></div>
                                 </div>
-                                <!-- <span>{{ user.name + ' (Du)' }}</span> -->
-
-
                                     <span *ngIf="user.id === this.currentUserUid">{{ user.name + ' (Du)' }}</span>
                                     <span *ngIf="user.id != this.currentUserUid">{{ user.name }}</span>
                             </div>

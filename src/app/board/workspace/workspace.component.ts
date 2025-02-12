@@ -304,10 +304,10 @@ export class WorkspaceComponent implements OnInit {
       // this.setAllMessagesAsRead()
       this.messagesService.setAllMessagesAsRead();
     } else {
-
-
       console.error("currentUserUid is null");
     }
+    console.log('!!!:', this.messagesService.directMessages);
+    
   }
 
   toggleNewChatForMobile(){

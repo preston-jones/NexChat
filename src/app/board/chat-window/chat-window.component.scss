@@ -10,8 +10,8 @@
 }
 
 .chat-header {
-    border-top-left-radius: 30px !important;
-    border-top-right-radius: 30px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
     position: absolute;
     top: 0;
     height: 96px;
@@ -250,7 +250,7 @@
     flex-direction: column;
     align-items: center;
     margin-top: 82px;
-    margin-bottom: 68px;
+    // margin-bottom: 68px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -612,32 +612,66 @@
     }
 }
 
+// .chat-message-input-container {
+//     position: relative;
+//     bottom: 24px;
+//     height: 175px;
+//     width: 100%;
+//     padding: 20px;
+//     box-sizing: border-box;
+
+//     >.message-input {
+//         background-color: white !important;
+//         border: 1px solid rgba(173, 176, 217, 1) !important;
+//         border-radius: 16px;
+//         height: 135px;
+//         width: 100%;
+//         padding: 20px;
+//         box-sizing: border-box;
+//         font-family: Nunito;
+//         font-size: 18px;
+//         resize: none;
+//         hyphens: auto;
+//     }
+// }
+
+
 .chat-message-input-container {
     position: relative;
-    bottom: 24px;
+    bottom: 28px;
     height: 175px;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    background: #fff;
+    // border: 1px solid rgb(173, 176, 217) !important;
+    border-radius: 16px;
+    min-height: 145px;
 
     >.message-input {
-        background-color: white !important;
-        border: 1px solid rgba(173, 176, 217, 1) !important;
-        border-radius: 16px;
-        height: 135px;
+        display: flex;
+        flex: 1;
+        border: unset;
+        outline: none;
+        resize: none;
         width: 100%;
-        padding: 20px;
         box-sizing: border-box;
         font-family: Nunito;
         font-size: 18px;
-        resize: none;
+        -webkit-hyphens: auto;
         hyphens: auto;
     }
 }
 
 .message-icon-container {
     width: 100%;
-    position: relative;
+    // position: relative;
     padding: 0 20px 0 20px;
     bottom: 52px;
     display: flex;
@@ -694,9 +728,15 @@
     border: 1px solid #ADB0D9
 }
 
+@media screen and (max-width: 1080px) {
+    .chat-content {
+        margin-top: 90px;
+    }
+}
+
 @media screen and (max-width: 768px) {
     .chat-content {
-        margin-top: 48px;
+        margin-top: 54px;
     }
 
     .members-list {

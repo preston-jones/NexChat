@@ -230,7 +230,7 @@ export class MessagesService {
         return message;
     }
 
-    async loadDirectMessages(currentUserUid: string | undefined, targetUserId: string | null | undefined) {
+    async loadDirectMessages(currentUserUid: string | undefined, targetUserId: string | undefined) {
         if (targetUserId) {
             // Lade den Benutzer basierend auf der targetUserId und setze selectedUser
             this.chatUtilityService.directMessageUser = await this.loadSelectedUser(targetUserId);
@@ -243,6 +243,13 @@ export class MessagesService {
         const unsubscribeSent = this.subscribeToSentMessages(sentMessagesQuery, currentUserUid);
         const unsubscribeReceived = this.subscribeToReceivedMessages(receivedMessagesQuery, currentUserUid);
 
+        // !!!!!!!!!!! //
+        if (currentUserUid === targetUserId) {
+            console.log(currentUserUid, 'xxx', targetUserId);
+            
+            this.directMessages = [...this.directMessages.filter(m => m.isOwnMessage), ...this.directMessages.filter(m => !m.isOwnMessage)];
+        }
+        console.log('from service1: ', this.directMessages);
         // Optional: Rückgabefunktion zum Abmelden von Snapshots
         return () => {
             unsubscribeSent();
@@ -260,6 +267,7 @@ export class MessagesService {
           let directMessageData = doc.data() as DirectMessage;
           return { ...directMessageData, id: doc.id, timestamp: directMessageData.timestamp || new Date() };
         });
+        console.log('from service2: ', this.directMessages);
         
         return this.directMessages;
       }
@@ -338,7 +346,7 @@ export class MessagesService {
         if (messageTimestamp instanceof Timestamp) {
             const messageDate = messageTimestamp.toDate();
             const formattedDate = this.formatTimestamp(messageDate);
-            msg.isOwnMessage = (msg.senderId === currentUserUid);
+            msg.isOwnMessage = msg.senderId === currentUserUid;
 
             // Setze das Anzeigen-Datum
             if (formattedDate !== lastDisplayedDate) {
