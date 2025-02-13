@@ -245,11 +245,10 @@ export class MessagesService {
 
         // !!!!!!!!!!! //
         if (currentUserUid === targetUserId) {
-            console.log(currentUserUid, 'xxx', targetUserId);
             
             this.directMessages = [...this.directMessages.filter(m => m.isOwnMessage), ...this.directMessages.filter(m => !m.isOwnMessage)];
         }
-        console.log('from service1: ', this.directMessages);
+        console.log('from service loadDirectMessages: ', this.directMessages);
         // Optional: Rückgabefunktion zum Abmelden von Snapshots
         return () => {
             unsubscribeSent();
@@ -267,7 +266,7 @@ export class MessagesService {
           let directMessageData = doc.data() as DirectMessage;
           return { ...directMessageData, id: doc.id, timestamp: directMessageData.timestamp || new Date() };
         });
-        console.log('from service2: ', this.directMessages);
+        console.log('from service loadDirectMessagesAsPromise: ', this.directMessages);
         
         return this.directMessages;
       }

@@ -293,6 +293,8 @@ export class WorkspaceComponent implements OnInit {
   }
 
   clickUserContainer(user: User, i: number) {
+    console.log('Direkt Message vor clickUserContainer ', this.messagesService.directMessages);
+    
     this.userService.clickedUsers.fill(false);
     this.clickedChannels.fill(false);
     this.userService.clickedUsers[i] = true;
@@ -306,8 +308,7 @@ export class WorkspaceComponent implements OnInit {
     } else {
       console.error("currentUserUid is null");
     }
-    console.log('!!!:', this.messagesService.directMessages);
-    
+    console.log('Direkt Message nach clickUserContainer ', this.messagesService.directMessages);    
   }
 
   toggleNewChatForMobile(){

@@ -584,7 +584,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
   async sendMessage() {
-
+    console.log('Direkt Message vor sendMessage ', this.messagesService.directMessages);
     if (this.currentUser?.id === this.selectedUser?.id) {
       console.log(this.currentUser?.id, this.selectedUser?.id);
 
@@ -702,7 +702,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
         console.error('Kein Benutzer angemeldet');
       }
     }
-    console.log('AfterSend: ', this.messagesService.directMessages);
+    console.log('Direkt Message nach sendMessage ', this.messagesService.directMessages);
   }
 
 
