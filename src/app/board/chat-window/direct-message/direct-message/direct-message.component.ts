@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChannelsService } from '../../../../shared/services/channels/channels.service';
 import { MessagesService } from '../../../../shared/services/messages/messages.service';
 import { UploadFileService } from '../../../../shared/services/firestore/storage-service/upload-file.service';
+import { NoteService } from '../../../../shared/services/notes.service';
 import { AuthService } from '../../../../shared/services/authentication/auth-service/auth.service';
 import { UserService } from '../../../../shared/services/firestore/user-service/user.service';
 import { User } from '../../../../shared/models/user.class';
@@ -80,19 +81,14 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     private userService: UserService, private cd: ChangeDetectorRef,
     public authService: AuthService, private uploadFileService: UploadFileService,
     public channelsService: ChannelsService, public dialog: MatDialog, public messagesService: MessagesService, private chatUtilityService: ChatUtilityService,
-    private channelNavigationService: ChannelNavigationService) {
-
-  }
+    private channelNavigationService: ChannelNavigationService, public noteService: NoteService) { }
 
   ngOnInit() {
     this.chatUtilityService.messageId$.subscribe(id => {
       this.messageId = id;
-      console.log('Aktuelle Message ID:', this.messageId);
     });
     this.loadData();
     this.currentUser = this.authService.currentUser();
-    console.log('OnInit:', this.messagesService.directMessages);
-
   }
 
 
@@ -302,15 +298,10 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       console.warn('Konversation nicht gefunden!');
     }
 
-    // console.log('showEmojiForReact aufgerufen');
-    // console.log('conversationId in showEmojiForReact:', this.conversationId);
-    // console.log('selectedMessage:', this.selectedMessage);
-
     // Toggle den Emoji-Picker nach einer kurzen Verzögerung
     setTimeout(() => {
       this.showEmojiPickerReact = !this.showEmojiPickerReact;  // Wechsel zwischen Anzeigen und Verbergen
       this.cd.markForCheck();  // Force a check for updates to the component
-      // console.log('showEmojiPickerReact nach setTimeout:', this.showEmojiPickerReact);
     }, 200);
   }
 
@@ -341,13 +332,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       (r: EmojiReaction) => r.emoji === emoji
     );
 
-    // // Überprüfe, ob selectedMessage vorhanden ist
-    // if (conversation) {
-    //   console.log('Gefundene Konversation:', conversation);
-    // } else {
-    //   console.warn('selectedMessage ist null oder nicht definiert!');
-    //   return;
-    // }
 
     // Überprüfe, ob `reactions` ein Array ist
     if (!Array.isArray(this.selectedMessage?.reactions)) {
@@ -398,7 +382,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
   async updateMessageReactions(message: DirectMessage): Promise<void> {
     const messageDocRef = doc(this.firestore, `direct_messages/${this.messageId}`);
-    // console.log(messageDocRef);
 
     // Hole das aktuelle conversation-Array aus Firestore
     const messageSnapshot = await getDoc(messageDocRef);
@@ -584,125 +567,121 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
   async sendMessage() {
-    console.log('Direkt Message vor sendMessage ', this.messagesService.directMessages);
     if (this.currentUser?.id === this.selectedUser?.id) {
-      console.log(this.currentUser?.id, this.selectedUser?.id);
-
-      this.messagesService.directMessages = [...this.messagesService.directMessages.filter(m => m.isOwnMessage), ...this.messagesService.directMessages.filter(m => !m.isOwnMessage)];
-      console.log('Nachrichten:', this.messagesService.directMessages);
-      
+      this.noteService.addNote(this.directChatMessage);
+      this.clearInputField();
     }
 
-    if (this.directChatMessage.trim() || this.selectedFile) {
+    else {
+      if (this.directChatMessage.trim() || this.selectedFile) {
+        if (this.currentUser) {
+          const messagesRef = collection(this.firestore, 'direct_messages');
+          const conversationId = uuidv4();
 
-      // const currentUser = this.currentUser;
+          const markedUserDetails = this.markedUser.map(user => ({
+            id: user.id,
+            name: user.name,
+          }));
 
-      if (this.currentUser) {
-        const messagesRef = collection(this.firestore, 'direct_messages');
-        const conversationId = uuidv4();
+          if (this.messageId) {
+            // Konversation existiert, also aktualisiere sie
+            const messageDocRef = doc(messagesRef, this.messageId);
 
-        const markedUserDetails = this.markedUser.map(user => ({
-          id: user.id,
-          name: user.name,
-        }));
+            const newConversation = {
+              conversationId: conversationId,
+              senderName: this.currentUser?.name || '',
+              message: this.directChatMessage || '',
+              reactions: [],
+              timestamp: new Date(),
+              receiverName: this.selectedUser?.name || '',
+              senderId: this.currentUser?.id || null,
+              receiverId: this.selectedUser?.id || null,
+              fileURL: '', // Platzhalter für Datei-URL
+              markedUser: markedUserDetails || [],
+              readedMessage: false,
+            };
 
-        if (this.messageId) {
-          console.log('existiert');
-          // Konversation existiert, also aktualisiere sie
-          const messageDocRef = doc(messagesRef, this.messageId);
+            // Füge die neue Nachricht zur bestehenden Konversation hinzu
+            await updateDoc(messageDocRef, {
+              conversation: arrayUnion(newConversation),
+            });
 
-          const newConversation = {
-            conversationId: conversationId,
-            senderName: this.currentUser?.name || '',
-            message: this.directChatMessage || '',
-            reactions: [],
-            timestamp: new Date(),
-            receiverName: this.selectedUser?.name || '',
-            senderId: this.currentUser?.id || null,
-            receiverId: this.selectedUser?.id || null,
-            fileURL: '', // Platzhalter für Datei-URL
-            markedUser: markedUserDetails || [],
-            readedMessage: false,
-          };
+            // Datei verarbeiten, falls vorhanden
+            if (this.selectedFile) {
+              try {
+                const fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, this.messageId);
+                // Lade das aktuelle Dokument
+                const docSnapshot = await getDoc(messageDocRef);
+                if (docSnapshot.exists()) {
+                  const docData = docSnapshot.data();
+                  const conversationArray = docData['conversation'] || [];
 
-          // Füge die neue Nachricht zur bestehenden Konversation hinzu
-          await updateDoc(messageDocRef, {
-            conversation: arrayUnion(newConversation),
-          });
+                  // Finde die Nachricht mit `conversationId` und aktualisiere die `fileURL`
+                  const updatedConversation = conversationArray.map((message: any) =>
+                    message.conversationId === conversationId
+                      ? { ...message, fileURL } // Aktualisiere nur diese Nachricht
+                      : message
+                  );
 
-          // Datei verarbeiten, falls vorhanden
-          if (this.selectedFile) {
-            try {
-              const fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, this.messageId);
-              // Lade das aktuelle Dokument
-              const docSnapshot = await getDoc(messageDocRef);
-              if (docSnapshot.exists()) {
-                const docData = docSnapshot.data();
-                const conversationArray = docData['conversation'] || [];
-
-                // Finde die Nachricht mit `conversationId` und aktualisiere die `fileURL`
-                const updatedConversation = conversationArray.map((message: any) =>
-                  message.conversationId === conversationId
-                    ? { ...message, fileURL } // Aktualisiere nur diese Nachricht
-                    : message
-                );
-
-                // Aktualisiere das Dokument in Firestore
-                await updateDoc(messageDocRef, { conversation: updatedConversation });
+                  // Aktualisiere das Dokument in Firestore
+                  await updateDoc(messageDocRef, { conversation: updatedConversation });
+                }
+              } catch (error) {
+                console.error('Datei-Upload fehlgeschlagen:', error);
               }
-            } catch (error) {
-              console.error('Datei-Upload fehlgeschlagen:', error);
+            }
+          } else {
+            // Es gibt keine Konversation, also erstelle eine neue
+            const newConversation = {
+              conversationId: conversationId,
+              senderName: this.currentUser?.name || '',
+              message: this.directChatMessage || '',
+              reactions: [],
+              timestamp: new Date(),
+              receiverName: this.selectedUser?.name || '',
+              senderId: this.currentUser?.id || null,
+              receiverId: this.selectedUser?.id || null,
+              fileURL: '', // Platzhalter für Datei-URL
+              markedUser: markedUserDetails || [],
+              readedMessage: false,
+            };
+
+            // Füge die neue Konversation in Firestore hinzu
+            const messageDocRef = await addDoc(messagesRef, {
+              senderId: this.currentUser.id,
+              receiverId: this.selectedUser?.id || null,
+              timestamp: new Date(),
+              conversation: [newConversation],
+            });
+            // Datei verarbeiten, falls vorhanden
+            if (this.selectedFile) {
+              try {
+                const fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, messageDocRef.id);
+
+                // Aktualisiere die Datei-URL in der Konversation
+                newConversation.fileURL = fileURL;
+                await updateDoc(messageDocRef, {
+                  conversation: [newConversation], // Ersetze die gesamte Konversation
+                });
+              } catch (error) {
+                console.error('Datei-Upload fehlgeschlagen:', error);
+              }
             }
           }
+
+          // Eingabefelder bereinigen und Scrollen
+          this.clearInputField();
+          this.clearUploadCache();
         } else {
-          console.log('Neu');
-          // Es gibt keine Konversation, also erstelle eine neue
-          const newConversation = {
-            conversationId: conversationId,
-            senderName: this.currentUser?.name || '',
-            message: this.directChatMessage || '',
-            reactions: [],
-            timestamp: new Date(),
-            receiverName: this.selectedUser?.name || '',
-            senderId: this.currentUser?.id || null,
-            receiverId: this.selectedUser?.id || null,
-            fileURL: '', // Platzhalter für Datei-URL
-            markedUser: markedUserDetails || [],
-            readedMessage: false,
-          };
-
-          // Füge die neue Konversation in Firestore hinzu
-          const messageDocRef = await addDoc(messagesRef, {
-            senderId: this.currentUser.id,
-            receiverId: this.selectedUser?.id || null,
-            timestamp: new Date(),
-            conversation: [newConversation],
-          });
-          // Datei verarbeiten, falls vorhanden
-          if (this.selectedFile) {
-            try {
-              const fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, messageDocRef.id);
-
-              // Aktualisiere die Datei-URL in der Konversation
-              newConversation.fileURL = fileURL;
-              await updateDoc(messageDocRef, {
-                conversation: [newConversation], // Ersetze die gesamte Konversation
-              });
-            } catch (error) {
-              console.error('Datei-Upload fehlgeschlagen:', error);
-            }
-          }
+          console.error('Kein Benutzer angemeldet');
         }
-
-        // Eingabefelder bereinigen und Scrollen
-        this.directChatMessage = '';
-        this.selectedFile = null;
-        this.deleteUpload();
-      } else {
-        console.error('Kein Benutzer angemeldet');
       }
     }
-    console.log('Direkt Message nach sendMessage ', this.messagesService.directMessages);
+  }
+
+
+  clearInputField() {
+    this.directChatMessage = '';
   }
 
 
@@ -743,7 +722,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  deleteUpload() {
+  clearUploadCache() {
     this.selectedFile = null;
     this.filePreviewUrl = null;
     localStorage.removeItem('selectedFile');

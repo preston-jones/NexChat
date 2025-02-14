@@ -19,7 +19,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { Message } from '../../shared/models/message.class';
 import { DirectMessage } from '../../shared/models/direct.message.class';
 import { SearchDialogComponent } from '../../dialogs/search-dialog/search-dialog.component';
-import { FormsModule } from '@angular/forms';  
+import { FormsModule } from '@angular/forms';
 import { BoardComponent } from '../board.component';
 import { UserService } from '../../shared/services/firestore/user-service/user.service';
 
@@ -82,7 +82,7 @@ export class WorkspaceComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() { 
+  ngOnInit() {
     this.authService.auth.onAuthStateChanged((user: FirebaseUser | null) => {
       if (user) {
         this.loadData(user); // Pass the user to loadData
@@ -293,8 +293,6 @@ export class WorkspaceComponent implements OnInit {
   }
 
   clickUserContainer(user: User, i: number) {
-    console.log('Direkt Message vor clickUserContainer ', this.messagesService.directMessages);
-    
     this.userService.clickedUsers.fill(false);
     this.clickedChannels.fill(false);
     this.userService.clickedUsers[i] = true;
@@ -308,10 +306,9 @@ export class WorkspaceComponent implements OnInit {
     } else {
       console.error("currentUserUid is null");
     }
-    console.log('Direkt Message nach clickUserContainer ', this.messagesService.directMessages);    
   }
 
-  toggleNewChatForMobile(){
+  toggleNewChatForMobile() {
     this.boardComponent.toggleWorkspace();
     this.boardComponent.openChatWindow();
     const sidenavContent = document.querySelector('.sidenav-content') as HTMLElement;

@@ -80,7 +80,6 @@ export class MessagesService {
 
     addEmoji(event: any) {
         this.chatMessage += event.emoji.native;
-        console.log(event.emoji.native);
     }
 
     toggleEmojiPicker() {
@@ -97,8 +96,6 @@ export class MessagesService {
 
     showThread() {
         this.showThreadEvent.emit();
-        console.log();
-
     }
 
     async loadMessages(currentUserUid: string | null | undefined, channelId: string) {
@@ -243,25 +240,6 @@ export class MessagesService {
         const unsubscribeSent = this.subscribeToSentMessages(sentMessagesQuery, currentUserUid);
         const unsubscribeReceived = this.subscribeToReceivedMessages(receivedMessagesQuery, currentUserUid);
 
-
-    // If the current user is the same as the target user, filter messages where the receiver is the sender
-    if (currentUserUid === targetUserId) {
-        this.directMessages = this.directMessages.filter(m => m.receiverId === m.senderId);
-    }
-
-    // Filter out duplicate messages based on message ID within each conversation
-    this.directMessages.forEach(directMessage => {
-        if (directMessage.conversation) {
-            directMessage.conversation = directMessage.conversation.filter((message, index, self) =>
-                index === self.findIndex((m) => (
-                    m.messageId === message.messageId
-                ))
-            );
-        }
-    });
-
-
-        console.log('from service loadDirectMessages: ', this.directMessages);
         // Optional: Rückgabefunktion zum Abmelden von Snapshots
         return () => {
             unsubscribeSent();
@@ -279,7 +257,6 @@ export class MessagesService {
             let directMessageData = doc.data() as DirectMessage;
             return { ...directMessageData, id: doc.id, timestamp: directMessageData.timestamp || new Date() };
         });
-        console.log('from service loadDirectMessagesAsPromise: ', this.directMessages);
 
         return this.directMessages;
     }
@@ -349,7 +326,6 @@ export class MessagesService {
             msg.senderAvatar = senderUser?.avatarPath || './assets/images/avatars/avatar5.svg';
         } else {
             msg.senderAvatar = './assets/images/avatars/avatar5.svg';
-            console.log("Sender ID is undefined for message:", msg);
         }
     }
 
@@ -409,7 +385,6 @@ export class MessagesService {
                 const answers = message['answers'] || []; // Antworten abrufen
                 for (let i = 0; i < answers.length; i++) {
                     if (answers[i].senderID === this.authService.currentUserUid) {
-                        console.log(answers[i]);
                         this.updateSendernameOfAnswer(doc.id, this.authService.currentUser()?.name as string, i);
                     }
                 }

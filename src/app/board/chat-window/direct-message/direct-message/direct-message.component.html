@@ -210,7 +210,7 @@
                     <a *ngIf="selectedFile && selectedFile.type === 'application/pdf'" [href]="filePreviewUrl"
                         target="_blank">PDF
                         anzeigen</a>
-                    <mat-icon class="delete-upload" fontIcon="close" (click)="deleteUpload()"></mat-icon>
+                    <mat-icon class="delete-upload" fontIcon="close" (click)="clearUploadCache()"></mat-icon>
                 </div>
 
             </div>
