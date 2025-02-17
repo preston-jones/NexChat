@@ -1,5 +1,3 @@
-@import '../../mixin.scss';
-
 .intro-animation-container {
     position: fixed;
     z-index: 100;
@@ -12,7 +10,7 @@
     justify-content: center;
     align-items: center;
     gap: 24px;
-    background-image: $background-image_login-animation;
+    background-image: linear-gradient(#797ef3, #313ae5);
     opacity: 1;
     animation: background-off .225s ease-in-out forwards 2.7s;
 

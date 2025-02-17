@@ -3,15 +3,15 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    border-radius: 16px !important;
+    border-radius: 30px !important;
     overflow-x: hidden;
     box-sizing: border-box;
     justify-content: flex-end;
 }
 
 .chat-header {
-    border-top-left-radius: 16px !important;
-    border-top-right-radius: 16px !important;
+    border-top-left-radius: 30px !important;
+    border-top-right-radius: 30px !important;
     position: absolute;
     top: 0;
     height: 96px;
@@ -30,7 +30,7 @@
     padding: 20px 0 0 0;
 
     >.mat-mdc-text-field-wrapper {
-        border-radius: 16px !important;
+        border-radius: 30px !important;
         border: 1px solid rgba(173, 176, 217, 1);
         transition: border 0.1s ease;
     }
@@ -71,7 +71,7 @@
     box-sizing: border-box;
     background: white;
     padding: 20px;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 1px solid #ADB0D9;
     z-index: 999;
 
@@ -118,7 +118,7 @@
     box-sizing: border-box;
     background: white;
     padding: 20px;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 1px solid #ADB0D9;
     z-index: 999;
 
@@ -250,7 +250,7 @@
     flex-direction: column;
     align-items: center;
     margin-top: 82px;
-    // margin-bottom: 68px;
+    margin-bottom: 68px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -272,7 +272,7 @@
         border: 1px solid rgba(173, 176, 217, 1);
         padding: 5px 15px 5px 15px;
         background: white;
-        border-radius: 16px;
+        border-radius: 30px;
         position: relative;
         bottom: 50%;
         z-index: 1;
@@ -338,7 +338,7 @@
         background: rgba(236, 238, 254, 1);
         padding: 15px;
         gap: 8px;
-        border-radius: 0px 16px 16px 16px;
+        border-radius: 0px 30px 30px 30px;
         box-sizing: border-box;
         font-size: 18px;
         display: flex;
@@ -349,7 +349,7 @@
         background: rgba(83, 90, 241, 1);
         padding: 15px;
         gap: 8px;
-        border-radius: 16px 0 16px 16px;
+        border-radius: 30px 0 30px 30px;
         color: white;
         box-sizing: border-box;
         font-size: 18px;
@@ -385,7 +385,7 @@
     background: white;
     padding: 8px;
     gap: 5px;
-    border-radius: 16px 16px 0px 16px;
+    border-radius: 30px 30px 0px 30px;
     border: 1px solid rgba(173, 176, 217, 1);
     display: flex;
     align-items: center;
@@ -448,7 +448,7 @@
     background-color: white;
     padding: 8px;
     gap: 5px;
-    border-radius: 16px 16px 0px 16px;
+    border-radius: 30px 30px 0px 30px;
     border: 1px solid rgba(173, 176, 217, 1);
     display: flex;
     align-items: center;
@@ -475,7 +475,7 @@
         gap: 10px;
         height: 34px;
         width: 64px;
-        border-radius: 16px;
+        border-radius: 30px;
         border: 1px solid rgba(173, 176, 217, 1);
 
         &:hover {
@@ -505,7 +505,7 @@
     background-color: white;
     padding: 8px 12px;
     gap: 10px;
-    border-radius: 0px 16px 16px 16px;
+    border-radius: 0px 30px 30px 30px;
     border: 1px solid rgba(173, 176, 217, 1);
     display: flex;
     align-items: center;
@@ -517,7 +517,7 @@
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
 
     >span {
-        border-radius: 16px;
+        border-radius: 30px;
         padding: 10px;
         font-size: 18px;
         font-weight: 700;
@@ -536,7 +536,7 @@
     background-color: rgba(83, 90, 241, 1);
     height: 112px;
     width: 158px;
-    border-radius: 16px 16px 16px 0px;
+    border-radius: 30px 30px 30px 0px;
     position: absolute;
     bottom: 36px;
     left: 34px;
@@ -564,7 +564,7 @@
 .message-input {
     background-color: white !important;
     border: 1px solid rgba(173, 176, 217, 1) !important;
-    border-radius: 16px;
+    border-radius: 20px;
     height: 100%;
     width: 100%;
     padding: 20px;
@@ -600,7 +600,7 @@
     }
 
     >button {
-        border-radius: 16px;
+        border-radius: 30px;
         height: 38px;
         width: 130px;
         cursor: pointer;
@@ -612,66 +612,32 @@
     }
 }
 
-// .chat-message-input-container {
-//     position: relative;
-//     bottom: 24px;
-//     height: 175px;
-//     width: 100%;
-//     padding: 20px;
-//     box-sizing: border-box;
-
-//     >.message-input {
-//         background-color: white !important;
-//         border: 1px solid rgba(173, 176, 217, 1) !important;
-//         border-radius: 16px;
-//         height: 135px;
-//         width: 100%;
-//         padding: 20px;
-//         box-sizing: border-box;
-//         font-family: Nunito;
-//         font-size: 18px;
-//         resize: none;
-//         hyphens: auto;
-//     }
-// }
-
-
 .chat-message-input-container {
     position: relative;
-    bottom: 28px;
+    bottom: 24px;
     height: 175px;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 0;
-    width: 100%;
-    background: #fff;
-    // border: 1px solid rgb(173, 176, 217) !important;
-    border-radius: 16px;
-    min-height: 145px;
 
     >.message-input {
-        display: flex;
-        flex: 1;
-        border: unset;
-        outline: none;
-        resize: none;
+        background-color: white !important;
+        border: 1px solid rgba(173, 176, 217, 1) !important;
+        border-radius: 30px;
+        height: 135px;
         width: 100%;
+        padding: 20px;
         box-sizing: border-box;
         font-family: Nunito;
         font-size: 18px;
-        -webkit-hyphens: auto;
+        resize: none;
         hyphens: auto;
     }
 }
 
 .message-icon-container {
     width: 100%;
-    // position: relative;
+    position: relative;
     padding: 0 20px 0 20px;
     bottom: 52px;
     display: flex;
@@ -728,15 +694,9 @@
     border: 1px solid #ADB0D9
 }
 
-@media screen and (max-width: 1080px) {
-    .chat-content {
-        margin-top: 90px;
-    }
-}
-
 @media screen and (max-width: 768px) {
     .chat-content {
-        margin-top: 54px;
+        margin-top: 48px;
     }
 
     .members-list {
@@ -802,7 +762,7 @@
     justify-content: space-between;
     align-items: center;
     border: 1px solid #ADB0D9;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 10px;
 }
 
@@ -819,13 +779,13 @@
 .image-preview {
     height: 100px;
     width: 100px;
-    border-radius: 16px;
+    border-radius: 20px;
     padding-left: 10px;
 }
 
 .file-link {
     height: 20px;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 1px solid #ADB0D9;
     display: flex;
     align-items: center;
@@ -872,7 +832,7 @@
 }
 
 .mat-mdc-snack-bar-container .mdc-snackbar__surface {
-    border-radius: 16px !important;
+    border-radius: 20px !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
     background-color: white !important;
     color: black !important;

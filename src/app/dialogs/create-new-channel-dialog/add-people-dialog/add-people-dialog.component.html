@@ -7,11 +7,10 @@
         <form #channelForm="ngForm" (ngSubmit)="onSubmit(channelForm)" class="radio-group-container">
             <mat-radio-group [(ngModel)]="selectedValue" (change)="onSelectionChange($event)" name="radioGroup" required>
                 <mat-radio-button class="radio-button" color="primary" value="addAll">
-                    <!-- <span>Alle Mitglieder von <a class="group-link" href="">OfficeTeam</a> hinzufügen</span> -->
-                    <span>Alle User hinzufügen</span>
+                    <span>Alle Mitglieder von <a class="group-link" href="">OfficeTeam</a> hinzufügen</span>
                 </mat-radio-button>
                 <mat-radio-button class="radio-button" color="primary" value="specific">
-                    <span>einzelne User hinzufügen</span>
+                    <span>Bestimmte Leute hinzufügen</span>
                 </mat-radio-button>
             </mat-radio-group>
             <mat-error *ngIf="channelForm.submitted && !selectedValue">Bitte wähle eine Option aus.</mat-error>

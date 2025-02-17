@@ -14,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChannelsService } from '../../../../shared/services/channels/channels.service';
 import { MessagesService } from '../../../../shared/services/messages/messages.service';
 import { UploadFileService } from '../../../../shared/services/firestore/storage-service/upload-file.service';
-import { NoteService } from '../../../../shared/services/notes.service';
+import { NoteService } from '../../../../shared/services/notes/notes.service';
 import { AuthService } from '../../../../shared/services/authentication/auth-service/auth.service';
 import { UserService } from '../../../../shared/services/firestore/user-service/user.service';
 import { User } from '../../../../shared/models/user.class';
@@ -568,7 +568,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
   async sendMessage() {
     if (this.currentUser?.id === this.selectedUser?.id) {
-      this.noteService.addNote(this.directChatMessage);
+      // this.noteService.addNote(this.directChatMessage);
       this.clearInputField();
     }
 

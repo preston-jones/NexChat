@@ -4,9 +4,8 @@ header {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    // padding: 25px 45px 0 25px;
+    padding: 25px 45px 0 25px;
     box-sizing: border-box;
-    z-index: 10;
 }
 
 .input-search-container {
@@ -17,8 +16,7 @@ header {
     position: relative;
     width: 40%;
     background: #fff;
-    border-radius: 16px;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.3));
+    border-radius: 50px;
     padding: 17.5px 55px 17.5px 45px;
 
     >input {
@@ -116,16 +114,6 @@ header {
     z-index: 1000;
     background-color: #00000033;
     cursor: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.overlay-content {
-    position: relative;
-    width: 100%;
-    max-width: 1920px;
-    height: 100%;
 }
 
 .userInfoOverlay {
@@ -143,18 +131,18 @@ header {
 
 .user-info {
     background-color: #fff;
-    border-radius: 16px;
+    border-radius: 30px;
 }
 
 .profile-menu {
     position: absolute;
     top: 148px;
-    right: 37px;
+    right: 20px;
     z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 16px 0px 16px 16px;
+    border-radius: 30px 0px 30px 30px;
     gap: 15px;
     background-color: #fff;
 
@@ -179,7 +167,7 @@ header {
 
         &:hover {
             cursor: pointer;
-            border-radius: 16px;
+            border-radius: 40px;
             color: #535AF1;
             background: #ECEEFE;
         }
@@ -222,7 +210,6 @@ header {
     box-sizing: border-box; // with this adjustment the container should not be possible to overflow.
     padding: 20px;
 
-    // Workspace Open/Close Button
     .navigation-toggle-btn {
         position: absolute;
         display: flex;
@@ -230,8 +217,8 @@ header {
         justify-content: center;
         align-items: center;
         gap: 10px;
-        border-radius: 0 16px 16px 0;
-        bottom: 20px;
+        border-radius: 0 30px 30px 0;
+        bottom: 96px;
         left: 0;
         // height: 347px;
         background: #fff;
@@ -271,10 +258,9 @@ mat-toolbar-row {
     font-weight: 400;
 }
 
-// Workspace Card
 .sidenav,
 .mat-drawer {
-    border-radius: 16px !important;
+    border-radius: 30px !important;
 }
 
 .mat-drawer-container {
@@ -283,8 +269,7 @@ mat-toolbar-row {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    // background-color: #F2F2F2 !important;
-    background-color: transparent !important;
+    background-color: #ECEEFE !important;
 }
 
 .sidenav-content {
@@ -296,10 +281,9 @@ mat-toolbar-row {
     // margin: 0 16px;
     // gap: 16px;
 
-    // Chatwindow Card
     >mat-card {
         height: 100%;
-        border-radius: 16px;
+        border-radius: 30px;
         width: 100%;
     }
 }
@@ -334,7 +318,7 @@ mat-toolbar-row {
     top: 240px;
     left: 60%;
     background-color: white;
-    border-radius: 16px 0px 16px 16px;
+    border-radius: 30px 0px 30px 30px;
 }
 
 .add-members-dialog {
@@ -342,7 +326,7 @@ mat-toolbar-row {
     top: 240px;
     left: 50%;
     background-color: white;
-    border-radius: 16px 0px 16px 16px;
+    border-radius: 30px 0px 30px 30px;
 }
 
 .back-btn-logo {
@@ -372,13 +356,11 @@ mat-toolbar-row {
     .board-container {
         padding: 0;
         gap: 0;
-        height: 100vh;
     }
 
-    // .mat-drawer-container {
-    //     height: calc(100vh - 110px);
-    //     height: 100%;
-    // }
+    .mat-drawer-container {
+        height: 100%;
+    }
 
     .mat-drawer-content {
         margin-left: 0 !important;
@@ -472,7 +454,7 @@ mat-toolbar-row {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        border-radius: 16px 16px 16px 16px;
+        border-radius: 30px 30px 30px 30px;
     }
 
     .show-members-dialog {
@@ -482,7 +464,7 @@ mat-toolbar-row {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        border-radius: 16px 16px 16px 16px;
+        border-radius: 30px 30px 30px 30px;
     }
 
     .dialog-content {
@@ -493,7 +475,7 @@ mat-toolbar-row {
     .profile-menu {
         top: 82px;
         width: 90%;
-        border-radius: 16px 16px 16px 16px;
+        border-radius: 30px 30px 30px 30px;
         left: 50%;
         transform: translate(-50%);
         right: 0;

@@ -166,11 +166,6 @@
     }
 }
 
-.info-text {
-    font-style: italic;
-    color: gray;
-}
-
 .message-container {
     display: flex;
     flex-direction: column;
@@ -507,7 +502,7 @@
     >.message-input {
         background-color: white !important;
         border: 1px solid rgba(173, 176, 217, 1) !important;
-        border-radius: 16px;
+        border-radius: 30px;
         height: 135px;
         width: 100%;
         padding: 20px;
@@ -701,13 +696,10 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    border-radius: 100px;
+    font-size: 24px;
+    font-weight: 700;
+    border-radius: 30px;
     padding: 4px 20px;
-
-    >span {
-        font-size: 24px;
-        font-weight: 700;
-    }
 
     >img {
         height: 50px;
