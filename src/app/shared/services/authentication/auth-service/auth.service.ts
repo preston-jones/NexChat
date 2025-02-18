@@ -20,7 +20,7 @@ export class AuthService {
   private userSignal = signal<User | null | undefined>(undefined);
   private authSubscription: Subscription | null = null;
   errorCode: string | null = null
-  currentUserUid: string | null | undefined = null;
+  currentUserUid: string = '';
   currentUser = this.getUserSignal(); // Change to hold an instance of the User class
   // GUEST_UID = 'ZnyRrhtuIBhdU3EYhDw5DueQsi02';
 

@@ -61,7 +61,8 @@
                         <app-chat-window
                             (openDirectMessageFromChatEvent)="openDirectMessageFromChat($event.selectedUser, $event.index)"
                             (openChannelMessageFromChatEvent)="openChannelMessageFromChat($event.selectedChannel, $event.index)"
-                            (openChannelMessageEvent)="openChannelMessage()"></app-chat-window>
+                            (openChannelMessageEvent)="openChannelMessage()">
+                        </app-chat-window>
                     </ng-container>
                     <ng-container *ngIf="this.showChannelMessage">
                         <app-channel-message (showThreadEvent)="showThread($event)"></app-channel-message>

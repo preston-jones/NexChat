@@ -8,7 +8,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterModule } from '@angular/router';
 import { MatDividerModule } from '@angular/material/divider';
-
+import { ChannelsService } from '../../shared/services/channels/channels.service';
 import { GoogleAuthService } from '../../shared/services/authentication/google-auth-service/google-auth.service';
 import { AuthService } from '../../shared/services/authentication/auth-service/auth.service';
 /* ------------------------- */
@@ -41,6 +41,7 @@ export class SignInComponent {
 
   googleAuthService = inject(GoogleAuthService);
   authService = inject(AuthService);
+  channelsService = inject(ChannelsService);
   router = inject(Router);
 
   emailFormControl = new FormControl('', [Validators.required, Validators.email]);

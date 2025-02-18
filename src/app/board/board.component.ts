@@ -127,9 +127,14 @@ export class BoardComponent implements OnInit {
 
   }
 
-  ngOnInit() {
-    this.loadData();
-  }
+  async ngOnInit() {
+    await this.loadData();
+    this.channelsService.updateUserChannels(this.authService.currentUserUid, 'Wilkommen');
+    const currentUser = this.userService.currentUser();
+    if (currentUser) {
+        await this.channelsService.addCurrentUserToChannel(currentUser as User, 'mH2jwT76WrAhdu9LZC5h');
+    }
+}
 
   async loadData() {
     this.auth.onAuthStateChanged(async (user) => {
@@ -156,7 +161,7 @@ export class BoardComponent implements OnInit {
         }));
         resolve(this.users); // Promise auflösen
       });
-    });
+    });    
   }
 
 
