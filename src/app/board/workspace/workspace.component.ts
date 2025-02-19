@@ -44,7 +44,7 @@ import { UserService } from '../../shared/services/firestore/user-service/user.s
   encapsulation: ViewEncapsulation.None
 })
 export class WorkspaceComponent implements OnInit {
-  directMessages: DirectMessage[] = [];
+  directMessages: any = [];
   channels: Channel[] = [];
   users: User[] = [];
   clickedChannels: boolean[] = [];
