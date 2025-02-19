@@ -107,6 +107,7 @@ export class ChannelsService implements OnInit {
     this.clickedChannels[i] = true;
     this.getChannelData(channel);
     this.currentChannelId = channel.id;
+    console.log('clickedChannels:', this.clickedChannels);
   }
 
   initializeArrays(channelCount: number, userCount: number) {

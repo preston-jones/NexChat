@@ -22,6 +22,9 @@
     padding: 0 30px;
     box-sizing: border-box;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    // ??????
+    z-index: 5;
+    background-color: cornflowerblue;
 }
 
 .mat-mdc-card-content {
@@ -113,6 +116,22 @@
     margin-bottom: 12px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.welcome-page-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 40px 20px 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    >app-welcome-page {
+        height: 100%;
+        padding-top: 24px;
+    }
 }
 
 .posted-date-container {

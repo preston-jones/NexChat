@@ -86,7 +86,7 @@ export class BoardComponent implements OnInit {
   currentUserUid: string | null | undefined = null;
   selectedMessage: Message | null = null;
   isSmallScreen: boolean = window.innerWidth < 1080;
-  showChatWindow: boolean = true;
+  showChatWindow: boolean = false;
   showChannelMessage: boolean = false;
   showDirectMessage: boolean = false;
   messageIdSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);

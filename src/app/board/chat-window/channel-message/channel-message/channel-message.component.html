@@ -1,5 +1,5 @@
 <div class="chat-container max-width">
-    <div class="chat-header">
+    <div *ngIf="channelsService.currentChannelName != 'Willkommen'" class="chat-header">
         <div *ngIf="this.channelsService.currentUserChannels && this.channelsService.channelIsClicked"
             class="chat-header-button" (click)="openChannelDescriptionDialog()">
             <mat-icon class="icon" svgIcon="hashtag" aria-hidden="false" aria-label="Hashtag icon">
@@ -32,7 +32,7 @@
             </a>
         </div>
     </div>
-    <div #chatWindow class="chat-content" *ngIf="channelsService.currentChannelName === 'Willkommen'">
+    <div #chatWindow class="welcome-page-container" *ngIf="channelsService.currentChannelName === 'Willkommen'">
         <app-welcome-page></app-welcome-page>
     </div>
     <div #chatWindow class="chat-content" *ngIf="channelsService.currentChannelName != 'Willkommen'">
@@ -219,7 +219,7 @@
 
 
     </div>
-    <div class="chat-message-input-container">
+    <div *ngIf="channelsService.currentChannelName != 'Willkommen'" class="chat-message-input-container">
         <textarea class="message-input" id="channelChatMessage" [(ngModel)]="channelChatMessage"
             (input)="updateSearchQuery($event)" type="text" placeholder="Schreiben Sie Ihre Nachricht"></textarea>
 
