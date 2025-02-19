@@ -1,0 +1,42 @@
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 64rem;
+  padding: 1.5rem 1.5rem 1.5rem 2.875rem;
+  font-size: 18px;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  ul {
+    margin: 0;
+    padding-inline-start: 1rem;
+    > li {
+      margin-top: 0.325rem;
+    }
+  }
+  ul > ul {
+    padding-inline-start: 1.25rem;
+    > li {
+      margin-top: 0;
+    }
+  }
+
+  .admin-div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    // button {
+    //   @include buttonFull;
+    // }
+  }
+}

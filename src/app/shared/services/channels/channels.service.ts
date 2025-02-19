@@ -1,10 +1,11 @@
 import { Injectable, OnInit, signal } from '@angular/core';
-import { Firestore, doc, onSnapshot, collection, query, orderBy } from '@angular/fire/firestore';
+import { Firestore, doc, onSnapshot, collection, query, orderBy, arrayUnion } from '@angular/fire/firestore';
 import { Channel } from '../../models/channel.class';
 import { User } from '../../models/user.class';
 import { Observable } from 'rxjs';
 import { AuthService } from '../authentication/auth-service/auth.service';
-import { getDocs, updateDoc, where } from 'firebase/firestore';
+import { getDocs, updateDoc, where, getDoc } from 'firebase/firestore';
+import { user } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +30,7 @@ export class ChannelsService implements OnInit {
   public channel$!: Observable<Channel>;
   public channels: Channel[] = [];
   public currentUserChannels: Channel[] = [];
-  
+
 
   constructor(private firestore: Firestore, private authService: AuthService) {
     // Initialize authentication state listener
@@ -53,8 +54,6 @@ export class ChannelsService implements OnInit {
     onSnapshot(channelsQuery, async (snapshot) => {
       this.channels = await Promise.all(snapshot.docs.map(async (doc) => {
         let channelData = doc.data() as Channel;
-        // console.log(currentUserId);
-
         return { ...channelData, id: doc.id };
       }));
 
@@ -62,6 +61,15 @@ export class ChannelsService implements OnInit {
         let userChannels = this.channels.filter(channel => {
           return channel.memberUids && channel.memberUids.includes(currentUserId);
         });
+
+        // Ensure the channel with the Name 'Willkommen' is always first
+        const wellcomeChannel = 'Willkommen';
+        const specialChannelIndex = userChannels.findIndex(channel => channel.name === wellcomeChannel);
+        if (specialChannelIndex !== -1) {
+          const [specialChannel] = userChannels.splice(specialChannelIndex, 1);
+          userChannels.unshift(specialChannel);
+        }
+
         this.currentUserChannels = userChannels;
       } else {
         this.currentUserChannels = [];
@@ -99,6 +107,7 @@ export class ChannelsService implements OnInit {
     this.clickedChannels[i] = true;
     this.getChannelData(channel);
     this.currentChannelId = channel.id;
+    console.log('clickedChannels:', this.clickedChannels);
   }
 
   initializeArrays(channelCount: number, userCount: number) {
@@ -152,96 +161,53 @@ export class ChannelsService implements OnInit {
     });
   }
 
-  // needs to be moved to workspace
+
+  async updateUserChannels(userId: string, channelName: string) {
+    let usersRef = collection(this.firestore, 'users');
+    let userDocRef = doc(usersRef, userId);
+    let userData = await getDoc(userDocRef);
+    let user = userData.data() as User;
+
+    await updateDoc(userDocRef, {
+      channels: arrayUnion(channelName),
+    });
+  }
 
 
+  async addCurrentUserToChannel(currentUser: User, channelId: string) {
+    let channelRef = collection(this.firestore, 'channels');
+    let channelDocRef = doc(channelRef, channelId);
+    let channelData = await getDoc(channelDocRef);
+    let channel = channelData.data() as Channel;
 
-  //
-
-
-
-  // async loadUsers() {
-  //   let usersRef = collection(this.firestore, 'users');
-  //   let usersQuery = query(usersRef, orderBy('name'));
-
-  //   onSnapshot(usersQuery, async (snapshot) => {
-  //     this.users = await Promise.all(snapshot.docs.map(async (doc) => {
-  //       let userData = doc.data() as User;
-  //       return { ...userData, id: doc.id };
-  //     }));
-  //   });
-  //   console.log(this.users);
-  // }
+    await updateDoc(channelDocRef, {
+      memberUids: arrayUnion(currentUser.id),
+      members: arrayUnion(currentUser)
+    });
+  }
 
 
+  async addUserToChannel(selectedUsers: User[], currentChannelId: string) {
+    let channelsRef = collection(this.firestore, 'channels');
+    let channelDocRef = doc(channelsRef, currentChannelId);
+    let channelDoc = await getDoc(channelDocRef);
+    if (channelDoc.exists()) {
+      try {
+        await updateDoc(channelDocRef, {
+          members: arrayUnion(...selectedUsers),
+          memberUids: arrayUnion(...selectedUsers.map(user => user.id))
+        });
 
-  // checkAuthState(): void {
-  //   this.auth.onAuthStateChanged((user: User | null) => {
-  //     if (user) {
-  //       this.currentUserUid = user.uid;
-  //       this.getUserChannels(user.uid);
-  //     } else {
-  //       console.log('Kein Benutzer angemeldet');
-  //     }
-  //   });
-  // }
+        this.closeAddMemberDialog();
+        this.closeMembersDialog();
+        this.memberAddedInfo = true;
+        setTimeout(() => {
+          this.memberAddedInfo = false;
+        }, 3000);
 
-  // getCurrentUser(): string | null {
-  //   const currentUser = this.auth.currentUser;
-  //   if (currentUser) {
-  //     this.currentUserUid = currentUser.uid;
-  //     return currentUser.uid;
-  //   } else {
-  //     console.log('Kein Benutzer angemeldet');
-  //     return null;
-  //   }
-  // }
-
-  // getUserChannels(uid: string): void {
-  //   const userDocRef = doc(this.firestore, `users/${uid}`);
-  //   onSnapshot(userDocRef, (doc) => {
-  //     if (doc.exists()) {
-  //       const data = doc.data() as { channels: string[] };
-  //       this.currentUserChannels = data.channels;
-  //       console.log('Benutzerinformationen:', this.currentUserChannels);
-  //     } else {
-  //       console.log('Kein Benutzerdokument gefunden');
-  //     }
-  //   });
-  // }
-
-  // async loadChannels(): Promise<Channel[]> {
-  //   const channelsRef = collection(this.firestore, 'channels');
-  //   const channelsQuery = query(channelsRef, orderBy('name'));
-
-  //   return new Promise((resolve) => {
-  //     onSnapshot(channelsQuery, (snapshot) => {
-  //       const channels = snapshot.docs.map((doc) => {
-  //         const channelData = doc.data() as Channel;
-  //         return { ...channelData, id: doc.id };
-  //       });
-  //       resolve(channels);
-  //     });
-  //   });
-  // }
-
-  //   async loadUsers(): Promise<User[]> {
-  //     const usersRef = collection(this.firestore, 'users');
-  //     const usersQuery = query(usersRef, orderBy('name'));
-
-  //     return new Promise((resolve) => {
-  //       onSnapshot(usersQuery, (snapshot) => {
-  //         const users = snapshot.docs.map((doc) => {
-  //           const userData = doc.data() as User;
-  //           return { ...userData, id: doc.id };
-  //         });
-  //         resolve(users);
-  //       });
-  //     });
-  //   }
+      } catch (error) {
+        console.error("Fehler beim Aktualisieren des Channels:", error);
+      }
+    }
+  }
 }
-
-
-
-
-

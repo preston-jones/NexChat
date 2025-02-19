@@ -98,40 +98,40 @@ export class AddMemberDialogComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     if (form.valid) {
-      this.addUserToChannel();
+      this.channelsService.addUserToChannel(this.selectedUsers, this.currentChannelId);
     } else {
         console.log('Form is invalid');
     }
   }
 
-  async addUserToChannel() {
-    let channelsRef = collection(this.firestore, 'channels');
-    let currentChannelId = this.currentChannelId;
-    let selectedUsers = this.selectedUsers;
-    let channelDocRef = doc(channelsRef, currentChannelId);
-      try {
+  // async addUserToChannel() {
+  //   let channelsRef = collection(this.firestore, 'channels');
+  //   let currentChannelId = this.currentChannelId;
+  //   let selectedUsers = this.selectedUsers;
+  //   let channelDocRef = doc(channelsRef, currentChannelId);
+  //     try {
 
-        let channelDoc = await getDoc(channelDocRef);
+  //       let channelDoc = await getDoc(channelDocRef);
 
-            if (channelDoc.exists()) {
-              } 
-                await updateDoc(channelDocRef, {
-                  members: arrayUnion(...selectedUsers),
-                  memberUids: arrayUnion(...selectedUsers.map(user => user.id))
-                });
+  //           if (channelDoc.exists()) {
+  //             } 
+  //               await updateDoc(channelDocRef, {
+  //                 members: arrayUnion(...selectedUsers),
+  //                 memberUids: arrayUnion(...selectedUsers.map(user => user.id))
+  //               });
         
-        this.channelsService.closeAddMemberDialog();
-        this.channelsService.closeMembersDialog();
-        this.channelsService.memberAddedInfo = true;
-        setTimeout(() => {
-          this.channelsService.memberAddedInfo = false;
-        }, 3000);    
+  //       this.channelsService.closeAddMemberDialog();
+  //       this.channelsService.closeMembersDialog();
+  //       this.channelsService.memberAddedInfo = true;
+  //       setTimeout(() => {
+  //         this.channelsService.memberAddedInfo = false;
+  //       }, 3000);    
 
-      } catch (error) {
-        console.error("Fehler beim Aktualisieren des Channels:", error);
-    }
+  //     } catch (error) {
+  //       console.error("Fehler beim Aktualisieren des Channels:", error);
+  //   }
     
-  }
+  // }
 
 
 //   async addUserToChannel() {

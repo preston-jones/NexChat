@@ -1,5 +1,5 @@
 <div class="chat-container max-width">
-    <div class="chat-header">
+    <div *ngIf="channelsService.currentChannelName != 'Willkommen'" class="chat-header">
         <div *ngIf="this.channelsService.currentUserChannels && this.channelsService.channelIsClicked"
             class="chat-header-button" (click)="openChannelDescriptionDialog()">
             <mat-icon class="icon" svgIcon="hashtag" aria-hidden="false" aria-label="Hashtag icon">
@@ -32,8 +32,10 @@
             </a>
         </div>
     </div>
-    <div #chatWindow class="chat-content">
-
+    <div #chatWindow class="welcome-page-container" *ngIf="channelsService.currentChannelName === 'Willkommen'">
+        <app-welcome-page></app-welcome-page>
+    </div>
+    <div #chatWindow class="chat-content" *ngIf="channelsService.currentChannelName != 'Willkommen'">
         <div class="max-width" *ngFor="let message of (messageService.messages); let i = index">
             <div *ngIf="message.displayDate" class="posted-date-container">
                 <span class="posted-date">{{ message.displayDate }}</span>
@@ -51,8 +53,7 @@
                         <div (click)="showEmojiForReact(message)" class="reaction-icon"><mat-icon
                                 fontIcon="add_reaction"></mat-icon></div>
                         <div (click)="showThread(message)" class="reaction-icon"><mat-icon
-                                fontIcon="comment" style="cursor:pointer;"
-                                title="Antworten"></mat-icon></div>
+                                fontIcon="comment"></mat-icon></div>
                     </div>
                     <span class="message-infos-sender">
                         <span class="sender-name" (click)="this.getSelectedUserInfo(message.senderID)">
@@ -128,8 +129,7 @@
                             <div (click)="showEmojiForReact(message)" class="reaction-icon"><mat-icon
                                     fontIcon="add_reaction"></mat-icon></div>
                             <div (click)="showThread(message)" class="reaction-icon"><mat-icon
-                                    fontIcon="comment" style="cursor:pointer;"
-                                    title="Antworten"></mat-icon></div>
+                                    fontIcon="comment"></mat-icon></div>
                             <div (click)="showMessageEditToggle()" class="reaction-icon edit-message-icon"><mat-icon
                                     fontIcon="more_vert"></mat-icon></div>
                             <div *ngIf="showMessageEdit" class="edit-message">
@@ -219,7 +219,7 @@
 
 
     </div>
-    <div class="chat-message-input-container">
+    <div *ngIf="channelsService.currentChannelName != 'Willkommen'" class="chat-message-input-container">
         <textarea class="message-input" id="channelChatMessage" [(ngModel)]="channelChatMessage"
             (input)="updateSearchQuery($event)" type="text" placeholder="Schreiben Sie Ihre Nachricht"></textarea>
 

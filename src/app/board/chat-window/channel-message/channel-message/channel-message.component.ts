@@ -25,6 +25,7 @@ import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
 import { MembersDialogComponent } from '../../../../dialogs/members-dialog/members-dialog.component';
 import { ChannelNavigationService } from '../../../../shared/services/chat/channel-navigation.service';
 import { ChatUtilityService } from '../../../../shared/services/messages/chat-utility.service';
+import { WelcomePageComponent } from '../../../../shared/templates/welcome-page/welcome-page.component';
 
 
 
@@ -32,7 +33,7 @@ import { ChatUtilityService } from '../../../../shared/services/messages/chat-ut
   selector: 'app-channel-message',
   standalone: true,
   imports: [MatCardModule, MatButtonModule, MatIconModule, MatDividerModule, FormsModule,
-    MatFormFieldModule, MatInputModule, CommonModule, PickerComponent, NgIf, NgFor,],
+    MatFormFieldModule, MatInputModule, CommonModule, PickerComponent, NgIf, NgFor, WelcomePageComponent],
   templateUrl: './channel-message.component.html',
   styleUrl: './channel-message.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,

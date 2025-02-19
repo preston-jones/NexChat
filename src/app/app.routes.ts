@@ -8,6 +8,7 @@ import { SignInComponent } from './login/sign-in/sign-in.component';
 import { BoardComponent } from './board/board.component';
 import { PrivacyPolicyComponent } from './shared/legal-pages/privacy-policy/privacy-policy.component';
 import { LegalNoticeComponent } from './shared/legal-pages/legal-notice/legal-notice.component';
+import { WelcomePageComponent } from './shared/templates/welcome-page/welcome-page.component';
 
 
 export const routes: Routes = [
@@ -21,7 +22,8 @@ export const routes: Routes = [
             { path: 'send-mail', component: SendEmailComponent },
             { path: 'sign-in', component: SignInComponent },
             { path: 'privacy-policy', component: PrivacyPolicyComponent },
-            { path: 'legal-notice', component: LegalNoticeComponent }
+            { path: 'legal-notice', component: LegalNoticeComponent },
+            { path: 'welcome-page', component: WelcomePageComponent }
         ]
     },
     { path: 'board', component: BoardComponent },

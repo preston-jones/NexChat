@@ -13,14 +13,13 @@
                 </div>
             </div>
             <div class="logo-container">
-                <img src="./../../assets/images/main_logo.png" alt="ChatApp Logo">
+                <img src="./../../assets/images/main_logo.png" alt="DABubble Logo">
             </div>
         </div>
         <div class="input-search-container">
             <input name="searchText" type="text" placeholder="Devspace durchsuchen" [(ngModel)]="searchInput">
             <img src="../../assets/images/icons/search.png" alt="search icon">
-            <app-search-dialog [searchValue]="searchInput" (openChannelEvent)="openChannelMessage()"
-                (clickUserEvent)="openDirectMessage()"></app-search-dialog>
+            <app-search-dialog [searchValue]="searchInput" (openChannelEvent)="openChannelMessage()" (clickUserEvent)="openDirectMessage()"></app-search-dialog>
         </div>
         <div class="profile-menu-container" (click)="toggleProfileMenu()">
             <span>{{ currentUser()?.name }}</span>
@@ -35,19 +34,16 @@
                     *ngIf="currentUser()?.loginState === 'inactive'" class="state-icon">
                 <mat-icon>keyboard_arrow_down</mat-icon>
                 <div class="overlay" *ngIf="this.userService.showOverlay()" (click)="closeAllDialogs()">
-                    <div class="overlay-content">
-                        <div class="profile-menu" (click)="stopPropagation($event)">
-                            <div class="profil-menu-link-container"
-                                *ngIf="!this.userService.showProfile() && !this.userService.showProfileEditor()">
-                                <div class="profil-menu-links" (click)="openUserProfile($event)">Profil</div>
-                                <div class="profil-menu-links" (click)="authService.logout()">Log Out</div>
-                            </div>
-                            <app-profile-dialog class="profil-details" *ngIf="this.userService.showProfile()">
-                            </app-profile-dialog>
-                            <app-profile-editor-dialog class="profil-editor"
-                                *ngIf="this.userService.showProfileEditor()">
-                            </app-profile-editor-dialog>
+                    <div class="profile-menu" (click)="stopPropagation($event)">
+                        <div class="profil-menu-link-container"
+                            *ngIf="!this.userService.showProfile() && !this.userService.showProfileEditor()">
+                            <div class="profil-menu-links" (click)="openUserProfile($event)">Profil</div>
+                            <div class="profil-menu-links" (click)="authService.logout()">Log Out</div>
                         </div>
+                        <app-profile-dialog class="profil-details" *ngIf="this.userService.showProfile()">
+                        </app-profile-dialog>
+                        <app-profile-editor-dialog class="profil-editor" *ngIf="this.userService.showProfileEditor()">
+                        </app-profile-editor-dialog>
                     </div>
                 </div>
             </div>
@@ -65,7 +61,8 @@
                         <app-chat-window
                             (openDirectMessageFromChatEvent)="openDirectMessageFromChat($event.selectedUser, $event.index)"
                             (openChannelMessageFromChatEvent)="openChannelMessageFromChat($event.selectedChannel, $event.index)"
-                            (openChannelMessageEvent)="openChannelMessage()"></app-chat-window>
+                            (openChannelMessageEvent)="openChannelMessage()">
+                        </app-chat-window>
                     </ng-container>
                     <ng-container *ngIf="this.showChannelMessage">
                         <app-channel-message (showThreadEvent)="showThread($event)"></app-channel-message>

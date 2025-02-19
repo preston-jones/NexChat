@@ -89,14 +89,9 @@ span {
             @include dFlex($fd: column, $g: 10px, $ai: flex-start);
 
             >div {
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                flex-direction: row;
-                gap: 15px;
-                padding: 12px 20px 12px 20px;
-                border-radius: 100px;
-                width: 100%;
+                @include dFlex($g: 15px);
+                padding: 4px 20px 4px 20px;
+                border-radius: 20px;
 
                 &:nth-child(1) {
                     margin-top: 25px;
@@ -162,14 +157,9 @@ span {
             overflow-y: auto;
 
             >div {
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                flex-direction: row;
-                gap: 15px;
+                @include dFlex($g: 15px);
                 padding: 4px 20px 4px 20px;
-                border-radius: 100px;
-                width: 100%;
+                border-radius: 35px;
 
                 &:nth-child(1) {
                     margin-top: 25px;
@@ -309,7 +299,7 @@ span {
     text-align: center;
 }
 
-.group-logo {
+.group-logo{
     display: flex;
     gap: 15px;
     align-items: center;
@@ -317,32 +307,32 @@ span {
     font-size: 24px;
 }
 
-.new-chat-button-mobile {
+.new-chat-button-mobile{
     display: none;
 }
 
 
 @media screen and (max-width: 1080px) {
-    .hide-input-mobile {
-        display: none;
-    }
+.hide-input-mobile{
+    display: none;
+}
 
-    .flex-input-mobile {
-        display: flex !important;
-        width: 100%;
-        border: 1px solid #ADB0D9;
-        padding: 8.5px 40px 8.5px 30px;
-    }
+.flex-input-mobile{
+    display: flex !important;
+    width: 100%;
+    border: 1px solid #ADB0D9;
+    padding: 8.5px 40px 8.5px 30px;
+}
 
-    .new-chat-button-mobile {
-        display: flex !important;
-        position: absolute;
-        background-color: #535AF1;
-        bottom: 30px;
-        right: 14px;
-        height: 54px !important;
-        width: 54px !important;
-    }
+.new-chat-button-mobile{
+    display: flex !important;
+    position: absolute;
+    background-color: #535AF1;
+    bottom: 30px;
+    right: 14px;
+    height: 54px !important;
+    width: 54px !important;
+}
 }
 
 @media screen and (max-width: 375px) {

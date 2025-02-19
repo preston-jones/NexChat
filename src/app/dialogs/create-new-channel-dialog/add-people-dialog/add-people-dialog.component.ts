@@ -10,7 +10,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { ChannelsService } from '../../../shared/services/channels/channels.service';
 import { CreateNewChannelDialog } from '../create-new-channel-dialog.component';
 import { Channel } from '../../../shared/models/channel.class';
-import { Firestore, doc, updateDoc, addDoc, collection, onSnapshot, query, orderBy, arrayUnion } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc, addDoc, collection, onSnapshot, query, orderBy } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { User } from '../../../shared/models/user.class';
 import { NgFor, NgIf, NgStyle } from '@angular/common';
@@ -137,7 +137,7 @@ export class AddPeopleDialog implements OnInit {
         }, 3000); 
 
       if (newChannel) {
-        await this.updateUserChannels(this.currentUser.id, newChannel.name);
+        await this.channelsService.updateUserChannels(this.currentUser.id, newChannel.name);
       }
       this.channelsService.channelCreatedInfo = true;
       setTimeout(() => {
@@ -177,15 +177,6 @@ export class AddPeopleDialog implements OnInit {
     return newChannel;
   }
 
-
-  async updateUserChannels(userId: string, channelName: string) {
-    let usersRef = collection(this.firestore, 'users');
-    let userDocRef = doc(usersRef, userId);
-
-    await updateDoc(userDocRef, {
-      channels: arrayUnion(channelName),
-    });
-  }
 
   // Only the id of the users is pushed to the firestore
   getMemberUids(): string[] {
