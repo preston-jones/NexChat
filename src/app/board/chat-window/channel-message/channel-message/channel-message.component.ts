@@ -87,7 +87,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const observer = new MutationObserver(() => {
-      // console.log('Mutation detected');
       this.scrollToBottom();
     });
 
@@ -135,7 +134,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
   scrollToBottom() {
-    if (this.chatWindow && this.chatWindow.nativeElement) {
+    if (this.chatWindow && this.chatWindow.nativeElement && this.channelsService.currentChannelName != 'Willkommen') {
       this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
     }
   }

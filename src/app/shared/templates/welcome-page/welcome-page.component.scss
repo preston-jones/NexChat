@@ -1,6 +1,7 @@
 main {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 1.5rem;
   max-width: 64rem;
   padding: 1.5rem 1.5rem 1.5rem 2.875rem;
@@ -9,25 +10,54 @@ main {
   h2 {
     font-size: 24px;
     font-weight: 700;
+    margin: 0;
   }
 
   h3 {
     font-size: 20px;
     font-weight: 700;
+    margin: 0;
   }
 
   ul {
+    list-style: none;
     margin: 0;
     padding-inline-start: 1rem;
-    > li {
-      margin-top: 0.325rem;
-    }
   }
-  ul > ul {
-    padding-inline-start: 1.25rem;
-    > li {
-      margin-top: 0;
-    }
+
+  li {
+    margin-top: 0.325rem;
+    padding-left: 1rem;
+    text-indent: -2rem;
+    padding-top: 4px;
+  }
+
+  .check::before {
+    content: "✔ ";
+  }
+
+  .not::before {
+    content: "❌ ";
+  }
+
+  .channel::before {
+    content: "📢 ";
+  }
+
+  .message::before {
+    content: "💬 ";
+  }
+
+  .emoji::before {
+    content: "😀 ";
+  }
+
+  .search::before {
+    content: "🔍 ";
+  }
+
+  .file::before {
+    content: "📂 ";
   }
 
   .admin-div {
