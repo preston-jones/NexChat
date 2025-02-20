@@ -19,8 +19,8 @@
         <div class="input-search-container">
             <input name="searchText" type="text" placeholder="Devspace durchsuchen" [(ngModel)]="searchInput">
             <img src="../../assets/images/icons/search.png" alt="search icon">
-            <app-search-dialog [searchValue]="searchInput" (openChannelEvent)="openChannelMessage()"
-                (clickUserEvent)="openDirectMessage()"></app-search-dialog>
+            <app-search-dialog [searchValue]="searchInput" (closeSearchEvent)="handleCloseSearchDialog()"
+                (openChannelEvent)="openChannelMessage()" (clickUserEvent)="openDirectMessage()"></app-search-dialog>
         </div>
         <div class="profile-menu-container" (click)="toggleProfileMenu()">
             <span>{{ currentUser()?.name }}</span>

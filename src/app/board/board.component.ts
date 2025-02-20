@@ -71,6 +71,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class BoardComponent implements OnInit {
 
+  @ViewChild(SearchDialogComponent) searchDialogComponent!: SearchDialogComponent;
   @ViewChild('drawer') drawer!: MatDrawer;
   // @ViewChild(WorkspaceComponent) workspaceComponent!: WorkspaceComponent;
   users: User[] = [];
@@ -115,6 +116,12 @@ export class BoardComponent implements OnInit {
     this.isSmallScreen = window.innerWidth < 1080;
     this.changeLogoInHeader();
   }
+
+
+  handleCloseSearchDialog(): void {
+    this.searchInput = '';
+  }
+
 
   changeLogoInHeader(): void {
 

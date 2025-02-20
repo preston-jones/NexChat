@@ -2,6 +2,7 @@
     position: absolute;
     top: 70px;
     left: 0px;
+    width: 100%;
     min-width: 400px;
     height: auto;
     padding: 24px;
@@ -10,6 +11,8 @@
     z-index: 20;
     border-radius: 30px;
     font-family: 'Nunito';
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .search-dialog {
@@ -19,7 +22,6 @@
     justify-content: flex-start;
     gap: 15px;
     min-width: 400px;
-    height: auto;
     overflow-y: auto;
     max-height: 500px;
 
@@ -33,12 +35,32 @@
     }
 }
 
+#close {
+    height: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    >img {
+        cursor: pointer;
+        border-radius: 50px;
+        transition: background-color .125s ease-in-out;
+
+        &:hover {
+            background-color: #ECEEFD;
+            transition: background-color .125s ease-in-out;
+        }
+    }
+}
+
 .filtered-channel {
     display: flex;
     gap: 8px;
     font-size: 16px;
-    padding: 4px 12px;
+    padding: 10px 12px;
     border-radius: 100px;
+    width: 100%;
 
     &:hover {
         color: rgb(83, 90, 241);
@@ -59,6 +81,7 @@
     gap: 8px;
     padding: 4px 12px;
     border-radius: 100px;
+    width: 100%;
 
     &:hover {
         color: rgb(83, 90, 241);
@@ -91,63 +114,6 @@
     }
 }
 
-.filtered-chat-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 12px;
-    border-radius: 100px;
-
-    &:hover {
-        color: rgb(83, 90, 241);
-        background: rgba(236, 238, 254, 1);
-        cursor: pointer;
-    }
-
-    >span {
-        font-size: 16px;
-        font-weight: 400;
-    }
-
-    >.filtered-partner {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 16px;
-
-        >img {
-            width: 32px;
-            height: 32px;
-            object-fit: cover;
-            border-radius: 100%;
-        }
-
-        >span {
-            font-size: 18px;
-            font-weight: 700;
-        }
-    }
-
-    >.filtered-message {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 16px;
-
-        >img {
-            width: 32px;
-            height: 32px;
-            object-fit: cover;
-            border-radius: 100%;
-        }
-
-        >span {
-            font-size: 18px;
-            font-weight: 700;
-            font-style: italic;
-        }
-    }
-}
 
 .spacer {
     display: block;

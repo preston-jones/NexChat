@@ -28,6 +28,7 @@ export class SearchDialogComponent implements OnChanges {
   @Output() sendEmptyString: EventEmitter<string> = new EventEmitter<string>();
   @Output() clickUserEvent = new EventEmitter<void>();
   @Output() openChannelEvent = new EventEmitter<void>();
+  @Output() closeSearchEvent = new EventEmitter<void>();
 
   firestore = inject(Firestore);
   chatUtilityService = inject(ChatUtilityService);
@@ -128,8 +129,15 @@ export class SearchDialogComponent implements OnChanges {
   }
 
 
-  async getSelectedUserInfo(selectedUserId: string | null) {
+  closeSearchDialog() {
     this.showSearchDialog = false;
+    this.searchValue = '';
+    this.closeSearchEvent.emit();
+  }
+
+
+  async getSelectedUserInfo(selectedUserId: string | null) {
+    this.closeSearchDialog();
     this.userService.showUserInfo.set(true);
     await this.userService.getSelectedUserById(selectedUserId as string);
   }
@@ -152,7 +160,7 @@ export class SearchDialogComponent implements OnChanges {
     if (changes['searchValue'] && this.searchValue.length > 0) {
       this.showSearchDialogAndFilterItems();
     } else {
-      this.hideSearchDialog();
+      this.closeSearchDialog();
     }
   }
 
@@ -167,11 +175,6 @@ export class SearchDialogComponent implements OnChanges {
   }
 
 
-  hideSearchDialog(): void {
-    this.showSearchDialog = false;
-  }
-
-
   filterUserById(userId: string) {
     if (this.userService.users) {
       let filteredUser = this.userService.users.find((user: User) => user.id === userId);
@@ -179,28 +182,6 @@ export class SearchDialogComponent implements OnChanges {
     }
     return null;
   }
-
-
-  // filterSearchItems(): SearchItem[] {
-  //   return this.allData.filter((ad: SearchItem) => {
-  //     console.log('ad =', ad);
-
-  //     if (this.isUser(ad)) {
-  //       return ad.name.toLowerCase().includes(this.searchValue.toLowerCase());
-  //     } else if (this.isChannel(ad)) {
-  //       return ad.name.toLowerCase().includes(this.searchValue.toLowerCase());
-  //     } else if (this.isChatMessage(ad)) {
-  //       return ad.message?.toLowerCase().includes(this.searchValue.toLowerCase());
-  //     } else if (this.isDirectMessage(ad)) {
-  //       // return this.filterConversationMessage(ad);
-  //       return ad.conversation?.forEach((conversation) => {
-  //         conversation.message?.toLowerCase().includes(this.searchValue.toLowerCase());
-  //       });
-  //     } else {
-  //       return false;
-  //     }
-  //   });
-  // }
 
 
   filterSearchItems(): (User | DirectMessage | Channel | Message)[] {
@@ -248,7 +229,7 @@ export class SearchDialogComponent implements OnChanges {
 
 
   openChannel(channel: Channel, i: number) {
-    this.showSearchDialog = false;
+    this.closeSearchDialog();
     this.channelsService.channelIsClicked = true;
     this.channelsService.clickChannelContainer(channel, i);
     this.openChannelEvent.emit();
@@ -268,7 +249,7 @@ export class SearchDialogComponent implements OnChanges {
     let index = this.userService.users.findIndex((user: User) => user.id === userId);
     this.userService.clickedUsers[index] = true;
 
-    this.showSearchDialog = false;
+    this.closeSearchDialog();
     this.chatUtilityService.directMessageUser = await this.userService.getSelectedUserById(userId);
     this.clickUserEvent.emit();
 

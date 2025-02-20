@@ -1,5 +1,6 @@
 @if(this.showSearchDialog){
 <div class="search-container">
+    <div id="close" (click)="closeSearchDialog()"><img src="../../../assets/images/icons/close.png"></div>
     <div class="search-dialog">
         @if(mainSearchList.length > 0){
         @for(result of mainSearchList; track result; let index = $index){
@@ -19,15 +20,6 @@
             </div>
             <span class="separator-bar"></span>
         </div>
-        }
-        @else if(result.message && result.channelId){
-        <!-- <div id="{{index}}" class="filtered-chat-container">
-            <span> #{{getChannelName(result.channelId)}} :</span>
-            <div class="filtered-message">
-                <span>" {{result.message.slice(0, 20)}}... "</span>
-            </div>
-            <span class="separator-bar"></span>
-        </div> -->
         }
         @else if(result.conversation){
         @if (result.senderId === this.authService.currentUserUid){
