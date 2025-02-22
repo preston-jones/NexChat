@@ -51,54 +51,6 @@ export class SearchDialogComponent implements OnChanges {
   }
 
 
-    // async loadAllConversations(): Promise<void> {
-    //   try {
-    //     // Referenz zur gesamten Sammlung `direct_messages`
-    //     const messagesCollectionRef = collection(this.firestore, 'direct_messages');
-  
-    //     // Abrufen aller Dokumente innerhalb der Sammlung
-    //     const querySnapshot = await getDocs(messagesCollectionRef);
-  
-    //     // Initialisiere ein Mapping, um ungelesene Nachrichten pro Sender zu speichern
-    //     const unreadMessagesBySender: { [key: string]: number } = {};
-  
-    //     // Durchlaufe jedes Dokument in der Sammlung
-    //     querySnapshot.forEach((doc) => {
-    //       const data = doc.data();
-    //       const conversations = data['conversation'] || []; // Falls keine Konversationen vorhanden sind, leeres Array verwenden
-  
-    //       // Filtere Konversationen, bei denen der `currentUserUid` der Empfänger ist
-    //       const userConversations = conversations.filter((conv: any) =>
-    //         conv.receiverId === this.authService.currentUserUid && !conv.readedMessage
-    //       );
-  
-    //       // Für jede gefundene ungelesene Nachricht: Zähle die Nachrichten pro Sender
-    //       userConversations.forEach((conv: any) => {
-    //         if (!unreadMessagesBySender[conv.senderId]) {
-    //           unreadMessagesBySender[conv.senderId] = 0;
-    //         }
-    //         unreadMessagesBySender[conv.senderId]++;
-    //       });
-  
-    //       // Speichere alle Nachrichten
-    //       this.messagesService.directMessages.push({ messageId: doc.id, ...data } as DirectMessage);
-    //     });
-  
-    //     // Weise den Benutzern in der Benutzerliste die ungelesenen Nachrichten zu
-    //     this.userService.users = this.userService.users.map((user) => {
-    //       return {
-    //         ...user,
-    //         unreadMessagesCount: unreadMessagesBySender[user.id] || 0, // Standardwert: 0
-    //       };
-    //     });
-  
-    //     // console.log('Ungelesene Nachrichten pro Sender:', unreadMessagesBySender);
-    //   } catch (error) {
-    //     console.error('Fehler beim Laden der Konversationen:', error);
-    //   }
-    // }
-
-
   async loadAllData() {
     this.authService.auth.onAuthStateChanged(async (user) => {
       this.allData = [];

@@ -1,4 +1,5 @@
 import { Component, inject, Input, signal, WritableSignal } from '@angular/core';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { AuthService } from '../../shared/services/authentication/auth-service/auth.service';
 import { UserService } from '../../shared/services/firestore/user-service/user.service';
@@ -6,11 +7,12 @@ import { MessagesService } from '../../shared/services/messages/messages.service
 import { ChannelsService } from '../../shared/services/channels/channels.service';
 import { SendMessageService } from '../../shared/services/messages/send-message.service';
 import { User } from '../../shared/models/user.class';
+import { AvatarsService } from '../../shared/services/avatars/avatars.service';
 
 @Component({
   selector: 'app-profile-editor-dialog',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule, NgFor, NgIf],
   templateUrl: './profile-editor-dialog.component.html',
   styleUrl: './profile-editor-dialog.component.scss'
 })
@@ -21,12 +23,15 @@ export class ProfileEditorDialogComponent {
   mail: string | null | undefined;
   avatarPath: string | null | undefined;
   changesSuccessful = signal<boolean>(false);
+  openAvatarSelector: boolean = false;
+  avatarSrc: string | null | undefined;
 
   authService = inject(AuthService);
   userService = inject(UserService);
   messagesService = inject(MessagesService);
   channelsService = inject(ChannelsService);
   threadService = inject(SendMessageService);
+  avatarsService = inject(AvatarsService);
 
 
   constructor() {
@@ -115,5 +120,27 @@ export class ProfileEditorDialogComponent {
     this.userService.showProfileEditor.set(false);
     this.userService.showProfile.set(false);
     this.userService.showOverlay.set(false);
+  }
+
+
+  openAvatarSelection() {
+    this.openAvatarSelector = true;
+    console.log('select avatar');
+
+  }
+
+
+  chooseAvatar(avatar: string) {
+    this.avatarPath = avatar;
+    this.openAvatarSelector = false;
+    console.log('avatar selected', this.avatarPath);
+    
+  }
+
+
+  uploadAvatar($event: Event) {
+    const fileInput = $event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
   }
 }

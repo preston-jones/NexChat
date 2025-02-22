@@ -111,6 +111,9 @@ export class AuthService {
 
 
   async logout(): Promise<void> {
+    if (this.auth.currentUser?.uid === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02') {
+      this.resetGuestUser();
+    }
     try {
       if (this.auth.currentUser) {
         await this.userService.updateUserLoginState(this.auth.currentUser.uid, 'loggedOut');
@@ -134,39 +137,15 @@ export class AuthService {
   }
 
 
-  // async guestLogin() {
-  //   const db = getFirestore();
-  //   const guestRef = doc(db, 'users', this.GUEST_UID);
-
-  //   // Erstelle ein Gastbenutzer-Objekt mit setCurrentUserObject
-  //   const guestUserObject = {
-  //     uid: this.GUEST_UID,
-  //     email: '', // Gastbenutzer haben normalerweise keine E-Mail
-  //     name: 'Gast',
-  //     avatarPath: './assets/images/avatars/avatar1.svg', // Hier kannst du einen Pfad zu einem Standard-Avatar setzen
-  //     loginState: 'loggedOut',
-  //     channels: [] // Optional: Falls der Gastbenutzer keine Kanäle haben soll, bleibt dies leer
-  //   };
-
-  //   // Überprüfen, ob der Gastbenutzer-Datensatz existiert
-  //   const guestSnapshot = await getDoc(guestRef);
-  //   if (!guestSnapshot.exists()) {
-  //     // Falls kein Gastbenutzer existiert, neuen Gastbenutzer-Datensatz erstellen
-  //     await setDoc(guestRef, guestUserObject);
-  //     console.log('Gastbenutzer erstellt mit UID:', this.GUEST_UID);
-  //   } else {
-  //     console.log('Gastbenutzer existiert bereits mit UID:', this.GUEST_UID);
-
-  //     // Falls der Gastbenutzer bereits existiert, den loginState auf 'loggedIn' ändern
-  //     await updateDoc(guestRef, {
-  //       loginState: 'loggedIn'
-  //     });
-  //     console.log('loginState auf "loggedIn" gesetzt');
-  //   }
-
-  //   // "Anmeldung" simulieren, indem du die UID speicherst
-  //   // localStorage.setItem('guestUID', this.GUEST_UID);
-  // }
+  resetGuestUser() {
+    let changes = {
+      name: 'Gast',
+      email: 'guest@test.de',
+      avatarPath: './assets/images/avatars/avatar_default.png'
+    };
+    this.userService.updateUserInFirestore(this.auth.currentUser!.uid, changes);
+    this.updateUserProfile(changes);
+  }
 
 
   async updateUserProfile(changes: {}): Promise<void> {

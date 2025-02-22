@@ -61,17 +61,17 @@
         <div class="sidenav-content">
             <mat-card class="chat-window-container" appearance="outlined">
                 <mat-card-content>
-                    <ng-container *ngIf="this.showChatWindow">
+                    <ng-container *ngIf="this.directMessagesService.showChatWindow">
                         <app-chat-window
                             (openDirectMessageFromChatEvent)="openDirectMessageFromChat($event.selectedUser, $event.index)"
                             (openChannelMessageFromChatEvent)="openChannelMessageFromChat($event.selectedChannel, $event.index)"
                             (openChannelMessageEvent)="openChannelMessage()">
                         </app-chat-window>
                     </ng-container>
-                    <ng-container *ngIf="this.showChannelMessage">
+                    <ng-container *ngIf="this.directMessagesService.showChannelMessage">
                         <app-channel-message (showThreadEvent)="showThread($event)"></app-channel-message>
                     </ng-container>
-                    <ng-container *ngIf="this.showDirectMessage">
+                    <ng-container *ngIf="this.directMessagesService.showDirectMessage">
                         <app-direct-message [selectedUser]="chatUtilityService.directMessageUser"></app-direct-message>
                     </ng-container>
                 </mat-card-content>
@@ -85,12 +85,12 @@
 
     </mat-drawer-container>
     <div class="navigation-toggle-btn" (click)="toggleWorkspace()"
-        [ngStyle]="{ 'display': workspaceOpen ? 'flex' : 'none' }">
+        [ngStyle]="{ 'display': directMessagesService.workspaceOpen ? 'flex' : 'none' }">
         <mat-icon class="icon" svgIcon="close-menu" aria-hidden="false" aria-label="Workspace icon"></mat-icon>
         <span>Workspace-Menü schließen</span>
     </div>
     <div class="navigation-toggle-btn" (click)="toggleWorkspace()"
-        [ngStyle]="{ 'display': workspaceOpen ? 'none' : 'flex' }">
+        [ngStyle]="{ 'display': directMessagesService.workspaceOpen ? 'none' : 'flex' }">
         <mat-icon class="icon" svgIcon="open-menu" aria-hidden="false" aria-label="Workspace icon"></mat-icon>
         <span>Workspace-Menü öffnen</span>
     </div>

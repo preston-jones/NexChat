@@ -32,6 +32,6 @@
 
     <div class="send-message-btn">
         <img src="../../../assets/images/icons/message.png" alt="">
-        <span (click)="message(this.userService.selectedUser?.id)">Nachricht</span>
+        <span (click)="directMessagesService.openDirectMessage(userService.selectedUser?.id!)">Nachricht</span>
     </div>
 </div>

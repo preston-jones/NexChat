@@ -34,7 +34,7 @@
         }
         @else if (result.receiverId === this.authService.currentUserUid){
         <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessage(result.senderId)">
-            <span>Direkt Nachricht :</span>
+            <span>Direkt Nachricht:</span>
             <div class="filtered-user">
                 <img src="{{filterUserById(result.senderId)?.avatarPath}}" alt="">
                 <span>{{filterUserById(result.senderId)?.name}}</span>

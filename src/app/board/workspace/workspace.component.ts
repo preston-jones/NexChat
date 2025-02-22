@@ -16,12 +16,12 @@ import { AuthService } from '../../shared/services/authentication/auth-service/a
 import { ChatUtilityService } from '../../shared/services/messages/chat-utility.service';
 import { Overlay } from '@angular/cdk/overlay';
 import { MatBadgeModule } from '@angular/material/badge';
-import { Message } from '../../shared/models/message.class';
 import { DirectMessage } from '../../shared/models/direct.message.class';
 import { SearchDialogComponent } from '../../dialogs/search-dialog/search-dialog.component';
 import { FormsModule } from '@angular/forms';
 import { BoardComponent } from '../board.component';
 import { UserService } from '../../shared/services/firestore/user-service/user.service';
+import { DirectMessagesService } from '../../shared/services/messages/direct-messages.service';
 
 @Component({
   selector: 'app-workspace',
@@ -60,7 +60,7 @@ export class WorkspaceComponent implements OnInit {
   searchInput: string = '';
   @Input() openChatWindow!: () => void;
   @Output() openChannelEvent = new EventEmitter<void>();
-  @Output() clickUserEvent = new EventEmitter<void>();
+  @Output() clickUserEvent = this.directMessagesService.clickUserEvent;
 
   triggerOpenChat() {
     this.chatUtilityService.openChatWindow();
@@ -78,7 +78,8 @@ export class WorkspaceComponent implements OnInit {
     private userService: UserService,
     private chatUtilityService: ChatUtilityService,
     private overlay: Overlay,
-    private boardComponent: BoardComponent
+    private boardComponent: BoardComponent,
+    public directMessagesService: DirectMessagesService
   ) {
   }
 
@@ -93,7 +94,7 @@ export class WorkspaceComponent implements OnInit {
     });
 
     this.chatUtilityService.openDirectMessageEvent.subscribe(({ selectedUser, index }) => {
-      this.clickUserContainer(selectedUser, index);
+      this.directMessagesService.clickUserContainer(selectedUser, index);
     });
 
     this.chatUtilityService.openChannelMessageEvent.subscribe(({ selectedChannel, index }) => {
@@ -229,24 +230,25 @@ export class WorkspaceComponent implements OnInit {
       disableClose: false,
       hasBackdrop: true,
       scrollStrategy: this.overlay.scrollStrategies.noop()
-    });
+    });    
   }
 
-  clickUserContainer(user: User, i: number) {
-    this.userService.clickedUsers.fill(false);
-    this.clickedChannels.fill(false);
-    this.userService.clickedUsers[i] = true;
-    this.messagesService.getUserName(user);
-    this.clickUserEvent.emit();
-    if (this.currentUserUid) {
-      this.messagesService.loadDirectMessages(this.currentUserUid, user.id);
-      this.chatUtilityService.setMessageId(null);
-      // this.setAllMessagesAsRead()
-      this.messagesService.setAllMessagesAsRead();
-    } else {
-      console.error("currentUserUid is null");
-    }
-  }
+  // clickUserContainer(user: User, i: number) {
+  //   this.userService.clickedUsers.fill(false);
+  //   this.channelsService.clickedChannels.fill(false);
+  //   this.userService.clickedUsers[i] = true;
+  //   this.messagesService.getUserName(user);
+  //   this.directMessagesService.clickUserEvent.emit();
+  //   if (this.currentUserUid) {
+  //     this.messagesService.loadDirectMessages(this.currentUserUid, user.id);
+  //     this.chatUtilityService.setMessageId(null);
+  //     // this.setAllMessagesAsRead()
+  //     this.messagesService.setAllMessagesAsRead();
+  //   } else {
+  //     console.error("currentUserUid is null");
+  //   }
+  // }
+
 
   toggleNewChatForMobile() {
     this.boardComponent.toggleWorkspace();
