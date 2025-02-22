@@ -40,7 +40,11 @@ export class DirectMessagesService {
     this.messagesService.getUserName(user);
     this.clickUserEvent.emit();
     if (this.authService.currentUserUid) {
-      // this.messagesService.loadDirectMessages(this.authService.currentUserUid, user.id);
+
+// !!!! fuehrt zur zwischenladung aller Direjkt Nachrichten, bevor eigentliche Nachrichten geladen werden !!!!
+      this.messagesService.loadDirectMessages(this.authService.currentUserUid, user.id);
+
+
       this.chatUtilityService.setMessageId(null);
       this.messagesService.setAllMessagesAsRead();
     } else {
