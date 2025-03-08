@@ -33,6 +33,7 @@ import { AddMemberDialogComponent } from '../dialogs/add-member-dialog/add-membe
 import { MemberAddedInfoComponent } from "../dialogs/member-added-info/member-added-info.component";
 import { ChannelCreatedInfoComponent } from "../dialogs/channel-created-info/channel-created-info.component";
 import { BehaviorSubject } from 'rxjs';
+import { DirectMessagesService } from '../shared/services/messages/direct-messages.service';
 
 @Component({
   selector: 'app-board',
@@ -71,6 +72,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class BoardComponent implements OnInit {
 
+  @ViewChild(SearchDialogComponent) searchDialogComponent!: SearchDialogComponent;
   @ViewChild('drawer') drawer!: MatDrawer;
   // @ViewChild(WorkspaceComponent) workspaceComponent!: WorkspaceComponent;
   users: User[] = [];
@@ -105,6 +107,7 @@ export class BoardComponent implements OnInit {
     public chatUtilityService: ChatUtilityService,
     public cd: ChangeDetectorRef,
     public channelsService: ChannelsService,
+    public directMessagesService: DirectMessagesService
   ) {
     this.currentUser = this.authService.getUserSignal();
   }
@@ -115,6 +118,12 @@ export class BoardComponent implements OnInit {
     this.isSmallScreen = window.innerWidth < 1080;
     this.changeLogoInHeader();
   }
+
+
+  handleCloseSearchDialog(): void {
+    this.searchInput = '';
+  }
+
 
   changeLogoInHeader(): void {
 
@@ -193,7 +202,7 @@ export class BoardComponent implements OnInit {
 
   toggleWorkspace() {
     this.drawer.toggle();
-    this.workspaceOpen = !this.workspaceOpen;
+    this.directMessagesService.workspaceOpen = !this.directMessagesService.workspaceOpen;
   }
 
   toggleWorkspaceMobile() {
@@ -201,7 +210,7 @@ export class BoardComponent implements OnInit {
       this.drawer.toggle(); // Toggle-Funktion des Drawers
       this.goBack()
     }
-    this.workspaceOpen = !this.workspaceOpen; // Zustand umschalten
+    this.directMessagesService.workspaceOpen = !this.directMessagesService.workspaceOpen; // Zustand umschalten
   }
 
   // Methode zum expliziten Schließen (optional)
@@ -209,7 +218,7 @@ export class BoardComponent implements OnInit {
     if (this.isSmallScreen && this.drawer) {
       this.drawer.close(); // Schließt den Drawer nur, wenn die Bedingung erfüllt ist
     }
-    this.workspaceOpen = false; // Zustand setzen
+    this.directMessagesService.workspaceOpen = false; // Zustand setzen
   }
 
 
@@ -236,34 +245,34 @@ export class BoardComponent implements OnInit {
 
   openChannelMessage() {
     this.closeWorkspace();
-    this.showChannelMessage = true;
-    this.showDirectMessage = false;
-    this.showChatWindow = false;
+    this.directMessagesService.showChannelMessage = true;
+    this.directMessagesService.showDirectMessage = false;
+    this.directMessagesService.showChatWindow = false;
     this.adjustDrawerStylesForSmallScreen();
   }
 
   openChannelMessageFromChat(selectedChannel: Channel, index: number) {
     this.closeWorkspace();
-    this.showChannelMessage = true;
-    this.showDirectMessage = false;
-    this.showChatWindow = false;
+    this.directMessagesService.showChannelMessage = true;
+    this.directMessagesService.showDirectMessage = false;
+    this.directMessagesService.showChatWindow = false;
     this.openChannelMessageEvent.emit({ selectedChannel, index });
     this.adjustDrawerStylesForSmallScreen();
   }
 
   openDirectMessage() {
     this.closeWorkspace();
-    this.showDirectMessage = true;
-    this.showChannelMessage = false;
-    this.showChatWindow = false;
+    this.directMessagesService.showDirectMessage = true;
+    this.directMessagesService.showChannelMessage = false;
+    this.directMessagesService.showChatWindow = false;
     this.adjustDrawerStylesForSmallScreen();
   }
 
   openDirectMessageFromChat(selectedUser: User, index: number) {
     this.closeWorkspace();
-    this.showDirectMessage = true;
-    this.showChannelMessage = false;
-    this.showChatWindow = false;
+    this.directMessagesService.showDirectMessage = true;
+    this.directMessagesService.showChannelMessage = false;
+    this.directMessagesService.showChatWindow = false;
     this.openDirectMessageEvent.emit({ selectedUser, index });
     this.adjustDrawerStylesForSmallScreen();
   }
@@ -271,9 +280,9 @@ export class BoardComponent implements OnInit {
 
   openChatWindow() {
     this.closeWorkspace();
-    this.showChatWindow = true;
-    this.showDirectMessage = false;
-    this.showChannelMessage = false;
+    this.directMessagesService.showChatWindow = true;
+    this.directMessagesService.showDirectMessage = false;
+    this.directMessagesService.showChannelMessage = false;
     this.setMessageId(null);
     this.directMessageUser = null;
     this.selectedChannel = null;

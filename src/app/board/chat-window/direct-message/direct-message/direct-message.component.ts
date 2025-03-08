@@ -89,6 +89,8 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     });
     this.loadData();
     this.currentUser = this.authService.currentUser();
+    console.log('Lalalala', this.messagesService.directMessages);
+    
   }
 
 

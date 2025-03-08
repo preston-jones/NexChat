@@ -3,19 +3,24 @@
         <h3>Dein Profil bearbeiten</h3>
         <img src="../../../assets/images/icons/close.png" alt="" (click)="closeUserProfileEditor()">
     </div>
-    <img src="{{ this.authService.currentUser()?.avatarPath }}" alt="" class="avatar-img">
+    <img src="{{ this.avatarPath }}" alt="" class="avatar-img edit-avatar" (click)="openAvatarSelection()">
     <div class="name-container">
-            <h2>{{ this.authService.currentUser()?.name }}</h2>
+        <h2>{{ this.authService.currentUser()?.name }}</h2>
     </div>
     <form (ngSubmit)="onSubmit(editForm)" #editForm="ngForm">
         <div class="input-container">
             <label for="name"><img src="../../../assets/images/icons/account_circle.png">Vollständiger Name</label>
-            <input type="text" id="name" name="name" [(ngModel)]="fullname" #name="ngModel" placeholder="{{ this.authService.currentUser()?.name }}">
+            <input type="text" id="name" name="name" [(ngModel)]="fullname" #name="ngModel"
+                placeholder="{{ this.authService.currentUser()?.name }}">
         </div>
         <div class="input-container">
             <label for="name"><img src="../../../assets/images/icons/mail.png" alt="">E-Mail-Adresse</label>
-            <input type="email" id="email" name="email" #email="ngModel" [(ngModel)]="mail"
-            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" placeholder="{{ this.authService.currentUser()?.email }}">
+            <input
+            [disabled]="this.authService.currentUser()?.id === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02'"
+            [ngClass]="{disabled: this.authService.currentUser()?.id === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02'}"
+                [ngClass]="email" type="email" id="email" name="email" #email="ngModel" [(ngModel)]="mail"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                placeholder="{{ this.authService.currentUser()?.email }}">
         </div>
         @if (email.touched && !email.valid) {
         <span class="error-message">Bitte geben sie eine gültige E-Mail-Adresse ein</span>
@@ -35,4 +40,21 @@
             <input type="submit" value="Speichern" class="btn-no-style submit-btn">
         </div>
     </form>
+    <div class="avatar-selection" *ngIf="openAvatarSelector">
+        <div class="avatar-selection-content">
+            <h3>Wähle deinen Avatar</h3>
+            <div class="avatar-selection-container">
+                <div class="avatar-selection-item" *ngFor="let avatar of this.avatarsService.avatars"
+                    (click)="chooseAvatar(avatar)">
+                    <img [src]="avatar" alt="Avatar">
+                </div>
+            </div>
+            <div class="own-avatar-container">
+                <span>Eigenes Bild verwenden</span>
+                <input type="file" class="file-input" #fileUpload (change)="uploadAvatar($event)">
+                <button mat-stroked-button (click)="fileUpload.click()">Datei hochladen</button>
+            </div>
+        </div>
+
+    </div>
 </div>

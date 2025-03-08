@@ -28,6 +28,7 @@ export class SearchDialogComponent implements OnChanges {
   @Output() sendEmptyString: EventEmitter<string> = new EventEmitter<string>();
   @Output() clickUserEvent = new EventEmitter<void>();
   @Output() openChannelEvent = new EventEmitter<void>();
+  @Output() closeSearchEvent = new EventEmitter<void>();
 
   firestore = inject(Firestore);
   chatUtilityService = inject(ChatUtilityService);
@@ -48,54 +49,6 @@ export class SearchDialogComponent implements OnChanges {
 
     // this.loadAllConversations();
   }
-
-
-    // async loadAllConversations(): Promise<void> {
-    //   try {
-    //     // Referenz zur gesamten Sammlung `direct_messages`
-    //     const messagesCollectionRef = collection(this.firestore, 'direct_messages');
-  
-    //     // Abrufen aller Dokumente innerhalb der Sammlung
-    //     const querySnapshot = await getDocs(messagesCollectionRef);
-  
-    //     // Initialisiere ein Mapping, um ungelesene Nachrichten pro Sender zu speichern
-    //     const unreadMessagesBySender: { [key: string]: number } = {};
-  
-    //     // Durchlaufe jedes Dokument in der Sammlung
-    //     querySnapshot.forEach((doc) => {
-    //       const data = doc.data();
-    //       const conversations = data['conversation'] || []; // Falls keine Konversationen vorhanden sind, leeres Array verwenden
-  
-    //       // Filtere Konversationen, bei denen der `currentUserUid` der Empfänger ist
-    //       const userConversations = conversations.filter((conv: any) =>
-    //         conv.receiverId === this.authService.currentUserUid && !conv.readedMessage
-    //       );
-  
-    //       // Für jede gefundene ungelesene Nachricht: Zähle die Nachrichten pro Sender
-    //       userConversations.forEach((conv: any) => {
-    //         if (!unreadMessagesBySender[conv.senderId]) {
-    //           unreadMessagesBySender[conv.senderId] = 0;
-    //         }
-    //         unreadMessagesBySender[conv.senderId]++;
-    //       });
-  
-    //       // Speichere alle Nachrichten
-    //       this.messagesService.directMessages.push({ messageId: doc.id, ...data } as DirectMessage);
-    //     });
-  
-    //     // Weise den Benutzern in der Benutzerliste die ungelesenen Nachrichten zu
-    //     this.userService.users = this.userService.users.map((user) => {
-    //       return {
-    //         ...user,
-    //         unreadMessagesCount: unreadMessagesBySender[user.id] || 0, // Standardwert: 0
-    //       };
-    //     });
-  
-    //     // console.log('Ungelesene Nachrichten pro Sender:', unreadMessagesBySender);
-    //   } catch (error) {
-    //     console.error('Fehler beim Laden der Konversationen:', error);
-    //   }
-    // }
 
 
   async loadAllData() {
@@ -128,8 +81,15 @@ export class SearchDialogComponent implements OnChanges {
   }
 
 
-  async getSelectedUserInfo(selectedUserId: string | null) {
+  closeSearchDialog() {
     this.showSearchDialog = false;
+    this.searchValue = '';
+    this.closeSearchEvent.emit();
+  }
+
+
+  async getSelectedUserInfo(selectedUserId: string | null) {
+    this.closeSearchDialog();
     this.userService.showUserInfo.set(true);
     await this.userService.getSelectedUserById(selectedUserId as string);
   }
@@ -152,7 +112,7 @@ export class SearchDialogComponent implements OnChanges {
     if (changes['searchValue'] && this.searchValue.length > 0) {
       this.showSearchDialogAndFilterItems();
     } else {
-      this.hideSearchDialog();
+      this.closeSearchDialog();
     }
   }
 
@@ -167,11 +127,6 @@ export class SearchDialogComponent implements OnChanges {
   }
 
 
-  hideSearchDialog(): void {
-    this.showSearchDialog = false;
-  }
-
-
   filterUserById(userId: string) {
     if (this.userService.users) {
       let filteredUser = this.userService.users.find((user: User) => user.id === userId);
@@ -179,28 +134,6 @@ export class SearchDialogComponent implements OnChanges {
     }
     return null;
   }
-
-
-  // filterSearchItems(): SearchItem[] {
-  //   return this.allData.filter((ad: SearchItem) => {
-  //     console.log('ad =', ad);
-
-  //     if (this.isUser(ad)) {
-  //       return ad.name.toLowerCase().includes(this.searchValue.toLowerCase());
-  //     } else if (this.isChannel(ad)) {
-  //       return ad.name.toLowerCase().includes(this.searchValue.toLowerCase());
-  //     } else if (this.isChatMessage(ad)) {
-  //       return ad.message?.toLowerCase().includes(this.searchValue.toLowerCase());
-  //     } else if (this.isDirectMessage(ad)) {
-  //       // return this.filterConversationMessage(ad);
-  //       return ad.conversation?.forEach((conversation) => {
-  //         conversation.message?.toLowerCase().includes(this.searchValue.toLowerCase());
-  //       });
-  //     } else {
-  //       return false;
-  //     }
-  //   });
-  // }
 
 
   filterSearchItems(): (User | DirectMessage | Channel | Message)[] {
@@ -248,7 +181,7 @@ export class SearchDialogComponent implements OnChanges {
 
 
   openChannel(channel: Channel, i: number) {
-    this.showSearchDialog = false;
+    this.closeSearchDialog();
     this.channelsService.channelIsClicked = true;
     this.channelsService.clickChannelContainer(channel, i);
     this.openChannelEvent.emit();
@@ -268,7 +201,7 @@ export class SearchDialogComponent implements OnChanges {
     let index = this.userService.users.findIndex((user: User) => user.id === userId);
     this.userService.clickedUsers[index] = true;
 
-    this.showSearchDialog = false;
+    this.closeSearchDialog();
     this.chatUtilityService.directMessageUser = await this.userService.getSelectedUserById(userId);
     this.clickUserEvent.emit();
 

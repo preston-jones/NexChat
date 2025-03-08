@@ -73,7 +73,7 @@
                             </a>
                         </mat-expansion-panel-header>
                         <div class="chat-container-open">
-                            <div *ngFor="let user of users; let i = index" (click)="clickUserContainer(user, i)"
+                            <div *ngFor="let user of users; let i = index" (click)="directMessagesService.clickUserContainer(user, i)"
                                 [ngClass]="channelsService.clickedUsers[i] ? 'clicked' : ''">
                                 <div>
                                     <img class="user-avatar-workspace" [src]="user.avatarPath" alt="Avatar Image">

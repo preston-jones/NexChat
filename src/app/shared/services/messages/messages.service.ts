@@ -120,11 +120,11 @@ export class MessagesService {
         let messagesQuery = query(messagesRef);
         const querySnapshot = await getDocs(messagesQuery);
         this.messages = querySnapshot.docs.map(doc => {
-          let messageData = doc.data() as Message;
-          return { ...messageData, id: doc.id };
-        });       
+            let messageData = doc.data() as Message;
+            return { ...messageData, id: doc.id };
+        });
         return this.messages;
-      }
+    }
 
 
     async loadAnswersForMessage(message: Message) {
@@ -251,18 +251,39 @@ export class MessagesService {
     }
 
 
+    // async loadDirectMessagesAsPromise(): Promise<DirectMessage[]> {
+    //     let directMessagesRef = collection(this.firestore, 'direct_messages');
+    //     let directMessagesQuery = query(directMessagesRef);
+    //     const querySnapshot = await getDocs(directMessagesQuery);        
+
+    //     this.directMessages = querySnapshot.docs.map(doc => {
+    //       let directMessageData = doc.data() as DirectMessage;
+    //       return { ...directMessageData, id: doc.id, timestamp: directMessageData.timestamp || new Date() };
+    //     });
+
+    //     return this.directMessages;
+    //   }
+
+
     async loadDirectMessagesAsPromise(): Promise<DirectMessage[]> {
         let directMessagesRef = collection(this.firestore, 'direct_messages');
         let directMessagesQuery = query(directMessagesRef);
         const querySnapshot = await getDocs(directMessagesQuery);
-        
-        this.directMessages = querySnapshot.docs.map(doc => {
-          let directMessageData = doc.data() as DirectMessage;
-          return { ...directMessageData, id: doc.id, timestamp: directMessageData.timestamp || new Date() };
-        });
-        
+    
+        this.directMessages = querySnapshot.docs
+            .map(doc => {
+                let directMessageData = doc.data() as DirectMessage;
+                return { ...directMessageData, id: doc.id, timestamp: directMessageData.timestamp || new Date() };
+            })
+            .filter(directMessage => 
+                directMessage.receiverId === this.authService.currentUserUid || 
+                directMessage.senderId === this.authService.currentUserUid
+            );
+    
+        console.log('Filtered Direct Messages:', this.directMessages);
+    
         return this.directMessages;
-      }
+    }
 
 
     private async loadSelectedUser(targetUserId: string) {
@@ -399,18 +420,6 @@ export class MessagesService {
     }
 
 
-    // async getMessagesFromCurrentUser() {
-    //     const q = query(collection(this.firestore, 'messages'), where('senderID', '==', this.authService.currentUserUid));
-    //     const querySnapshot = await getDocs(q);
-    //     querySnapshot.forEach(async (doc) => {
-    //         const message = doc.data() as Message;
-    //         if (message.senderID === this.authService.currentUserUid) {
-    //             this.updateSendernameOfMessage(doc.id, this.authService.currentUser()?.name as string);
-    //         }
-    //     });
-    // }
-
-
     updateSendernameOfMessage(messageId: string, senderName: string) {
         const messageRef = doc(this.firestore, 'messages', messageId);
         updateDoc(messageRef, { senderName: senderName });
@@ -456,84 +465,84 @@ export class MessagesService {
     // neuer service?
     async setAllMessagesAsRead(): Promise<void> {
         try {
-          // Referenz zur gesamten Sammlung `direct_messages`
-          const messagesCollectionRef = collection(this.firestore, 'direct_messages');
-    
-          // Abrufen aller Dokumente innerhalb der Sammlung
-          const querySnapshot = await getDocs(messagesCollectionRef);
-    
-          // Durchlaufe jedes Dokument in der Sammlung
-          for (const doc of querySnapshot.docs) {
-            const data = doc.data();
-            const conversations = data['conversation'] || [];
-    
-            // Aktualisiere nur die Konversationen, bei denen `receiverId` der aktuelle Benutzer ist
-            let updatedConversations = conversations.map((conv: any) => {
-                
-              if (conv.receiverId === this.authService.currentUserUid && !conv.readedMessage) {
-                return { ...conv, readedMessage: true };
-              }
-              return conv;
-            });
+            // Referenz zur gesamten Sammlung `direct_messages`
+            const messagesCollectionRef = collection(this.firestore, 'direct_messages');
 
-    
-            // Überschreibe das Dokument mit den aktualisierten Konversationen
-            await updateDoc(doc.ref, { conversation: updatedConversations });
-            this.listenToConversations()
-          }
-    
-          // console.log('Alle Nachrichten wurden als gelesen markiert.');
+            // Abrufen aller Dokumente innerhalb der Sammlung
+            const querySnapshot = await getDocs(messagesCollectionRef);
+
+            // Durchlaufe jedes Dokument in der Sammlung
+            for (const doc of querySnapshot.docs) {
+                const data = doc.data();
+                const conversations = data['conversation'] || [];
+
+                // Aktualisiere nur die Konversationen, bei denen `receiverId` der aktuelle Benutzer ist
+                let updatedConversations = conversations.map((conv: any) => {
+
+                    if (conv.receiverId === this.authService.currentUserUid && !conv.readedMessage) {
+                        return { ...conv, readedMessage: true };
+                    }
+                    return conv;
+                });
+
+
+                // Überschreibe das Dokument mit den aktualisierten Konversationen
+                await updateDoc(doc.ref, { conversation: updatedConversations });
+                this.listenToConversations()
+            }
+
+            // console.log('Alle Nachrichten wurden als gelesen markiert.');
         } catch (error) {
-          console.error('Fehler beim Aktualisieren der Nachrichten:', error);
+            console.error('Fehler beim Aktualisieren der Nachrichten:', error);
         }
-      }
-    
-      async listenToConversations(): Promise<void> {
+    }
+
+    async listenToConversations(): Promise<void> {
         try {
-          // Referenz zur gesamten Sammlung `direct_messages`
-          const messagesCollectionRef = collection(this.firestore, 'direct_messages');
-    
-          // Filtere die Konversationen, bei denen der aktuelle Benutzer der Empfänger ist
-          const q = query(
-            messagesCollectionRef,
-            where('conversation.receiverId', '==', this.authService.currentUserUid) // nur Konversationen des aktuellen Benutzers
-          );
-    
-          // Listener für Echtzeit-Updates
-          onSnapshot(q, (querySnapshot) => {
-            // Mapping der ungelesenen Nachrichten pro Sender
-            const unreadMessagesBySender: { [key: string]: number } = {};
-    
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              const conversations = data['conversation'] || [];
-    
-              // Filtere ungelesene Nachrichten
-              const userConversations = conversations.filter((conv: any) =>
-                conv.receiverId === this.currentUserUid && !conv.readedMessage
-              );
-    
-              // Zähle ungelesene Nachrichten für jeden Sender
-              userConversations.forEach((conv: any) => {
-                if (!unreadMessagesBySender[conv.senderId]) {
-                  unreadMessagesBySender[conv.senderId] = 0;
-                }
-                unreadMessagesBySender[conv.senderId]++;
-              });
+            // Referenz zur gesamten Sammlung `direct_messages`
+            const messagesCollectionRef = collection(this.firestore, 'direct_messages');
+
+            // Filtere die Konversationen, bei denen der aktuelle Benutzer der Empfänger ist
+            const q = query(
+                messagesCollectionRef,
+                where('conversation.receiverId', '==', this.authService.currentUserUid) // nur Konversationen des aktuellen Benutzers
+            );
+
+            // Listener für Echtzeit-Updates
+            onSnapshot(q, (querySnapshot) => {
+                // Mapping der ungelesenen Nachrichten pro Sender
+                const unreadMessagesBySender: { [key: string]: number } = {};
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const conversations = data['conversation'] || [];
+
+                    // Filtere ungelesene Nachrichten
+                    const userConversations = conversations.filter((conv: any) =>
+                        conv.receiverId === this.currentUserUid && !conv.readedMessage
+                    );
+
+                    // Zähle ungelesene Nachrichten für jeden Sender
+                    userConversations.forEach((conv: any) => {
+                        if (!unreadMessagesBySender[conv.senderId]) {
+                            unreadMessagesBySender[conv.senderId] = 0;
+                        }
+                        unreadMessagesBySender[conv.senderId]++;
+                    });
+                });
+
+                // Aktualisiere die Benutzerliste mit der Anzahl ungelesener Nachrichten
+                this.users = this.users.map((user) => {
+                    return {
+                        ...user,
+                        unreadMessagesCount: unreadMessagesBySender[user.id] || 0, // Standardwert: 0
+                    };
+                });
+
+                // console.log('Ungelesene Nachrichten pro Sender:', unreadMessagesBySender);
             });
-    
-            // Aktualisiere die Benutzerliste mit der Anzahl ungelesener Nachrichten
-            this.users = this.users.map((user) => {
-              return {
-                ...user,
-                unreadMessagesCount: unreadMessagesBySender[user.id] || 0, // Standardwert: 0
-              };
-            });
-    
-            // console.log('Ungelesene Nachrichten pro Sender:', unreadMessagesBySender);
-          });
         } catch (error) {
-          console.error('Fehler beim Überwachen der Konversationen:', error);
+            console.error('Fehler beim Überwachen der Konversationen:', error);
         }
-      }
+    }
 }

@@ -50,6 +50,9 @@ export class ChatUtilityService {
     this.showChannelMessage = false;
     this.showChatWindow = false;
     this.adjustDrawerStylesForSmallScreen();
+    
+    this.setMessageId(null);
+    console.log('OOOPPPENNN');
   }
 
   openDirectMessageFromChat(selectedUser: User, index: number) {

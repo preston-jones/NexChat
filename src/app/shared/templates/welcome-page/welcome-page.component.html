@@ -1,62 +1,71 @@
 <main>
-    <h2>Willkommen {{ this.authService.currentUser()?.name }}</h2>
+    <h2>Hallo {{ this.authService.currentUser()?.name }},</h2>
     <p>
-      DABubble ist deine neue Kommunikationsplattform und verbindet dich einfach
-      und intuitiv mit deiner Community.
-      <br />Ob im Team oder privat: Mit Channels und Direktnachrichten bleibst du
-      immer auf dem Laufenden.
-      <br />
-      Wir freuen uns, dich an Bord zu haben!
+        willkommen bei DABubble,<br>
+        DABubble ist deine neue Kommunikationsplattform für einfaches und intuitives Vernetzen mit deiner Community.
+        <br />Ob im Team oder privat – mit Channels und Direktnachrichten bleibst du immer auf dem Laufenden.
     </p>
-  
+
     <article>
-      <h3>Das bietet dir DABubble:</h3>
-      <ul>
-        <li>
-          <strong>Channels erstellen und organisieren:</strong>
-          <br />Erstelle Channels für Teams, Projekte oder Themen und halte alle
-          auf dem neuesten Stand.
-        </li>
-        <li>
-          <strong>Direktnachrichten:</strong>
-          <br />Kommuniziere privat und diskret mit Kollegen oder Freunden.
-        </li>
-        <li>
-          <strong>Emoji-Reaktionen und erweiterte Formatierung:</strong>
-          <br />Reagiere mit Emojis und gestalte deine Nachrichten individuell.
-        </li>
-        <li>
-          <strong>Suchfunktion:</strong>
-          <br />Finde schnell Nachrichten, Channels oder Kontakte.
-        </li>
-        <li>
-          <strong>Anhängen von Dateien:</strong>
-          <br />Teile deine Ideen in Form von Bildern und PDF.
-        </li>
-      </ul>
+        <h3>Das erwartet dich bei DABubble:</h3>
+        <ul>
+            <li class="channel">
+                <strong>Channels erstellen & organisieren</strong>
+                <br />Strukturiere deine Kommunikation mit Channels für Teams, Projekte oder bestimmte Themen und halte alle auf dem neuesten Stand.
+            </li>
+            <li class="message">
+                <strong>Direktnachrichten</strong>
+                <br />Sende private Nachrichten an Kollegen oder Freunde und kommuniziere schnell & sicher.
+            </li>
+            <li class="emoji">
+                <strong>Emoji-Reaktionen</strong>
+                <br />Verleihe deinen Nachrichten eine persönliche Note mit einer großen Auswahl an Emojis.
+            </li>
+            <li class="search">
+                <strong>Smarte Suchfunktion</strong>
+                <br />Finde Nachrichten, Channels oder Kontakte blitzschnell und effizient.
+            </li>
+            <li class="file">
+                <strong>Dateien teilen</strong>
+                <br />Bilder, PDFs oder andere Dateien – tausche Ideen direkt im Chat aus.
+            </li>
+        </ul>
     </article>
-  
+
+    <article *ngIf="this.authService.currentUser()?.id === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02'">
+        <strong>Deine Möglichkeiten als Gast:</strong>
+        <ul>
+            <li class="check">
+                Nachrichten schreiben
+            </li>
+            <li class="check">
+                Deine Nachrichten editieren
+            </li>
+            <li class="check">
+                Mit Emojis auf Nachrichten reagieren
+            </li>
+            <li class="check">
+                Eigene Channels anlegen
+            </li>
+            <li class="check">
+                Avatar in deinem Profil anpassen
+            </li>
+            <li class="not">
+                Bitte beachten: Als Gast kannst du keine Dateien hochladen und kein eigenes Profilfoto hochladen.
+            </li>
+        </ul>
+    </article>
     <article>
-      <h3>Neue und erweiterte Funktionen</h3>
-      <ul>
-        <li>
-          <strong>Benachrichtigungen bei neuen Nachrichten:</strong>
-          <br />Gibt es etwas Neues in einem deiner Chats oder Channels siehst du
-          es sofort im Workspace-Menü.
-        </li>
-        <li>
-          <strong>Erweiterte Emojis:</strong>
-          <br />Wähle aus einer großen Emoji-Bibliothek, um deine Message
-          persönlich und ganz nach deinem Geschmack zu gestalten.
-        </li>
-        <li>
-          <strong>Clevere, leistungsstarke Suche:</strong>
-          <br />
-          Finde Nachrichten, Channels oder Mitglieder schnell und effizient –
-          global oder kontextbasiert, sortiert nach Relevanz.
-        </li>
-      </ul>
+        <p>
+            Nutze die Logout-Funktion oben rechts im Profil-Menü. ☝️
+        </p>
     </article>
-    <strong>Viel Freude beim Erkunden von DABubble!</strong>
+    <article *ngIf="this.authService.currentUser()?.id === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02'">
+        <p>
+            <strong>Wichtig: </strong>Beim Ausloggen wird dein gesamter erstellter Content vollständig gelöscht. Stelle sicher, dass du
+            alles abgeschlossen hast, bevor du dich abmeldest.
+        </p>
+    </article>
+    <strong>Starte jetzt und entdecke DABubble</strong>
     <br />
-  </main>
+</main>

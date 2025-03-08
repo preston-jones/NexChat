@@ -1,8 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, EventEmitter, Output } from '@angular/core';
 import { UserService } from '../../shared/services/firestore/user-service/user.service';
 import { MessagesService } from '../../shared/services/messages/messages.service';
 import { ChatUtilityService } from '../../shared/services/messages/chat-utility.service';
 import { AuthService } from '../../shared/services/authentication/auth-service/auth.service';
+import { User } from '../../shared/models/user.class';
+import { ChannelsService } from '../../shared/services/channels/channels.service';
+import { DirectMessagesService } from '../../shared/services/messages/direct-messages.service';
 
 @Component({
   selector: 'app-user-info-dialog',
@@ -13,10 +16,14 @@ import { AuthService } from '../../shared/services/authentication/auth-service/a
 })
 export class UserInfoDialogComponent {
 
+  @Output() clickUserEvent = new EventEmitter<void>();
+
   userService = inject(UserService);
   messagesService = inject(MessagesService);
   chatUtilityService = inject(ChatUtilityService);
   authService = inject(AuthService);
+  channelsService = inject(ChannelsService);
+  directMessagesService = inject(DirectMessagesService);
 
   readonly GUESTID = 'ZnyRrhtuIBhdU3EYhDw5DueQsi02';
 
@@ -32,15 +39,5 @@ export class UserInfoDialogComponent {
 
   closeUserInfoDialog() {
     this.userService.showUserInfo.set(false);
-  }
-
-
-  message(selectedUserId: string | null | undefined) {
-    this.userService.showUserInfo.set(false);
-    this.messagesService.loadDirectMessages(this.authService.currentUser()?.id as string, selectedUserId as string);
-    this.chatUtilityService.openDirectMessage();
-    console.log('selectedUserId', selectedUserId);
-    console.log('this.userService.currentUserID', this.authService.currentUser()?.id);
-    this.chatUtilityService.setMessageId(null);
   }
 }
