@@ -100,28 +100,36 @@
         </app-user-info-dialog>
     </div>
 
-    <div class="overlay" *ngIf="this.channelsService.showMembersInfo()"
+    <div class="overlay-container" *ngIf="this.channelsService.showMembersInfo()"
         (click)="this.channelsService.closeMembersDialog()">
-        <app-members-dialog class="show-members-dialog" (click)="$event.stopPropagation()">
-        </app-members-dialog>
+        <div class="overlay">
+            <app-members-dialog class="show-members-dialog" (click)="$event.stopPropagation()">
+            </app-members-dialog>
+        </div>
     </div>
 
-    <div class="overlay" *ngIf="this.channelsService.showAddMemberDialog()"
+    <div class="overlay-container" *ngIf="this.channelsService.showAddMemberDialog()"
         (click)="this.channelsService.closeAddMemberDialog()">
-        <app-add-member-dialog class="add-members-dialog" (click)="$event.stopPropagation()">
-        </app-add-member-dialog>
+        <div class="overlay">
+            <app-add-member-dialog class="add-members-dialog" (click)="$event.stopPropagation()">
+            </app-add-member-dialog>
+        </div>
     </div>
 
-    <div class="overlay" *ngIf="this.channelsService.memberAddedInfo"
+    <div class="overlay-container" *ngIf="this.channelsService.memberAddedInfo"
         (click)="this.channelsService.closeMemberAddedInfo()">
-        <app-member-added-info>
-        </app-member-added-info>
+        <div class="overlay">
+            <app-member-added-info>
+            </app-member-added-info>
+        </div>
     </div>
 
-    <div class="overlay" *ngIf="this.channelsService.channelCreatedInfo"
+    <div class="overlay-container" *ngIf="this.channelsService.channelCreatedInfo"
         (click)="this.channelsService.closeChannelCreatedInfo()">
-        <app-channel-created-info>
-        </app-channel-created-info>
+        <div class="overlay">
+            <app-channel-created-info>
+            </app-channel-created-info>
+        </div>
     </div>
 
 </div>

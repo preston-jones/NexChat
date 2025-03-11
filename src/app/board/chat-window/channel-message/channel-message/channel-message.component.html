@@ -18,12 +18,12 @@
                 </div>
                 <div>
                     <span
-                        *ngIf="channelsService.currentChannelMembers && channelsService.currentChannelMembers.length <= 3">
-                        {{ channelsService.currentChannelMembers.length }}
-                    </span>
-                    <span
                         *ngIf="channelsService.currentChannelMembers && channelsService.currentChannelMembers.length >= 4">
                         3+
+                    </span>
+                    <span
+                        *ngIf="channelsService.currentChannelMembers && channelsService.currentChannelMembers.length <= 3">
+                        {{ channelsService.currentChannelMembers.length }}
                     </span>
                 </div>
             </a>
