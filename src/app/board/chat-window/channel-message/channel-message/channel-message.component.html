@@ -11,7 +11,7 @@
             <a class="show-members-button" (click)="this.channelsService.openMembersDialog()">
                 <div class="member-images">
                     <div class="members-list"
-                        *ngFor="let member of channelsService.currentChannelMembers?.slice(0, 3); let i = index"
+                        *ngFor="let member of channelsService.currentChannelMembers.slice(0, 3); let i = index"
                         [ngStyle]="{ 'margin-left': i >= 1 ? '-8px' : '0px' }">
                         <img [src]="member.avatarPath" alt="user-avatar">
                     </div>

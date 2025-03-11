@@ -179,23 +179,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // async openChannel(channel: Channel, i: number) {
-  //   const currentUser = this.currentUser();
-  //   this.isSearching = false; // Suche beenden
-  //   this.searchQuery = ''; // Suche zurücksetzen
-  //   this.channels = []; // Gefilterte Channels zurücksetzen
-  //   this.channelChatMessage = ''; // Chat-Nachricht zurücksetzen
-  //   this.channelsService.currentChannelId = channel.id;
-  //   this.channelsService.channelIsClicked = true;
-  //   this.channelsService.clickChannelContainer(channel, i);
-  //   this.openChannelEvent.emit();
-  //   if (currentUser) {
-  //     this.messageService.loadMessages(currentUser.id, channel.id);
-  //   } else {
-  //     console.error("currentUserUid is null");
-  //   }
-  //   this.loadChannels();
-  // }
 
   selectChannel(channel: Channel) {
     if (channel && channel.id) {
@@ -423,40 +406,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // addEmojiForReact(event: any): void {
-  //   const emoji = event.emoji.native;
-
-  //   if (this.selectedMessage) {
-  //     this.appendEmojiToEditedMessage(this.selectedMessage, emoji);
-  //   } else if (this.selectedMessage) {
-  //     const messageToUpdate = this.findMessageToUpdate(this.selectedMessage);
-
-  //     if (!messageToUpdate) {
-  //       return;
-  //     }
-  //     this.addOrUpdateReaction(messageToUpdate, emoji);
-  //     this.updateMessageReactions(messageToUpdate);
-
-  //   }
-
-  //   this.showEmojiPicker = false;
-  // }
-
-  // private appendEmojiToEditedMessage(message: Message, emoji: string): void {
-  //   const messageToUpdate = this.messages.find((msg) => message.messageId === msg.messageId);
-
-  //   if (messageToUpdate) {
-  //     messageToUpdate.message += emoji;
-  //   }
-  // }
-
-  // private findMessageToUpdate(message: Message): Message | null {
-  //   let messageToUpdate = this.messages.find(msg => message.messageId === msg.messageId) || null;
-  //   if (!messageToUpdate) {
-  //     messageToUpdate = this.selectedMessage || null;
-  //   }
-  //   return messageToUpdate;
-  // }
 
   toggleEmojiPicker() {
     this.messageService.toggleEmojiPicker();
