@@ -277,20 +277,7 @@ export class SendMessageService {
           });
 
           // Füge eine neue Nachricht hinzu, falls es notwendig ist
-          await updateDoc(messageDocRef, {
-            conversation: arrayUnion({
-              conversationId: conversationId,
-              senderName: currentUser().name || 'Unbekannter Sender', // Fallback-Wert
-              message: this.chatMessage || '', // Leere Nachricht, falls keine vorhanden
-              reactions: [],
-              timestamp: new Date(),
-              receiverName: this.selectedUser?.name || 'Unbekannter Empfänger', // Fallback-Wert
-              senderId: currentUser().id || 'Unbekannt', // Fallback-Wert
-              receiverId: this.selectedUser?.id || 'Unbekannt', // Fallback-Wert
-              fileURL: fileURL,
-              readedMessage: false,
-            }),
-          });
+          await this.createNewMessage(messageDocRef);
 
         } else {
           console.error("Dokument nicht gefunden");
@@ -301,6 +288,24 @@ export class SendMessageService {
     } else {
       console.error("Ungültige Nachricht");
     }
+  }
+
+
+  createNewMessage(messageDocRef) {
+    return updateDoc(messageDocRef, {
+      conversation: arrayUnion({
+        conversationId: conversationId,
+        senderName: currentUser().name || 'Unbekannter Sender', // Fallback-Wert
+        message: this.chatMessage || '', // Leere Nachricht, falls keine vorhanden
+        reactions: [],
+        timestamp: new Date(),
+        receiverName: this.selectedUser?.name || 'Unbekannter Empfänger', // Fallback-Wert
+        senderId: currentUser().id || 'Unbekannt', // Fallback-Wert
+        receiverId: this.selectedUser?.id || 'Unbekannt', // Fallback-Wert
+        fileURL: fileURL,
+        readedMessage: false,
+      }),
+    })
   }
 
 
@@ -392,19 +397,6 @@ export class SendMessageService {
       console.log('!!!SENT:', message);
       this.updateSendernameOfThread(doc.id, this.authService.currentUser()?.name as string);
     });
-
-
-    // for (let index = 0; index < message.conversation.length; index++) {
-    //   const element = message.conversation[index];
-    //   if (element.receiverId === this.authService.currentUserUid) {
-    //     console.log('Empfangen: ', element);
-    //     this.updateSendernameOfThread(doc.id, 'receiverName');
-    //   }
-    //   if (element.senderId === this.authService.currentUserUid) {
-    //     console.log('Gesendet: ', element);
-    //     this.updateSendernameOfThread(doc.id, 'senderName');
-    //   }
-    // }
   }
 
 
