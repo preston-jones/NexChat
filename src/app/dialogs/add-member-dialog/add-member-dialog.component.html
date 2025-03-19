@@ -50,7 +50,7 @@
                 <button class="add-people-button"
                 mat-flat-button
                 type="submit"
-                [disabled]="channelForm.invalid">
+                [disabled]="selectedUsers.length === 0">
                 Hinzufügen
             </button>
             </mat-dialog-actions>

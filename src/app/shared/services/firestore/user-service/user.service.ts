@@ -115,18 +115,6 @@ export class UserService {
   }
 
 
-  // async getUserById(userId: string): Promise<User | null> {
-  //   const userRef = this.getUserDocReference(userId);
-  //   const userDoc = await getDoc(userRef);    
-
-  //   if (userDoc.exists()) {
-  //     return new User({ ...userDoc.data(), id: userDoc.id });
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
-
   async getSelectedUserById(userId: string): Promise<User | null> {
     this.selectedUser = new User();
     const userRef = this.getUserDocReference(userId);
@@ -146,15 +134,4 @@ export class UserService {
       return null;
     }
   }
-
-
-  // async getUserInfo(selectedUserId: string | null) {
-  //   const userRef = doc(this.firestore, `users/${selectedUserId}`);
-  //   const user = (await getDoc(userRef)).data() as User;
-  //   this.selectedUser = { ...user, id: user.id };
-  //   console.log('user', this.selectedUser);
-    
-  //   return { ...user, id: user.id };
-  // }
-
 }

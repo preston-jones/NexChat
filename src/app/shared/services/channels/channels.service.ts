@@ -4,8 +4,8 @@ import { Channel } from '../../models/channel.class';
 import { User } from '../../models/user.class';
 import { Observable } from 'rxjs';
 import { AuthService } from '../authentication/auth-service/auth.service';
+import { UserService } from '../firestore/user-service/user.service';
 import { getDocs, updateDoc, where, getDoc } from 'firebase/firestore';
-import { user } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,7 @@ export class ChannelsService implements OnInit {
   currentChannelAuthor: string = '';
   currentChannelId: string = '';
   currentChannelMemberUids: string[] = [];
-  currentChannelMembers: string[] | any;
+  currentChannelMembers: User[] = [];
   showMembersInfo = signal<boolean>(false);
   showAddMemberDialog = signal<boolean>(false);
   memberAddedInfo: boolean = false;
@@ -32,7 +32,7 @@ export class ChannelsService implements OnInit {
   public currentUserChannels: Channel[] = [];
 
 
-  constructor(private firestore: Firestore, private authService: AuthService) {
+  constructor(private firestore: Firestore, private authService: AuthService, private userService: UserService) {
     // Initialize authentication state listener
     this.authService.auth.onAuthStateChanged((user) => {
       if (user) {
@@ -97,17 +97,29 @@ export class ChannelsService implements OnInit {
     this.currentChannelAuthor = channel.channelAuthor;
     this.currentChannelId = channel.id;
     this.currentChannelMemberUids = channel.memberUids;
-    this.currentChannelMembers = channel.members;
+    this.currentChannelMembers = [];
     this.channel = channel;
   }
+
+
+  getChannelUsers(channel: Channel) {
+    channel.memberUids.forEach(async (uid) => {
+      this.userService.getSelectedUserById(uid).then((user) => {
+        if (this.currentChannelMembers && user) {
+          this.currentChannelMembers.push(user);          
+        }
+      });
+    });
+  }
+
 
   clickChannelContainer(channel: Channel, i: number) {
     this.clickedChannels.fill(false);
     this.clickedUsers.fill(false);
     this.clickedChannels[i] = true;
     this.getChannelData(channel);
+    this.getChannelUsers(channel);
     this.currentChannelId = channel.id;
-    console.log('clickedChannels:', this.clickedChannels);
   }
 
   initializeArrays(channelCount: number, userCount: number) {

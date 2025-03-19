@@ -79,3 +79,11 @@ input {
     width: initial !important;
     overflow-y: inherit !important;
 }
+
+dialog {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: -webkit-fill-available;
+    overflow-y: auto;
+}

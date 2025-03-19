@@ -326,7 +326,7 @@ mat-toolbar-row {
 .show-members-dialog {
     position: absolute;
     top: 240px;
-    left: 60%;
+    right: 36px;
     background-color: white;
     border-radius: 30px 0px 30px 30px;
 }
@@ -334,7 +334,7 @@ mat-toolbar-row {
 .add-members-dialog {
     position: absolute;
     top: 240px;
-    left: 50%;
+    right: 36px;
     background-color: white;
     border-radius: 30px 0px 30px 30px;
 }
@@ -489,7 +489,13 @@ mat-toolbar-row {
         left: 50%;
         transform: translate(-50%);
         right: 0;
-
+        min-height: 180px; /* Minimum height */
+        max-height: calc(100vh - 164px); /* Maximum height based on viewport height */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        height: auto; /* Adjust height based on content */
+        overflow-y: auto; /* Allow vertical scrolling if content overflows */
     }
 
     .profil-details,

@@ -24,7 +24,7 @@ export class ProfileEditorDialogComponent {
   avatarPath: string | null | undefined;
   changesSuccessful = signal<boolean>(false);
   openAvatarSelector: boolean = false;
-  avatarSrc: string | null | undefined;
+  selectedAvatar: string | null | undefined;
 
   authService = inject(AuthService);
   userService = inject(UserService);
@@ -42,6 +42,7 @@ export class ProfileEditorDialogComponent {
       this.fullname = this.authService.currentUser()?.name;
       this.mail = this.authService.currentUser()?.email;
       this.avatarPath = this.authService.currentUser()?.avatarPath;
+      this.selectedAvatar = this.avatarPath;
     }
     // console.log(this.mail);
     // console.log(this.fullname);
@@ -125,17 +126,26 @@ export class ProfileEditorDialogComponent {
 
   openAvatarSelection() {
     this.openAvatarSelector = true;
-    console.log('select avatar');
-
   }
 
 
   chooseAvatar(avatar: string) {
-    this.avatarPath = avatar;
-    this.openAvatarSelector = false;
-    console.log('avatar selected', this.avatarPath);
-    
+    this.selectedAvatar = avatar;
+    this.saveAvatar();
   }
+
+
+  closeAvatarSelection() {
+    this.selectedAvatar = this.avatarPath;
+    this.openAvatarSelector = false;
+  }
+
+
+  saveAvatar() {
+    this.avatarPath = this.selectedAvatar;
+    this.openAvatarSelector = false;
+  }
+
 
 
   uploadAvatar($event: Event) {

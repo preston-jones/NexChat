@@ -14,7 +14,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 @Component({
   selector: 'app-select-avatar',
   standalone: true,
-  imports: [MatCardModule, NgFor, MatButtonModule, NgClass, NgStyle, MatIconModule, CreateAccountComponent],
+  imports: [MatCardModule, NgFor, MatButtonModule, NgStyle, MatIconModule],
   templateUrl: './select-avatar.component.html',
   styleUrl: './select-avatar.component.scss',
   encapsulation: ViewEncapsulation.None
