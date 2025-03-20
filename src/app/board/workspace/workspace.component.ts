@@ -233,22 +233,6 @@ export class WorkspaceComponent implements OnInit {
     });    
   }
 
-  // clickUserContainer(user: User, i: number) {
-  //   this.userService.clickedUsers.fill(false);
-  //   this.channelsService.clickedChannels.fill(false);
-  //   this.userService.clickedUsers[i] = true;
-  //   this.messagesService.getUserName(user);
-  //   this.directMessagesService.clickUserEvent.emit();
-  //   if (this.currentUserUid) {
-  //     this.messagesService.loadDirectMessages(this.currentUserUid, user.id);
-  //     this.chatUtilityService.setMessageId(null);
-  //     // this.setAllMessagesAsRead()
-  //     this.messagesService.setAllMessagesAsRead();
-  //   } else {
-  //     console.error("currentUserUid is null");
-  //   }
-  // }
-
 
   toggleNewChatForMobile() {
     this.boardComponent.toggleWorkspace();

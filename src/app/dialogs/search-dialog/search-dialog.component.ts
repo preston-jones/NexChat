@@ -12,6 +12,7 @@ import { Message } from '../../shared/models/message.class';
 import { Firestore, query } from '@angular/fire/firestore';
 import { collection, getDocs, where } from 'firebase/firestore';
 import { filter, find } from 'rxjs';
+import { DirectMessagesService } from '../../shared/services/messages/direct-messages.service';
 
 
 type SearchItem = User | DirectMessage | Channel | Message;
@@ -32,6 +33,7 @@ export class SearchDialogComponent implements OnChanges {
 
   firestore = inject(Firestore);
   chatUtilityService = inject(ChatUtilityService);
+  directMessagesService = inject(DirectMessagesService);
   authService = inject(AuthService);
   channelsService = inject(ChannelsService);
   userService = inject(UserService);
@@ -61,7 +63,7 @@ export class SearchDialogComponent implements OnChanges {
         users.forEach((user: User) => { this.allData.push(user) });
         let messages: Message[] = await this.messagesService.loadMessagesAsPromise();
         messages.forEach((message: Message) => { this.allData.push(message) });
-        let directMessages: DirectMessage[] = await this.messagesService.loadDirectMessagesAsPromise();
+        let directMessages: DirectMessage[] = await this.directMessagesService.loadDirectMessagesAsPromise();
         directMessages.forEach(async (directMessage: DirectMessage) => {
           if (this.authService.currentUserUid === directMessage.receiverId || this.authService.currentUserUid === directMessage.senderId) {
             this.allData.push(directMessage);
@@ -206,9 +208,9 @@ export class SearchDialogComponent implements OnChanges {
     this.clickUserEvent.emit();
 
     if (this.authService.currentUserUid && userId) {
-      this.messagesService.loadDirectMessages(this.authService.currentUserUid, userId);
+      this.directMessagesService.loadDirectMessages(this.authService.currentUserUid, userId);
       this.chatUtilityService.setMessageId(null);
-      this.messagesService.setAllMessagesAsRead();
+      this.directMessagesService.setAllMessagesAsRead();
     }
   }
 }
