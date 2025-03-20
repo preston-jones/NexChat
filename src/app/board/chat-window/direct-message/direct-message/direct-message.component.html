@@ -13,7 +13,7 @@
             Du kannst hier auch Dinge mit dir selbst besprechen.
         </span>
 
-        <div class="message-box" *ngFor="let messages of (messagesService.directMessages); let i = index">
+        <div class="message-box" *ngFor="let messages of (directMessageService.directMessages); let i = index">
             <div class="message-content" *ngFor="let message of messages.conversation; let i = index">
                 <div *ngIf="message.displayDate" class="posted-date-container">
                     <span class="posted-date">{{ message.displayDate }}</span>

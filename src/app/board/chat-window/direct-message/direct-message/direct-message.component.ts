@@ -25,6 +25,7 @@ import { ChatUtilityService } from '../../../../shared/services/messages/chat-ut
 import { v4 as uuidv4 } from 'uuid';
 import { EmojiReaction } from '../../../../shared/models/emoji-reaction.model';
 import { ChannelNavigationService } from '../../../../shared/services/chat/channel-navigation.service';
+import { DirectMessagesService } from '../../../../shared/services/messages/direct-messages.service';
 
 
 
@@ -81,7 +82,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     private userService: UserService, private cd: ChangeDetectorRef,
     public authService: AuthService, private uploadFileService: UploadFileService,
     public channelsService: ChannelsService, public dialog: MatDialog, public messagesService: MessagesService, private chatUtilityService: ChatUtilityService,
-    private channelNavigationService: ChannelNavigationService, public noteService: NoteService) { }
+    private channelNavigationService: ChannelNavigationService, public noteService: NoteService, public directMessageService: DirectMessagesService ) { }
 
   ngOnInit() {
     this.chatUtilityService.messageId$.subscribe(id => {
@@ -89,8 +90,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     });
     this.loadData();
     this.currentUser = this.authService.currentUser();
-    console.log('Lalalala', this.messagesService.directMessages);
-    
   }
 
 
