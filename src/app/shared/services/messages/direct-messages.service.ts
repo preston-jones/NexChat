@@ -17,6 +17,7 @@ export class DirectMessagesService {
   showChannelMessage: boolean = false;
   showChatWindow: boolean = false;
 
+  
   constructor(
     private userService: UserService,
     private messagesService: MessagesService,
@@ -41,14 +42,13 @@ export class DirectMessagesService {
     this.clickUserEvent.emit();
     if (this.authService.currentUserUid) {
 
+
 // !!!! fuehrt zur zwischenladung aller Direjkt Nachrichten, bevor eigentliche Nachrichten geladen werden !!!!
       this.messagesService.loadDirectMessages(this.authService.currentUserUid, user.id);
 
 
       this.chatUtilityService.setMessageId(null);
       this.messagesService.setAllMessagesAsRead();
-    } else {
-      console.error("currentUserUid is null");
     }
   }
 }
