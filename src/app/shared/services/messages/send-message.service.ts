@@ -40,6 +40,7 @@ export class SendMessageService {
     this.loadUsers();
   }
 
+
   async loadUsers() {
     const usersRef = collection(this.firestore, 'users');
     const usersQuery = query(usersRef, orderBy('name'));
@@ -54,6 +55,7 @@ export class SendMessageService {
       });
     });
   }
+
 
   async checkExistingConversation(receiverId: string): Promise<string | null> {
     const currentUser = this.authService.currentUser;
@@ -83,11 +85,10 @@ export class SendMessageService {
     return null; // Keine bestehende Konversation gefunden
   }
 
+
   async sendMessage() {
     if (this.chatMessage.trim() || this.selectedFile) {
       const currentUser = this.authService.currentUser;
-
-
       if (currentUser()) {
         const conversationId = uuidv4();
         if (this.selectedUser?.id) {
@@ -97,16 +98,14 @@ export class SendMessageService {
 
         } else if (this.channelsService.currentChannelId) {
           await this.sendChannelMessage(currentUser);
-        } else {
-          this.showError();
         }
-
         this.clearInputsAndScroll();
       } else {
         console.error('Kein Benutzer angemeldet');
       }
     }
   }
+
 
   async sendDirectMessage(conversationId: string, currentUser: any) {
     const messagesRef = collection(this.firestore, 'direct_messages');
@@ -157,6 +156,7 @@ export class SendMessageService {
     }
   }
 
+
   async sendChannelMessage(currentUser: any) {
     const messagesRef = collection(this.firestore, 'messages');
     const newMessage: Message = new Message({
@@ -187,6 +187,7 @@ export class SendMessageService {
     this.handleChannelMessage();
   }
 
+
   async uploadFile(messageDocRef: any) {
     if (this.selectedFile && this.currentUser()?.id) {
       try {
@@ -199,6 +200,7 @@ export class SendMessageService {
       console.error('No file selected');
     }
   }
+
 
   async uploadFileDirectMessage(messageDocRef: any, conversationId: string, currentUser: any) {
     if (this.selectedFile && this.currentUser()?.id && conversationId) {
@@ -216,8 +218,6 @@ export class SendMessageService {
             fileURL: fileURL,
           }),
         });
-
-        console.log('Datei-Upload erfolgreich:', fileURL);
       } catch (error) {
         console.error('Datei-Upload fehlgeschlagen:', error);
       }
@@ -240,6 +240,7 @@ export class SendMessageService {
     }
   }
 
+
   handleChannelMessage() {
     const channelIndex = this.channelsService.channels.findIndex(channel => channel.id === this.channelsService.currentChannelId);
     if (channelIndex !== -1) {
@@ -248,50 +249,42 @@ export class SendMessageService {
       console.error("Selected channel not found in channels array");
     }
   }
+
+
   async updateConversation(messagesRef: any, conversationId: string, currentUser: any) {
-
     if (this.messageId !== null) {
-      try {
-        const messageDocRef = doc(messagesRef, this.messageId);
-        const docSnapshot = await getDoc(messageDocRef);
+      const messageDocRef = doc(messagesRef, this.messageId);
+      const docSnapshot = await getDoc(messageDocRef);
 
-        if (docSnapshot.exists()) {
-          const docData = docSnapshot.data();
-          const conversationArray = docData['conversation'] || [];
-          let fileURL = '';
+      if (docSnapshot.exists()) {
+        const docData = docSnapshot.data();
+        const conversationArray = docData['conversation'] || [];
+        let fileURL = '';
 
-          if (this.selectedFile) {
-            fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, this.messageId);
-          }
-
-          // Finde die Nachricht mit `conversationId` und aktualisiere die `fileURL`, falls vorhanden
-          const updatedConversation = conversationArray.map((message: any) =>
-            message.conversationId === conversationId
-              ? { ...message, fileURL: fileURL || message.fileURL }
-              : message
-          );
-
-          // Aktualisiere das Dokument mit der modifizierten Conversation
-          await updateDoc(messageDocRef, {
-            conversation: updatedConversation,
-          });
-
-          // Füge eine neue Nachricht hinzu, falls es notwendig ist
-          await this.createNewMessage(messageDocRef);
-
-        } else {
-          console.error("Dokument nicht gefunden");
+        if (this.selectedFile) {
+          fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, this.messageId);
         }
-      } catch (error) {
-        console.error("Fehler beim Aktualisieren der Konversation:", error);
+
+        // Finde die Nachricht mit `conversationId` und aktualisiere die `fileURL`, falls vorhanden
+        const updatedConversation = conversationArray.map((message: any) =>
+          message.conversationId === conversationId
+            ? { ...message, fileURL: fileURL || message.fileURL }
+            : message
+        );
+
+        // Aktualisiere das Dokument mit der modifizierten Conversation
+        await updateDoc(messageDocRef, {
+          conversation: updatedConversation,
+        });
+
+        // Füge eine neue Nachricht hinzu, falls es notwendig ist
+        await this.createNewMessage(messageDocRef, fileURL, currentUser, conversationId);
       }
-    } else {
-      console.error("Ungültige Nachricht");
     }
   }
 
 
-  createNewMessage(messageDocRef) {
+  createNewMessage(messageDocRef: any, fileURL: string, currentUser: any, conversationId: string) {
     return updateDoc(messageDocRef, {
       conversation: arrayUnion({
         conversationId: conversationId,
@@ -316,9 +309,6 @@ export class SendMessageService {
     this.deleteUpload();
   }
 
-  showError() {
-    console.error("Kein Kanal ausgewählt.");
-  }
 
   scrollToBottom(): void {
     if (this.chatWindow) {
@@ -329,6 +319,7 @@ export class SendMessageService {
       }
     }
   }
+
 
   onFileSelected(event: Event) {
     const fileInput = event.target as HTMLInputElement;
@@ -343,7 +334,6 @@ export class SendMessageService {
         const fileData = reader.result as string;
         this.filePreviewUrl = fileData; // Speichere die Vorschau-URL für die Datei
         localStorage.setItem('selectedFile', JSON.stringify({ fileName: file.name, fileData }));
-        // console.log('File saved to localStorage');
       };
       reader.readAsDataURL(file);
     } else {
@@ -351,17 +341,20 @@ export class SendMessageService {
     }
   }
 
+
   deleteUpload() {
     this.selectedFile = null;
     this.filePreviewUrl = null;
     localStorage.removeItem('selectedFile');
   }
 
+
   // Trigger für verstecktes File-Input
   triggerFileInput() {
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
     fileInput.click();
   }
+
 
   isImageFile(fileURL: string | null): boolean {
     if (!fileURL) return false;
@@ -377,6 +370,7 @@ export class SendMessageService {
     const fileExtension = fileName.split('.').pop()?.toLowerCase();
     return imageExtensions.includes(fileExtension || '');
   }
+
 
   getFileNameFromURL(url: string | null): string {
     if (!url) {
@@ -394,7 +388,6 @@ export class SendMessageService {
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach(async (doc) => {
       const message = doc.data() as Message;
-      console.log('!!!SENT:', message);
       this.updateSendernameOfThread(doc.id, this.authService.currentUser()?.name as string);
     });
   }
