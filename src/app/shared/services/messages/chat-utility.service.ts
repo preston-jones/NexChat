@@ -30,12 +30,14 @@ export class ChatUtilityService {
     this.adjustDrawerStylesForSmallScreen();
   }
 
+
   openChannelMessage() {
     this.showChannelMessage = true;
     this.showDirectMessage = false;
     this.showChatWindow = false;
     this.adjustDrawerStylesForSmallScreen();
   }
+
 
   openChannelMessageFromChat(selectedChannel: Channel, index: number) {
     this.showChannelMessage = true;
@@ -45,6 +47,7 @@ export class ChatUtilityService {
     this.adjustDrawerStylesForSmallScreen();
   }
 
+
   openDirectMessage() {
     this.showDirectMessage = true;
     this.showChannelMessage = false;
@@ -52,8 +55,8 @@ export class ChatUtilityService {
     this.adjustDrawerStylesForSmallScreen();
     
     this.setMessageId(null);
-    console.log('OOOPPPENNN');
   }
+
 
   openDirectMessageFromChat(selectedUser: User, index: number) {
     this.showDirectMessage = true;
@@ -62,6 +65,7 @@ export class ChatUtilityService {
     this.openDirectMessageEvent.emit({ selectedUser, index });
     this.adjustDrawerStylesForSmallScreen();
   }
+
 
   openChatWindow() {
     this.showChatWindow = true;
@@ -74,9 +78,11 @@ export class ChatUtilityService {
     this.userService.selectedUser = null;
   }
 
+
   setMessageId(messageId: string | null) {
     this.messageIdSubject.next(messageId);
   }
+
 
   adjustDrawerStylesForSmallScreen(): void {
     if (!this.isSmallScreen) return;
@@ -96,8 +102,6 @@ export class ChatUtilityService {
       groupLogo.style.display = 'flex';
       logoContainer.style.display = 'none';
 
-    } else {
-      console.warn('Element mit der Klasse mat-drawer-container wurde nicht gefunden.');
     }
   }
 }
