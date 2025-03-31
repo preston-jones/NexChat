@@ -143,6 +143,7 @@ export class BoardComponent implements OnInit {
     if (currentUser) {
         await this.channelsService.addCurrentUserToChannel(currentUser as User, 'mH2jwT76WrAhdu9LZC5h');
     }
+    this.directMessagesService.loadDirectMessagesAsPromise();
 }
 
   async loadData() {

@@ -19,6 +19,7 @@ export class DirectMessagesService {
   showChannelMessage: boolean = false;
   showChatWindow: boolean = false;
   directMessages: DirectMessage[] = [];
+  currentConversation: DirectMessage[] = [];
   users: User[] = [];
   currentUserUid = this.authService.currentUser()?.id;
 
@@ -46,16 +47,21 @@ export class DirectMessagesService {
     this.userService.clickedUsers[i] = true;
     this.getUserName(user);
     this.clickUserEvent.emit();
+    console.log('User clicked:', user);
+
     if (this.authService.currentUserUid) {
 
-
-      // !!!! fuehrt zur zwischenladung aller Direjkt Nachrichten, bevor eigentliche Nachrichten geladen werden !!!!
-      this.loadDirectMessages(this.authService.currentUserUid, user.id);
-
+      this.currentConversation = this.directMessages
+      .filter((message: DirectMessage) => {
+        return message.senderId === user.id || message.receiverId === user.id;
+      })
+      .sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
 
       this.chatUtilityService.setMessageId(null);
       this.setAllMessagesAsRead();
     }
+    console.log('Current Conversation:', this.currentConversation);
+    
   }
 
 
@@ -94,6 +100,19 @@ export class DirectMessagesService {
   }
 
 
+  // async loadDirectMessages(currentUserUid: string | undefined, targetUserId: string | null | undefined) {
+
+  //   const messagesRef = collection(this.firestore, 'direct_messages');
+  //   const receivedMessagesQuery = query(messagesRef, where('receiverId', '==', currentUserUid), orderBy('timestamp'));
+  //   const unsubscribeReceived = this.subscribeToReceivedMessages(receivedMessagesQuery, currentUserUid);
+
+  //   // Optional: Rückgabefunktion zum Abmelden von Snapshots
+  //   return () => {
+  //     unsubscribeReceived();
+  //   };
+  // }
+
+
   private createSentMessagesQuery(messagesRef: any, currentUserUid: string | undefined, targetUserId: string | null | undefined) {
     return query(
       messagesRef,
@@ -115,13 +134,13 @@ export class DirectMessagesService {
 
   async loadDirectMessagesAsPromise(): Promise<DirectMessage[]> {
     let directMessagesRef = collection(this.firestore, 'direct_messages');
-    let directMessagesQuery = query(directMessagesRef);
+    let directMessagesQuery = query(directMessagesRef, orderBy('timestamp'));
     const querySnapshot = await getDocs(directMessagesQuery);
 
     this.directMessages = querySnapshot.docs
       .map(doc => {
         let directMessageData = doc.data() as DirectMessage;
-        return { ...directMessageData, id: doc.id, timestamp: directMessageData.timestamp || new Date() };
+        return { ...directMessageData, messageId: doc.id, timestamp: directMessageData.timestamp || new Date() };
       })
       .filter(directMessage =>
         directMessage.receiverId === this.authService.currentUserUid ||
@@ -135,30 +154,11 @@ export class DirectMessagesService {
 
 
   async loadConversations(message: DirectMessage): Promise<void> {
-    const messageDocRef = doc(this.firestore, `direct_messages/${message.messageId}`);
-
-    try {
-      // Hole das Dokument mit der angegebenen messageId
-      const docSnapshot = await getDoc(messageDocRef);
-
-      if (docSnapshot.exists()) {
-        // Extrahiere die Konversationen
-        const data = docSnapshot.data();
-        const conversations = data?.['conversation'] || []; // Default auf leeres Array, falls keine Konversationen vorhanden sind
-
-        // Verarbeite die Konversationen
-        console.log(conversations);
-
-        // Beispiel: Jede Nachricht in der Konversation ausgeben
-        conversations.forEach((conv: any) => {
-          console.log(`Sender: ${conv.senderName}, Nachricht: ${conv.message}`);
-        });
-      } else {
-        console.error('Dokument nicht gefunden!');
-      }
-    } catch (error) {
-      console.error('Fehler beim Laden der Konversationen:', error);
-    }
+    const q = query(collection(this.firestore, 'direct_messages'), where('senderID', '==', this.authService.currentUserUid));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (doc) => {
+      const message = doc.data() as DirectMessage;
+    });
   }
 
 

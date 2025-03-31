@@ -1,9 +1,8 @@
+import { Timestamp } from "firebase/firestore";
 
 export class DirectMessage {
-    timestamp(timestamp: any): string {
-        throw new Error('Method not implemented.');
-    }
-    messageId: string;
+    timestamp: Timestamp;
+    messageId: string | null;
     senderId: string | null;
     senderName: string | null;
     message: string | null;
@@ -37,6 +36,7 @@ export class DirectMessage {
 
 
     constructor(obj?: any, currentUserUid?: string | null) {
+        this.timestamp = obj ? obj.timestamp : null;
         this.messageId = obj ? obj.messageId : null;
         this.senderId = obj ? obj.senderId : null;
         this.senderName = obj ? obj.senderName : null;

@@ -520,14 +520,14 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  saveMessage(message: DirectMessage, conversationId: string) {
+  saveMessage(message: DirectMessage, messageId: string | null) {
     console.log(this.conversationId);
 
     if (message && this.messageId) {
       const messageRef = doc(this.firestore, `direct_messages/${this.messageId}`);
 
       const updatedConversation = (message.conversation || []).map(convo => {
-        if (convo.conversationId === conversationId) {
+        if (convo.conversationId === messageId) {
           return {
             ...convo,
             message: convo.message // Aktualisiere nur das `message`-Feld
