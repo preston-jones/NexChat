@@ -208,7 +208,7 @@ export class SearchDialogComponent implements OnChanges {
     this.clickUserEvent.emit();
 
     if (this.authService.currentUserUid && userId) {
-      this.directMessagesService.loadDirectMessages(this.authService.currentUserUid, userId);
+      this.directMessagesService.loadCurrentConversation(userId);
       this.chatUtilityService.setMessageId(null);
       this.directMessagesService.setAllMessagesAsRead();
     }

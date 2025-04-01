@@ -9,15 +9,13 @@
     <div #chatWindow class="chat-content">
 
         <span *ngIf="selectedUser?.id === this.currentUser?.id" class="message-received-container info-text">
-            Dies ist dein persönlicher Space. Hier kannst du dir Notizen machen, To-Dos auflisten, oder Links und Files griffbereit ablegen.
+            Dies ist dein persönlicher Space. Hier kannst du dir Notizen machen, To-Dos auflisten, oder Links und Files
+            griffbereit ablegen.
             Du kannst hier auch Dinge mit dir selbst besprechen.
         </span>
 
         <div class="message-box">
-            <div class="message-box message-content" *ngFor="let message of directMessageService.directMessages; let i = index">
-                <div *ngIf="message.displayDate" class="posted-date-container">
-                    <span class="posted-date">{{ message.displayDate }}</span>
-                </div>
+            <div class="message-content" *ngFor="let message of directMessageService.currentConversation; let i = index">
                 <div *ngIf="!message.isOwnMessage" class="message-received-container">
                     <img class="sender-avatar" [src]="message.senderAvatar" alt="">
                     <div class="message-container">
@@ -54,7 +52,7 @@
 
                         <div class="show-reactions">
                             <div class="reaction-icon-button" *ngFor="let reaction of message.reactions"
-                                (click)="addOrUpdateReaction(message, reaction.emoji, message.conversationId || '')">
+                                (click)="addOrUpdateReaction(message, reaction.emoji, message.messageId || '')">
 
                                 <!-- Überprüfung, ob reaction.emoji ein Bildpfad ist -->
                                 <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
@@ -66,7 +64,9 @@
 
                                 <!-- Popup zur Anzeige der Namen und der Reaktionsbeschreibung -->
                                 <div class="reaction-name-popup">
-                                    <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+                                    <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+                                        <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+                                    </ng-container>
                                     <h3>
 
                                         {{ formatSenderNames(reaction.senderName, reaction.senderID) }}
@@ -82,28 +82,29 @@
                     </div>
                 </div>
 
+
                 <div *ngIf="message.isOwnMessage" class="message-sender-container">
                     <img class="sender-avatar" [src]="message.senderAvatar" alt="">
 
                     <div class="message-area-container" (mouseleave)="closeEditMessageBox()">
-                        <div *ngIf="!isEditing(message.conversationId || '')" class="message-container">
+                        <div *ngIf="!isEditing(message.messageId || '')" class="message-container">
                             <div class="reaction-container-sender">
                                 <div class="reaction-icon"><img src="./assets/images/reaction/check_mark.png"
                                         alt="Check Mark"
-                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png', message.conversationId || '')">
+                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png', message.messageId || '')">
                                 </div>
                                 <div class="reaction-icon"><img src="./assets/images/reaction/hands_up.png"
                                         alt="Hands Up"
-                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png', message.conversationId || '')">
+                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png', message.messageId || '')">
                                 </div>
-                                <div (click)="showEmojiForReact(message, message.conversationId || '')"
+                                <div (click)="showEmojiForReact(message, message.messageId || '')"
                                     class="reaction-icon">
                                     <mat-icon fontIcon="add_reaction"></mat-icon>
                                 </div>
                                 <div (click)="showMessageEditToggle()" class="reaction-icon edit-message-icon"><mat-icon
                                         fontIcon="more_vert"></mat-icon></div>
-                                <div *ngIf="message.conversationId && showMessageEdit" class="edit-message">
-                                    <span (click)="editMessage(message.conversationId)">Nachricht bearbeiten</span>
+                                <div *ngIf="message.messageId && showMessageEdit" class="edit-message">
+                                    <span (click)="editMessage(message.messageId)">Nachricht bearbeiten</span>
                                 </div>
                             </div>
 
@@ -132,7 +133,7 @@
 
                             <div class="show-reactions">
                                 <div class="reaction-icon-button" *ngFor="let reaction of message.reactions"
-                                    (click)="addOrUpdateReaction(message, reaction.emoji, message.conversationId || '')">
+                                    (click)="addOrUpdateReaction(message, reaction.emoji, message.messageId || '')">
 
                                     <!-- Überprüfung, ob reaction.emoji ein Bildpfad ist -->
                                     <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
@@ -144,8 +145,13 @@
 
                                     <!-- Popup zur Anzeige der Namen und der Reaktionsbeschreibung -->
                                     <div class="reaction-name-popup">
-                                        <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
-                                        <h3>{{ formatSenderNames(reaction.senderName, reaction.senderID) }}</h3>
+                                        <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+                                            <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+                                        </ng-container>
+                                        <h3>
+
+                                            {{ formatSenderNames(reaction.senderName, reaction.senderID) }}
+                                        </h3>
                                         <span>{{ getReactionVerb(reaction.senderName, reaction.senderID) }}</span>
                                     </div>
 
@@ -153,100 +159,80 @@
                                     {{ reaction.count }}
                                 </div>
 
-                                <!-- Icon zum Hinzufügen einer neuen Reaktion -->
-                                <div (click)="showEmojiForReact(message, message.conversationId || '')"
-                                    class="reaction-icon">
-                                    <mat-icon fontIcon="add_reaction"></mat-icon> <!-- Emoji hinzufügen -->
-                                </div>
-                            </div>
-                        </div>
-                        <div *ngIf="isEditing(message.conversationId || '')" class="message-edit-container">
-                            <textarea class="message-input" id="edit-message" type="text"
-                                [(ngModel)]="message.message"></textarea>
-                            <div class="message-edit-buttons">
-                                <div (click)="showEmojiForEdit()" class="message-icon">
-                                    <mat-icon fontIcon="sentiment_satisfied"></mat-icon>
-                                </div>
-                                <div class="message-edit-action">
-                                    <button (click)="closeMessageEdit()">Abbrechen</button>
-                                    <button (click)="saveMessage(message, messageId)"
-                                        class="save-btn">Speichern</button>
-                                </div>
                             </div>
                         </div>
 
                     </div>
                 </div>
+
+            </div>
+        </div>
+        <div class="chat-message-input-container">
+            <textarea class="message-input" id="directChatMessage" [(ngModel)]="directChatMessage"
+                (input)="updateSearchQuery($event)" type="text" placeholder="Schreiben Sie Ihre Nachricht">
+            </textarea>
+
+
+            <!-- Datei-Vorschau -->
+
+
+
+            <div class="message-icon-container">
+                <div class="left-icon-container">
+                    <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
+                    <div class="message-icon" (click)="triggerFileInput()">
+                        <mat-icon fontIcon="add"></mat-icon>
+                    </div>
+                    <div class="separator"></div>
+                    <div (click)="showEmoji()" class="message-icon"><mat-icon fontIcon="sentiment_satisfied"></mat-icon>
+                    </div>
+                    <div (click)="toggleSearch()" class="message-icon"><mat-icon fontIcon="alternate_email"></mat-icon>
+                    </div>
+
+                    <div *ngIf="filePreviewUrl" class="file-preview">
+                        <img *ngIf="selectedFile && selectedFile.type.startsWith('image/')" [src]="filePreviewUrl"
+                            alt="Dateivorschau" />
+                        <a *ngIf="selectedFile && selectedFile.type === 'application/pdf'" [href]="filePreviewUrl"
+                            target="_blank">PDF
+                            anzeigen</a>
+                        <mat-icon class="delete-upload" fontIcon="close" (click)="clearUploadCache()"></mat-icon>
+                    </div>
+
+                </div>
+
+
+                <div class="right-icon-container">
+                    <div (click)="sendMessage()" class="message-icon send"><mat-icon fontIcon="send"></mat-icon>
+                    </div>
+                </div>
+            </div>
+            <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
+                [darkMode]="false" title="Pick your emoji…" emoji="point_up">
+            </emoji-mart>
+            <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPickerEdit" (emojiSelect)="addEmojiForEdit($event)"
+                [darkMode]="false" title="Pick your emoji…" emoji="point_up">
+            </emoji-mart>
+            <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPickerReact" (emojiSelect)="addEmojiForReact($event)"
+                [darkMode]="false" title="Pick your emoji…" emoji="point_up">
+            </emoji-mart>
+        </div>
+
+        <div class="search-block"
+            *ngIf="(isSearching && filteredUsers.length > 0) || (isUserSelect && filteredUsers.length > 0)">
+            <div class="found-block">
+                <div class="found-users" *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+                    <img [src]="user.avatarPath" alt="">{{ user.name }}
+                </div>
             </div>
         </div>
 
-
-    </div>
-    <div class="chat-message-input-container">
-        <textarea class="message-input" id="directChatMessage" [(ngModel)]="directChatMessage"
-            (input)="updateSearchQuery($event)" type="text" placeholder="Schreiben Sie Ihre Nachricht">
-        </textarea>
-
-
-        <!-- Datei-Vorschau -->
-
-
-
-        <div class="message-icon-container">
-            <div class="left-icon-container">
-                <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
-                <div class="message-icon" (click)="triggerFileInput()">
-                    <mat-icon fontIcon="add"></mat-icon>
+        <div class="search-block" *ngIf="isSearching && filteredChannels.length > 0">
+            <div class="found-block">
+                <div class="found-users" *ngFor="let channel of filteredChannels; let i = index"
+                    (click)="selectChannel(channel)">
+                    <span>#</span>{{ channel.name }}
                 </div>
-                <div class="separator"></div>
-                <div (click)="showEmoji()" class="message-icon"><mat-icon fontIcon="sentiment_satisfied"></mat-icon>
-                </div>
-                <div (click)="toggleSearch()" class="message-icon"><mat-icon fontIcon="alternate_email"></mat-icon>
-                </div>
-
-                <div *ngIf="filePreviewUrl" class="file-preview">
-                    <img *ngIf="selectedFile && selectedFile.type.startsWith('image/')" [src]="filePreviewUrl"
-                        alt="Dateivorschau" />
-                    <a *ngIf="selectedFile && selectedFile.type === 'application/pdf'" [href]="filePreviewUrl"
-                        target="_blank">PDF
-                        anzeigen</a>
-                    <mat-icon class="delete-upload" fontIcon="close" (click)="clearUploadCache()"></mat-icon>
-                </div>
-
-            </div>
-
-
-            <div class="right-icon-container">
-                <div (click)="sendMessage()" class="message-icon send"><mat-icon fontIcon="send"></mat-icon></div>
-            </div>
-        </div>
-        <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)" [darkMode]="false"
-            title="Pick your emoji…" emoji="point_up">
-        </emoji-mart>
-        <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPickerEdit" (emojiSelect)="addEmojiForEdit($event)"
-            [darkMode]="false" title="Pick your emoji…" emoji="point_up">
-        </emoji-mart>
-        <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPickerReact" (emojiSelect)="addEmojiForReact($event)"
-            [darkMode]="false" title="Pick your emoji…" emoji="point_up">
-        </emoji-mart>
-    </div>
-
-    <div class="search-block"
-        *ngIf="(isSearching && filteredUsers.length > 0) || (isUserSelect && filteredUsers.length > 0)">
-        <div class="found-block">
-            <div class="found-users" *ngFor="let user of filteredUsers" (click)="selectUser(user)">
-                <img [src]="user.avatarPath" alt="">{{ user.name }}
             </div>
         </div>
     </div>
-
-    <div class="search-block" *ngIf="isSearching && filteredChannels.length > 0">
-        <div class="found-block">
-            <div class="found-users" *ngFor="let channel of filteredChannels; let i = index"
-                (click)="selectChannel(channel)">
-                <span>#</span>{{ channel.name }}
-            </div>
-        </div>
-    </div>
-
 </div>
