@@ -16,6 +16,9 @@
 
         <div class="message-box">
             <div class="message-content" *ngFor="let message of directMessageService.currentConversation; let i = index">
+                <div *ngIf="message.displayDate" class="posted-date-container">
+                    <span class="posted-date">{{ message.displayDate }}</span>
+                </div>
                 <div *ngIf="!message.isOwnMessage" class="message-received-container">
                     <img class="sender-avatar" [src]="message.senderAvatar" alt="">
                     <div class="message-container">

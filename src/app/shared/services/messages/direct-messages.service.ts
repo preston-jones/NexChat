@@ -36,6 +36,11 @@ export class DirectMessagesService {
   ) { }
 
 
+  ngOnInit() {
+    this.loadDirectMessagesAsPromise();
+  }
+
+
   openDirectMessage(selectedUserId: string | null | undefined) {
     let user = this.userService.users.find((user: User) => user.id === selectedUserId);
     let index = this.userService.users.findIndex((user: User) => user.id === selectedUserId);
@@ -61,7 +66,7 @@ export class DirectMessagesService {
         this.loadCurrentConversation(clickedUser.id).then(() => {
           this.currentConversation = this.directMessages.filter(m => m.senderId === clickedUser.id || m.receiverId === clickedUser.id);
           this.chatUtilityService.setMessageId(null);
-          this.setAllMessagesAsRead();
+          // this.setAllMessagesAsRead();
           console.log('Current Conversation:', this.currentConversation);
         });
       }
@@ -91,28 +96,58 @@ export class DirectMessagesService {
   async loadNotes() {
     this.notes = [];
     this.notes.forEach(async note => {
-      await this.setMessageDisplayDate(note);
+      this.setMessageDisplayDate(note);
     });
   }
 
 
-  async loadDirectMessagesAsPromise(): Promise<DirectMessage[]> {
-    let directMessagesRef = collection(this.firestore, 'direct_messages');
-    let directMessagesQuery = query(directMessagesRef, orderBy('timestamp'));
-    const querySnapshot = await getDocs(directMessagesQuery);
+  // async loadDirectMessagesAsPromise(): Promise<DirectMessage[]> {
+  //   let directMessagesRef = collection(this.firestore, 'direct_messages');
+  //   let directMessagesQuery = query(directMessagesRef, orderBy('timestamp'));
+  //   const querySnapshot = await getDocs(directMessagesQuery);
 
-    this.directMessages = querySnapshot.docs
-      .map(doc => {
-        let directMessageData = doc.data() as DirectMessage;
-        return { ...directMessageData, messageId: doc.id, timestamp: directMessageData.timestamp || new Date() };
-      })
-      .filter(directMessage =>
-        directMessage.receiverId === this.authService.currentUserUid || directMessage.senderId === this.authService.currentUserUid
-      );
-    this.orderedDirectMessages(this.directMessages);
-    console.log('onInit || Users Direct Messages:', this.directMessages);
+  //   this.directMessages = querySnapshot.docs
+  //     .map(doc => {
+  //       let directMessageData = doc.data() as DirectMessage;
+  //       return { ...directMessageData, messageId: doc.id, timestamp: directMessageData.timestamp || new Date() };
+  //     })
+  //     .filter(directMessage =>
+  //       directMessage.receiverId === this.authService.currentUserUid || directMessage.senderId === this.authService.currentUserUid
+  //     );
+  //   this.orderedDirectMessages(this.directMessages);
+  //   console.log('onInit || Users Direct Messages:', this.directMessages);
 
-    return this.directMessages;
+  //   return this.directMessages;
+  // }
+
+
+  async loadDirectMessagesAsPromise(): Promise<void> {
+    const directMessagesRef = collection(this.firestore, 'direct_messages');
+    const directMessagesQuery = query(directMessagesRef, orderBy('timestamp'));
+  
+    // Set up a real-time listener with onSnapshot
+    onSnapshot(directMessagesQuery, (querySnapshot) => {
+      this.directMessages = querySnapshot.docs
+        .map(doc => {
+          const directMessageData = doc.data() as DirectMessage;
+          return {
+            ...directMessageData,
+            messageId: doc.id,
+            timestamp: directMessageData.timestamp || new Date(), // Ensure timestamp is set
+          };
+        })
+        .filter(directMessage =>
+          directMessage.receiverId === this.authService.currentUserUid || directMessage.senderId === this.authService.currentUserUid
+        );
+  
+      // Order the messages after fetching
+      this.orderedDirectMessages(this.directMessages);
+  
+      // Log the updated messages
+      console.log('Real-time Direct Messages:', this.directMessages);
+    }, (error) => {
+      console.error('Error listening to direct messages:', error);
+    });
   }
 
 
@@ -158,6 +193,30 @@ export class DirectMessagesService {
   }
 
 
+  private async loadSelectedUser(targetUserId: string) {
+    return await this.userService.getSelectedUserById(targetUserId);
+  }
+
+
+  // listenToCurrentConversation(selectedUserId: string) {
+  //   const messagesRef = collection(this.firestore, 'direct_messages');
+  //   const q = query(
+  //     messagesRef,
+  //     where('senderId', 'in', [this.authService.currentUserUid, selectedUserId]),
+  //     where('receiverId', 'in', [this.authService.currentUserUid, selectedUserId]),
+  //     orderBy('timestamp', 'asc')
+  //   );
+  
+  //   onSnapshot(q, (snapshot) => {
+  //     this.currentConversation = snapshot.docs.map(doc => doc.data() as DirectMessage);
+  //     this.cd.detectChanges(); // Trigger change detection to update the UI
+  //   });
+  // }
+
+
+  /* Noch zu erledigen  !!!
+
+
   async setAllMessagesAsRead(): Promise<void> {
     try {
       // Referenz zur gesamten Sammlung `direct_messages`
@@ -183,7 +242,7 @@ export class DirectMessagesService {
 
         // Überschreibe das Dokument mit den aktualisierten Konversationen
         await updateDoc(doc.ref, { conversation: updatedConversations });
-        this.listenToConversations()
+        // this.listenToConversations();
       }
 
       // console.log('Alle Nachrichten wurden als gelesen markiert.');
@@ -201,7 +260,7 @@ export class DirectMessagesService {
       // Filtere die Konversationen, bei denen der aktuelle Benutzer der Empfänger ist
       const q = query(
         messagesCollectionRef,
-        where('conversation.receiverId', '==', this.authService.currentUserUid) // nur Konversationen des aktuellen Benutzers
+        where('receiverId', '==', this.authService.currentUserUid) // nur Konversationen des aktuellen Benutzers
       );
 
       // Listener für Echtzeit-Updates
@@ -219,11 +278,11 @@ export class DirectMessagesService {
           );
 
           // Zähle ungelesene Nachrichten für jeden Sender
-          userConversations.forEach((conv: any) => {
-            if (!unreadMessagesBySender[conv.senderId]) {
-              unreadMessagesBySender[conv.senderId] = 0;
+          userConversations.forEach((msg: any) => {
+            if (!unreadMessagesBySender[msg.senderId]) {
+              unreadMessagesBySender[msg.senderId] = 0;
             }
-            unreadMessagesBySender[conv.senderId]++;
+            unreadMessagesBySender[msg.senderId]++;
           });
         });
 
@@ -241,9 +300,5 @@ export class DirectMessagesService {
       console.error('Fehler beim Überwachen der Konversationen:', error);
     }
   }
-
-
-  private async loadSelectedUser(targetUserId: string) {
-    return await this.userService.getSelectedUserById(targetUserId);
-  }
+    */
 }
