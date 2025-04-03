@@ -23,16 +23,16 @@
                 (openChannelEvent)="openChannelMessage()" (clickUserEvent)="openDirectMessage()"></app-search-dialog>
         </div>
         <div class="profile-menu-container" (click)="toggleProfileMenu()">
-            <span>{{ currentUser()?.name }}</span>
+            <span>{{ authService.currentUser()?.name }}</span>
             <div class="avatar-container">
-                <img src="{{ currentUser()?.avatarPath }}" alt="Profil Icon"
-                    *ngIf="currentUser()?.loginState === 'loggedIn'">
+                <img src="{{ authService.currentUser()?.avatarPath }}" alt="Profil Icon"
+                    *ngIf="authService.currentUser()?.loginState === 'loggedIn'">
                 <img src="../../assets/images/icons/Online.png" alt="state Icon"
-                    *ngIf="currentUser()?.loginState === 'loggedIn'" class="state-icon">
+                    *ngIf="authService.currentUser()?.loginState === 'loggedIn'" class="state-icon">
                 <img src="../../assets/images/icons/offline.png" alt="state Icon"
-                    *ngIf="currentUser()?.loginState === 'loggedOut'" class="state-icon">
+                    *ngIf="authService.currentUser()?.loginState === 'loggedOut'" class="state-icon">
                 <img src="../../assets/images/icons/inactive.png" alt="state Icon"
-                    *ngIf="currentUser()?.loginState === 'inactive'" class="state-icon">
+                    *ngIf="authService.currentUser()?.loginState === 'inactive'" class="state-icon">
                 <mat-icon>keyboard_arrow_down</mat-icon>
                 <div class="overlay-container" *ngIf="this.userService.showOverlay()" (click)="closeAllDialogs()">
                     <div class="overlay">
@@ -62,11 +62,6 @@
             <mat-card class="chat-window-container" appearance="outlined">
                 <mat-card-content>
                     <ng-container *ngIf="this.directMessagesService.showChatWindow">
-                        <app-chat-window
-                            (openDirectMessageFromChatEvent)="openDirectMessageFromChat($event.selectedUser, $event.index)"
-                            (openChannelMessageFromChatEvent)="openChannelMessageFromChat($event.selectedChannel, $event.index)"
-                            (openChannelMessageEvent)="openChannelMessage()">
-                        </app-chat-window>
                     </ng-container>
                     <ng-container *ngIf="this.directMessagesService.showChannelMessage">
                         <app-channel-message (showThreadEvent)="showThread($event)"></app-channel-message>

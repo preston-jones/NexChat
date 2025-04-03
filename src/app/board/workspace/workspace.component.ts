@@ -8,20 +8,18 @@ import { ChannelsService } from '../../shared/services/channels/channels.service
 import { MatDialog } from '@angular/material/dialog';
 import { CreateNewChannelDialog } from '../../dialogs/create-new-channel-dialog/create-new-channel-dialog.component';
 import { Channel } from '../../shared/models/channel.class';
-import { collection, doc, Firestore, getDocs, onSnapshot, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
-import { Auth, User as FirebaseUser } from '@angular/fire/auth';
 import { User } from '../../shared/models/user.class';
 import { MessagesService } from '../../shared/services/messages/messages.service';
 import { AuthService } from '../../shared/services/authentication/auth-service/auth.service';
 import { ChatUtilityService } from '../../shared/services/messages/chat-utility.service';
 import { Overlay } from '@angular/cdk/overlay';
 import { MatBadgeModule } from '@angular/material/badge';
-import { DirectMessage } from '../../shared/models/direct.message.class';
 import { SearchDialogComponent } from '../../dialogs/search-dialog/search-dialog.component';
 import { FormsModule } from '@angular/forms';
 import { BoardComponent } from '../board.component';
 import { UserService } from '../../shared/services/firestore/user-service/user.service';
 import { DirectMessagesService } from '../../shared/services/messages/direct-messages.service';
+import { initializeApp } from 'firebase/app';
 
 @Component({
   selector: 'app-workspace',
@@ -45,7 +43,6 @@ import { DirectMessagesService } from '../../shared/services/messages/direct-mes
 })
 export class WorkspaceComponent implements OnInit {
   directMessages: any = [];
-  channels: Channel[] = [];
   users: User[] = [];
   clickedChannels: boolean[] = [];
   // clickedUsers: boolean[] = [];
@@ -53,7 +50,6 @@ export class WorkspaceComponent implements OnInit {
   panelOpenState = false;
   arrowRotated: boolean[] = [false, false];
   isUnread: boolean = false;
-  currentUserUid: string | null = null;
   currentUserChannels: Channel[] = [];
   userConversationCount: number = 0;
   unreadMessagesCount: number = 0;
@@ -72,27 +68,15 @@ export class WorkspaceComponent implements OnInit {
     private iconsService: IconsService,
     public channelsService: ChannelsService,
     public authService: AuthService,
-    private firestore: Firestore,
-    private auth: Auth,
     private messagesService: MessagesService,
-    private userService: UserService,
+    public userService: UserService,
     private chatUtilityService: ChatUtilityService,
     private overlay: Overlay,
     private boardComponent: BoardComponent,
     public directMessagesService: DirectMessagesService
-  ) {
-  }
+  ) { }
 
   ngOnInit() {
-    this.authService.auth.onAuthStateChanged((user: FirebaseUser | null) => {
-      if (user) {
-        this.loadData(user); // Pass the user to loadData
-        this.fillArraysWithBoolean();
-      } else {
-        console.log('No user logged in');
-      }
-    });
-
     this.chatUtilityService.openDirectMessageEvent.subscribe(({ selectedUser, index }) => {
       this.directMessagesService.clickUserContainer(selectedUser, index);
     });
@@ -101,102 +85,18 @@ export class WorkspaceComponent implements OnInit {
       this.openChannel(selectedChannel, index);
     });
 
-    this.loadAllConversations();
-
-
-    this.start();
+    this.initializeChannels();
   }
 
 
-  start() {   
+  initializeChannels() {
     this.channelsService.channelIsClicked = true;
-
     this.channelsService.clickedChannels.fill(false);
     this.channelsService.clickedUsers.fill(false);
     this.channelsService.clickedChannels[0] = true;
-    console.log('clickedChannels:', this.channelsService.clickedChannels);
-    
-    // this.channelsService.clickedChannels[0] = true;
-
     this.channelsService.currentChannelName = 'Willkommen';
-    // this.channelsService.currentChannelDescription = '';
-    // this.channelsService.currentChannelAuthor = 'Preston Jones';
-    // this.channelsService.currentChannelId = 'mH2jwT76WrAhdu9LZC5h';
-    // this.channelsService.currentChannelMemberUids = [this.userService.currentUserID?.toString() || ''];
-    // this.channelsService.currentChannelMembers = this.userService.users;
-    // this.channelsService.channel = channel;
-
     this.channelsService.currentChannelId = 'mH2jwT76WrAhdu9LZC5h';
-
     this.openChannelEvent.emit();
-  }
-
-  async loadAllConversations(): Promise<void> {
-    try {
-      // Referenz zur gesamten Sammlung `direct_messages`
-      const messagesCollectionRef = collection(this.firestore, 'direct_messages');
-
-      // Abrufen aller Dokumente innerhalb der Sammlung
-      const querySnapshot = await getDocs(messagesCollectionRef);
-
-      // Initialisiere ein Mapping, um ungelesene Nachrichten pro Sender zu speichern
-      const unreadMessagesBySender: { [key: string]: number } = {};
-
-      // Durchlaufe jedes Dokument in der Sammlung
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const conversations = data['conversation'] || []; // Falls keine Konversationen vorhanden sind, leeres Array verwenden
-
-        // Filtere Konversationen, bei denen der `currentUserUid` der Empfänger ist
-        const userConversations = conversations.filter((conv: any) =>
-          conv.receiverId === this.currentUserUid && !conv.readedMessage
-        );
-
-        // Für jede gefundene ungelesene Nachricht: Zähle die Nachrichten pro Sender
-        userConversations.forEach((conv: any) => {
-          if (!unreadMessagesBySender[conv.senderId]) {
-            unreadMessagesBySender[conv.senderId] = 0;
-          }
-          unreadMessagesBySender[conv.senderId]++;
-        });
-
-        // Speichere alle Nachrichten
-        this.directMessages.push({ messageId: doc.id, ...data } as DirectMessage);
-      });
-
-      // Weise den Benutzern in der Benutzerliste die ungelesenen Nachrichten zu
-      this.users = this.users.map((user) => {
-        return {
-          ...user,
-          unreadMessagesCount: unreadMessagesBySender[user.id] || 0, // Standardwert: 0
-        };
-      });
-
-      // console.log('Ungelesene Nachrichten pro Sender:', unreadMessagesBySender);
-    } catch (error) {
-      console.error('Fehler beim Laden der Konversationen:', error);
-    }
-  }
-
-
-  async loadData(user: FirebaseUser) {
-    this.currentUserUid = user.uid; // Setze die currentUserUid hier
-    await this.loadUsers();
-    await this.channelsService.loadChannels(user.uid);
-  }
-
-
-  async loadUsers() {
-    let usersRef = collection(this.firestore, 'users');
-    let usersQuery = query(usersRef, orderBy('name'));
-
-    onSnapshot(usersQuery, async (snapshot) => {
-      this.users = await Promise.all(snapshot.docs.map(async (doc) => {
-        let userData = doc.data() as User;
-        return { ...userData, id: doc.id };
-      }));
-      // this.loadCurrentUser(currentUserId);
-    });
   }
 
 
@@ -212,12 +112,12 @@ export class WorkspaceComponent implements OnInit {
   // method to change background color for channel or user container
   openChannel(channel: Channel, i: number) {
     console.log('Channel clicked:', channel);
-    
+
     this.channelsService.channelIsClicked = true;
     this.channelsService.clickChannelContainer(channel, i);
     this.openChannelEvent.emit();
-    if (this.currentUserUid) {
-      this.messagesService.loadMessages(this.currentUserUid, channel.id);
+    if (this.authService.currentUserUid) {
+      this.messagesService.loadMessages(this.authService.currentUserUid, channel.id);
     } else {
       console.error("currentUserUid is null");
     }
@@ -230,7 +130,7 @@ export class WorkspaceComponent implements OnInit {
       disableClose: false,
       hasBackdrop: true,
       scrollStrategy: this.overlay.scrollStrategies.noop()
-    });    
+    });
   }
 
 

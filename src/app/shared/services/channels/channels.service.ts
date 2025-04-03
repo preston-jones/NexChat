@@ -74,7 +74,7 @@ export class ChannelsService implements OnInit {
       } else {
         this.currentUserChannels = [];
       }
-    });
+    });   
   }
 
 

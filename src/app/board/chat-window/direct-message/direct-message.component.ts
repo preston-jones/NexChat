@@ -11,21 +11,21 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { addDoc, arrayUnion, collection, doc, Firestore, getDoc, onSnapshot, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { MatDialog } from '@angular/material/dialog';
-import { ChannelsService } from '../../../../shared/services/channels/channels.service';
-import { MessagesService } from '../../../../shared/services/messages/messages.service';
-import { UploadFileService } from '../../../../shared/services/firestore/storage-service/upload-file.service';
-import { NoteService } from '../../../../shared/services/notes/notes.service';
-import { AuthService } from '../../../../shared/services/authentication/auth-service/auth.service';
-import { UserService } from '../../../../shared/services/firestore/user-service/user.service';
-import { User } from '../../../../shared/models/user.class';
-import { Channel } from '../../../../shared/models/channel.class';
-import { Message } from '../../../../shared/models/message.class';
-import { DirectMessage } from '../../../../shared/models/direct.message.class';
-import { ChatUtilityService } from '../../../../shared/services/messages/chat-utility.service';
+import { ChannelsService } from '../../../shared/services/channels/channels.service';
+import { MessagesService } from '../../../shared/services/messages/messages.service';
+import { UploadFileService } from '../../../shared/services/firestore/storage-service/upload-file.service';
+import { NoteService } from '../../../shared/services/notes/notes.service';
+import { AuthService } from '../../../shared/services/authentication/auth-service/auth.service';
+import { UserService } from '../../../shared/services/firestore/user-service/user.service';
+import { User } from '../../../shared/models/user.class';
+import { Channel } from '../../../shared/models/channel.class';
+import { Message } from '../../../shared/models/message.class';
+import { DirectMessage } from '../../../shared/models/direct.message.class';
+import { ChatUtilityService } from '../../../shared/services/messages/chat-utility.service';
 import { v4 as uuidv4 } from 'uuid';
-import { EmojiReaction } from '../../../../shared/models/emoji-reaction.model';
-import { ChannelNavigationService } from '../../../../shared/services/chat/channel-navigation.service';
-import { DirectMessagesService } from '../../../../shared/services/messages/direct-messages.service';
+import { EmojiReaction } from '../../../shared/models/emoji-reaction.model';
+import { ChannelNavigationService } from '../../../shared/services/chat/channel-navigation.service';
+import { DirectMessagesService } from '../../../shared/services/messages/direct-messages.service';
 
 
 
@@ -317,14 +317,14 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  addOrUpdateReaction(message: DirectMessage, emoji: string, conversationId: string): void {
+  addOrUpdateReaction(message: DirectMessage, emoji: string, messageId: string): void {
     const currentUser = this.currentUser;
     if (!currentUser) {
       console.warn('Kein Benutzer gefunden!');
       return;
     }
 
-    this.conversationId = conversationId;
+    this.conversationId = messageId;
     this.selectedMessage = message;
     const conversation = this.selectedMessage
     const senderID = currentUser.id ?? '';
@@ -385,44 +385,44 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   async updateMessageReactions(message: DirectMessage): Promise<void> {
     const messageDocRef = doc(this.firestore, `direct_messages/${this.messageId}`);
 
-    // Hole das aktuelle conversation-Array aus Firestore
-    const messageSnapshot = await getDoc(messageDocRef);
-    if (!messageSnapshot.exists()) {
-      console.error('Nachricht existiert nicht in Firestore.');
-      return;
-    }
+    // // Hole das aktuelle conversation-Array aus Firestore
+    // const messageSnapshot = await getDoc(messageDocRef);
+    // if (!messageSnapshot.exists()) {
+    //   console.error('Nachricht existiert nicht in Firestore.');
+    //   return;
+    // }
 
-    const data = messageSnapshot.data() as DirectMessage;
-    const currentConversations = data.conversation || [];
+    // const data = messageSnapshot.data() as DirectMessage;
+    // const currentConversations = data.conversation || [];
 
-    // Finde die Konversation mit der gegebenen conversationId
-    const conversationIndex = currentConversations.findIndex(conv => conv.conversationId === this.conversationId);
+    // // Finde die Konversation mit der gegebenen conversationId
+    // const conversationIndex = currentConversations.findIndex(conv => conv.conversationId === this.conversationId);
 
-    if (conversationIndex === -1) {
-      console.error(`Konversation mit der ID ${this.conversationId} nicht gefunden.`);
-      return;
-    }
+    // if (conversationIndex === -1) {
+    //   console.error(`Konversation mit der ID ${this.conversationId} nicht gefunden.`);
+    //   return;
+    // }
 
-    // Überprüfe, ob selectedMessage und selectedMessage.reactions existieren
-    if (!this.selectedMessage || !Array.isArray(this.selectedMessage.reactions)) {
-      console.warn('selectedMessage oder selectedMessage.reactions ist null oder undefined');
-      return;
-    }
+    // // Überprüfe, ob selectedMessage und selectedMessage.reactions existieren
+    // if (!this.selectedMessage || !Array.isArray(this.selectedMessage.reactions)) {
+    //   console.warn('selectedMessage oder selectedMessage.reactions ist null oder undefined');
+    //   return;
+    // }
 
-    // Update nur das reactions-Array in der gefundenen Konversation
-    const updatedConversation = [...currentConversations];
-    updatedConversation[conversationIndex] = {
-      ...updatedConversation[conversationIndex],
-      reactions: this.selectedMessage.reactions // Setze das reactions-Array von selectedMessage
-    };
+    // // Update nur das reactions-Array in der gefundenen Konversation
+    // const updatedConversation = [...currentConversations];
+    // updatedConversation[conversationIndex] = {
+    //   ...updatedConversation[conversationIndex],
+    //   reactions: this.selectedMessage.reactions // Setze das reactions-Array von selectedMessage
+    // };
 
-    try {
-      // Setze das aktualisierte conversation-Array in Firestore
-      await updateDoc(messageDocRef, { conversation: updatedConversation });
-      console.log('Reaktionen erfolgreich aktualisiert');
-    } catch (error) {
-      console.error('Fehler beim Aktualisieren der Reaktionen:', error);
-    }
+    // try {
+    //   // Setze das aktualisierte conversation-Array in Firestore
+    //   await updateDoc(messageDocRef, { conversation: updatedConversation });
+    //   console.log('Reaktionen erfolgreich aktualisiert');
+    // } catch (error) {
+    //   console.error('Fehler beim Aktualisieren der Reaktionen:', error);
+    // }
   }
 
 
@@ -432,7 +432,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     // Überprüfe, ob selectedMessage nicht null ist
     if (this.selectedMessage !== null) {
       // Überprüfe, ob selectedMessage die KonversationId enthält
-      if (this.selectedMessage.conversationId) {
+      if (this.selectedMessage.messageId) {
         // Konversation gefunden, füge oder aktualisiere die Reaktion
         this.addOrUpdateReaction(this.selectedMessage, emoji, this.conversationId);
         this.showEmojiPickerReact = false;
@@ -527,24 +527,24 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     if (message && this.messageId) {
       const messageRef = doc(this.firestore, `direct_messages/${this.messageId}`);
 
-      const updatedConversation = (message.conversation || []).map(convo => {
-        if (convo.conversationId === messageId) {
-          return {
-            ...convo,
-            message: convo.message // Aktualisiere nur das `message`-Feld
-          };
-        }
-        return convo;
-      });
+      // const updatedConversation = (message.conversation || []).map(convo => {
+      //   if (convo.messageId === messageId) {
+      //     return {
+      //       ...convo,
+      //       message: convo.message // Aktualisiere nur das `message`-Feld
+      //     };
+      //   }
+      //   return convo;
+      // });
 
-      updateDoc(messageRef, { conversation: updatedConversation })
-        .then(() => {
-          this.closeMessageEdit();
-          console.log("Nachricht erfolgreich aktualisiert.");
-        })
-        .catch(error => {
-          console.error("Fehler beim Speichern der Nachricht:", error);
-        });
+      // updateDoc(messageRef, { conversation: updatedConversation })
+      //   .then(() => {
+      //     this.closeMessageEdit();
+      //     console.log("Nachricht erfolgreich aktualisiert.");
+      //   })
+      //   .catch(error => {
+      //     console.error("Fehler beim Speichern der Nachricht:", error);
+      //   });
     } else {
       console.error("Ungültige Nachricht oder Conversation-ID.");
     }

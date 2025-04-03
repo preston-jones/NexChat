@@ -27,6 +27,7 @@ export class UserService {
   selectedUserId: string = '';
 
   constructor(private firestore: Firestore) {
+    this.loadUsers(); // Pass the user ID to loadChannels
   }
 
 
@@ -54,7 +55,7 @@ export class UserService {
     });
     return this.users;
   }
-  
+
 
   getUserSignal() {
     return this.userSignal;
@@ -122,7 +123,7 @@ export class UserService {
 
     if (userDoc.exists()) {
       const userData = userDoc.data() as User; // Access document data
-  
+
       this.selectedUser = new User({
         ...userData,
         id: userDoc.id,

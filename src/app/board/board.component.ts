@@ -1,5 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, HostListener, OnInit, ViewChild, ViewEncapsulation, WritableSignal, inject } from '@angular/core';
-import { ChatWindowComponent } from "./chat-window/chat-window.component";
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { WorkspaceComponent } from "./workspace/workspace.component";
 import { ThreadComponent } from './thread/thread.component';
 import { CommonModule, NgIf } from '@angular/common';
@@ -15,13 +14,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../shared/services/authentication/auth-service/auth.service';
 import { UserService } from '../shared/services/firestore/user-service/user.service';
 import { IconsService } from '../shared/services/icons/icons.service';
-import { collection, Firestore, onSnapshot, orderBy, query } from '@angular/fire/firestore';
 import { Message } from '../shared/models/message.class';
 import { Auth } from '@angular/fire/auth';
 import { ProfileEditorDialogComponent } from "../dialogs/profile-editor-dialog/profile-editor-dialog.component";
-import { DirectMessageComponent } from './chat-window/direct-message/direct-message/direct-message.component';
+import { DirectMessageComponent } from './chat-window/direct-message/direct-message.component';
 import { MessagesService } from '../shared/services/messages/messages.service';
-import { ChannelMessageComponent } from './chat-window/channel-message/channel-message/channel-message.component';
+import { ChannelMessageComponent } from './chat-window/channel-message/channel-message.component';
 import { User } from '../shared/models/user.class';
 import { Channel } from '../shared/models/channel.class';
 import { ChatUtilityService } from '../shared/services/messages/chat-utility.service';
@@ -39,14 +37,12 @@ import { DirectMessagesService } from '../shared/services/messages/direct-messag
   selector: 'app-board',
   standalone: true,
   imports: [
-    ChatWindowComponent,
     WorkspaceComponent,
     MatButtonModule,
     MatSidenavModule,
     ThreadComponent,
     MatCardModule,
     MatIconModule,
-    ChatWindowComponent,
     WorkspaceComponent,
     ThreadComponent,
     CommonModule,
@@ -79,13 +75,11 @@ export class BoardComponent implements OnInit {
   channels: Channel[] = [];
   searchInput: string = '';
   showThreadComponent: boolean = false;
-  currentUser = this.authService.getUserSignal();
   workspaceOpen = true;
   messages: Message[] = [];
   selectedUser: User | null = null;
   directMessageUser: User | null = null;
   selectedChannel: Channel | null = null;
-  currentUserUid: string | null | undefined = null;
   selectedMessage: Message | null = null;
   isSmallScreen: boolean = window.innerWidth < 1080;
   showChatWindow: boolean = false;
@@ -98,9 +92,6 @@ export class BoardComponent implements OnInit {
 
 
   constructor(
-    private iconsService: IconsService,
-    private firestore: Firestore,
-    private auth: Auth,
     public authService: AuthService,
     public userService: UserService,
     public messageService: MessagesService,
@@ -108,9 +99,7 @@ export class BoardComponent implements OnInit {
     public cd: ChangeDetectorRef,
     public channelsService: ChannelsService,
     public directMessagesService: DirectMessagesService
-  ) {
-    this.currentUser = this.authService.getUserSignal();
-  }
+  ) { }
 
 
   @HostListener('window:resize', ['$event'])
@@ -126,70 +115,23 @@ export class BoardComponent implements OnInit {
 
 
   changeLogoInHeader(): void {
+    if (!this.isSmallScreen) return;
+    const groupLogo = document.querySelector('hide-input-mobile') as HTMLElement;
+    const devLogo = document.querySelector('.logo-container') as HTMLElement;
 
-    // if (!this.isSmallScreen) return;
-    // const groupLogo = document.querySelector('hide-input-mobile') as HTMLElement;
-    // const devLogo = document.querySelector('.logo-container') as HTMLElement;
-
-    // groupLogo.style.display = 'flex';
-    // devLogo.style.display = 'none';
-
+    groupLogo.style.display = 'flex';
+    devLogo.style.display = 'none';
   }
+
 
   async ngOnInit() {
-    await this.loadData();
-    this.channelsService.updateUserChannels(this.authService.currentUserUid, 'Wilkommen');
-    const currentUser = this.userService.currentUser();
-    if (currentUser) {
-      await this.channelsService.addCurrentUserToChannel(currentUser as User, 'mH2jwT76WrAhdu9LZC5h');
-    }
-    this.directMessagesService.loadDirectMessagesAsPromise();
+    // this.channelsService.updateUserChannels(this.authService.currentUserUid, 'Wilkommen');
+    // const currentUser = this.userService.currentUser();
+    // if (currentUser) {
+    //   await this.channelsService.addCurrentUserToChannel(currentUser as User, 'mH2jwT76WrAhdu9LZC5h');
+    // }
   }
 
-
-  async loadData() {
-    this.auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        await this.loadUsers(); // Warten auf das Laden der Benutzer
-        // console.log('Users array in ngOnInit:', this.users); // Hier wird das Array korrekt angezeigt
-        await this.loadChannels();
-        // console.log('Channels array in ngOnInit:', this.channels);
-      } else {
-        console.log('Kein Benutzer angemeldet');
-      }
-    });
-  }
-
-  async loadUsers() {
-    const usersRef = collection(this.firestore, 'users');
-    const usersQuery = query(usersRef, orderBy('name'));
-
-    return new Promise((resolve) => {
-      onSnapshot(usersQuery, async (snapshot) => {
-        this.users = await Promise.all(snapshot.docs.map(async (doc) => {
-          const userData = doc.data() as User;
-          return { ...userData, id: doc.id };
-        }));
-        resolve(this.users); // Promise auflösen
-      });
-    });
-  }
-
-
-  async loadChannels() {
-    const channelRef = collection(this.firestore, 'channels');
-    const channelQuery = query(channelRef, orderBy('name'));
-
-    return new Promise((resolve) => {
-      onSnapshot(channelQuery, async (snapshot) => {
-        this.channels = await Promise.all(snapshot.docs.map(async (doc) => {
-          const channelData = doc.data() as Channel;// Prüfen, ob Kanäle geladen werden
-          return { ...channelData, id: doc.id };
-        }));
-        resolve(this.channels); // Promise auflösen
-      });
-    });
-  }
 
   closeThread() {
     this.showThreadComponent = false;

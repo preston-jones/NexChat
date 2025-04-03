@@ -25,12 +25,12 @@
                         <div class="reaction-container-received">
                             <div class="reaction-icon"><img src="./assets/images/reaction/check_mark.png"
                                     alt="Check Mark"
-                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png', message.conversationId || '')">
+                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png', message.messageId || '')">
                             </div>
                             <div class="reaction-icon"><img src="./assets/images/reaction/hands_up.png" alt="Hands Up"
-                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png', message.conversationId || '')">
+                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png', message.messageId || '')">
                             </div>
-                            <div (click)="showEmojiForReact(message, message.conversationId || '')"
+                            <div (click)="showEmojiForReact(message, message.messageId || '')"
                                 class="reaction-icon">
                                 <mat-icon fontIcon="add_reaction"></mat-icon>
                             </div>

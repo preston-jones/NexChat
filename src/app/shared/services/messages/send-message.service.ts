@@ -305,7 +305,7 @@ export class SendMessageService {
   clearInputsAndScroll() {
     this.chatMessage = '';
     this.selectedFile = null;
-    this.scrollToBottom();
+    // this.scrollToBottom();
     this.deleteUpload();
   }
 

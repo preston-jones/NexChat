@@ -73,7 +73,7 @@
                             </a>
                         </mat-expansion-panel-header>
                         <div class="chat-container-open">
-                            <div *ngFor="let user of users; let i = index" (click)="directMessagesService.clickUserContainer(user, i)"
+                            <div *ngFor="let user of userService.users; let i = index" (click)="directMessagesService.clickUserContainer(user, i)"
                                 [ngClass]="channelsService.clickedUsers[i] ? 'clicked' : ''">
                                 <div>
                                     <img class="user-avatar-workspace" [src]="user.avatarPath" alt="Avatar Image">
@@ -85,8 +85,8 @@
                                     <div *ngIf="user.unreadMessagesCount > 0" class="badge"
                                         matBadge="{{ user.unreadMessagesCount }}"></div>
                                 </div>
-                                    <span *ngIf="user.id === this.currentUserUid">{{ user.name + ' (Du)' }}</span>
-                                    <span *ngIf="user.id != this.currentUserUid">{{ user.name }}</span>
+                                    <span *ngIf="user.id === this.authService.currentUserUid">{{ user.name + ' (Du)' }}</span>
+                                    <span *ngIf="user.id != this.authService.currentUserUid">{{ user.name }}</span>
                             </div>
                         </div>
 

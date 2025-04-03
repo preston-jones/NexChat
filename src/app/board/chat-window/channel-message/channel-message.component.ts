@@ -11,21 +11,21 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { addDoc, collection, doc, Firestore, onSnapshot, orderBy, query, updateDoc } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { MatDialog } from '@angular/material/dialog';
-import { User } from '../../../../shared/models/user.class';
-import { Channel } from '../../../../shared/models/channel.class';
-import { UserService } from '../../../../shared/services/firestore/user-service/user.service';
-import { AuthService } from '../../../../shared/services/authentication/auth-service/auth.service';
-import { UploadFileService } from '../../../../shared/services/firestore/storage-service/upload-file.service';
-import { ChannelsService } from '../../../../shared/services/channels/channels.service';
-import { MessagesService } from '../../../../shared/services/messages/messages.service';
-import { AddMemberDialogComponent } from '../../../../dialogs/add-member-dialog/add-member-dialog.component';
-import { ChannelDescriptionDialogComponent } from '../../../../dialogs/channel-description-dialog/channel-description-dialog.component';
-import { Message } from '../../../../shared/models/message.class';
-import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
-import { MembersDialogComponent } from '../../../../dialogs/members-dialog/members-dialog.component';
-import { ChannelNavigationService } from '../../../../shared/services/chat/channel-navigation.service';
-import { ChatUtilityService } from '../../../../shared/services/messages/chat-utility.service';
-import { WelcomePageComponent } from '../../../../shared/templates/welcome-page/welcome-page.component';
+import { User } from '../../../shared/models/user.class';
+import { Channel } from '../../../shared/models/channel.class';
+import { UserService } from '../../../shared/services/firestore/user-service/user.service';
+import { AuthService } from '../../../shared/services/authentication/auth-service/auth.service';
+import { UploadFileService } from '../../../shared/services/firestore/storage-service/upload-file.service';
+import { ChannelsService } from '../../../shared/services/channels/channels.service';
+import { MessagesService } from '../../../shared/services/messages/messages.service';
+import { AddMemberDialogComponent } from '../../../dialogs/add-member-dialog/add-member-dialog.component';
+import { ChannelDescriptionDialogComponent } from '../../../dialogs/channel-description-dialog/channel-description-dialog.component';
+import { Message } from '../../../shared/models/message.class';
+import { SafeUrlPipe } from '../../../shared/pipes/safe-url.pipe';
+import { MembersDialogComponent } from '../../../dialogs/members-dialog/members-dialog.component';
+import { ChannelNavigationService } from '../../../shared/services/chat/channel-navigation.service';
+import { ChatUtilityService } from '../../../shared/services/messages/chat-utility.service';
+import { WelcomePageComponent } from '../../../shared/templates/welcome-page/welcome-page.component';
 
 
 

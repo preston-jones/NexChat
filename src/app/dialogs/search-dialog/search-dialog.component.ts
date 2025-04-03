@@ -146,9 +146,11 @@ export class SearchDialogComponent implements OnChanges {
         return ad.name.toLowerCase().includes(this.searchValue.toLowerCase());
       } else if (this.isChatMessage(ad)) {
         return ad.message?.toLowerCase().includes(this.searchValue.toLowerCase());
-      } else if (this.isDirectMessage(ad)) {
-        return ad.conversation?.some(conversation => conversation.message?.toLowerCase().includes(this.searchValue.toLowerCase())) ?? false;
-      } else {
+      } 
+      // else if (this.isDirectMessage(ad)) {
+      //   return ad.conversation?.some(conversation => conversation.message?.toLowerCase().includes(this.searchValue.toLowerCase())) ?? false;
+      // } 
+      else {
         return false;
       }
     });
@@ -156,12 +158,13 @@ export class SearchDialogComponent implements OnChanges {
 
 
   filterConversationMessage(directMessage: DirectMessage): boolean {
-    if (!directMessage.conversation) {
-      return false;
-    }
-    return directMessage.conversation.some(conversation =>
-      conversation.message?.toLowerCase().includes(this.searchValue.toLowerCase())
-    );
+    // if (!directMessage) {
+    //   return false;
+    // }
+    // return directMessage.conversation.some(conversation =>
+    //   conversation.message?.toLowerCase().includes(this.searchValue.toLowerCase())
+    // );
+    return false;
   }
 
 
@@ -173,9 +176,9 @@ export class SearchDialogComponent implements OnChanges {
     return (item as Channel).name !== undefined;
   }
 
-  isDirectMessage(item: SearchItem): item is DirectMessage {
-    return (item as DirectMessage).conversation !== undefined;
-  }
+  // isDirectMessage(item: SearchItem): item is DirectMessage {
+  //   return (item as DirectMessage).conversation !== undefined;
+  // }
 
   isChatMessage(item: SearchItem): item is Message {
     return (item as Message).senderName !== undefined;

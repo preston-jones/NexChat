@@ -18,7 +18,7 @@ export class DirectMessagesService {
   workspaceOpen: boolean = false;
   showDirectMessage: boolean = true;
   showChannelMessage: boolean = false;
-  showChatWindow: boolean = false;
+  showChatWindow: boolean = true;
   directMessages: DirectMessage[] = [];
   currentConversation: DirectMessage[] = [];
   notes: Note[] = [];
@@ -33,7 +33,9 @@ export class DirectMessagesService {
     private chatUtilityService: ChatUtilityService,
     private authService: AuthService,
     private channelsService: ChannelsService,
-  ) { }
+  ) {
+    this.loadDirectMessages();
+  }
 
 
   openDirectMessage(selectedUserId: string | null | undefined) {
