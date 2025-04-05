@@ -198,20 +198,20 @@ export class SearchDialogComponent implements OnChanges {
   }
 
 
- async openDirectMessage(userId: string) {
+ async openDirectMessage(user: User) {
 
     this.userService.clickedUsers.fill(false);
 
     // find the index of the clicked user
-    let index = this.userService.users.findIndex((user: User) => user.id === userId);
+    let index = this.userService.users.findIndex((user: User) => user.id === user.id);
     this.userService.clickedUsers[index] = true;
 
     this.closeSearchDialog();
-    this.chatUtilityService.directMessageUser = await this.userService.getSelectedUserById(userId);
+    this.chatUtilityService.directMessageUser = await this.userService.getSelectedUserById(user.id);
     this.clickUserEvent.emit();
 
-    if (this.authService.currentUserUid && userId) {
-      this.directMessagesService.loadCurrentConversation(userId);
+    if (this.authService.currentUserUid && user.id) {
+      this.directMessagesService.loadCurrentConversation(user);
       this.chatUtilityService.setMessageId(null);
       // this.directMessagesService.setAllMessagesAsRead();
     }

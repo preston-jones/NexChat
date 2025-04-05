@@ -52,7 +52,8 @@ export class DirectMessagesService {
     this.userService.selectedUser = clickedUser;
     this.userService.selectedUserId = clickedUser.id;
     console.log('Selected User:', this.selectedUser);
-    
+    console.log('SERVICE User:', this.userService.selectedUser);
+
     this.userService.clickedUsers.fill(false);
     this.channelsService.clickedChannels.fill(false);
     this.userService.clickedUsers[i] = true;
@@ -60,20 +61,20 @@ export class DirectMessagesService {
     this.clickUserEvent.emit();
     console.log('User clicked:', clickedUser);
     console.log(this.userService.selectedUser);
-    
+
     if (this.authService.currentUserUid) {
       if (clickedUser.id === this.authService.currentUserUid) {
         this.loadNotes();
         console.log('Load Notes.');
       }
       else {
-        this.loadCurrentConversation(clickedUser.id);
+        this.loadCurrentConversation(clickedUser);
         this.chatUtilityService.setMessageId(null);
         // this.setAllMessagesAsRead();
       }
     }
-    console.log('CURRENT CON.: ', this.currentConversation);
-    
+    console.log('CURRENT CON.: ', this.currentConversation); // update currentConversation after message is send, or firestore is updated!!!
+
   }
 
 
@@ -82,13 +83,21 @@ export class DirectMessagesService {
   }
 
 
-  async loadCurrentConversation(targetUserId: string | null | undefined) {
+  async loadCurrentConversation(targetUser: User | null | undefined) {
     this.currentConversation = [];
-    if (targetUserId) {
+    if (targetUser?.id) {
       // Lade den Benutzer basierend auf der targetUserId und setze selectedUser
       // this.chatUtilityService.directMessageUser = await this.loadSelectedUser(targetUserId);
     }
-    const selectedMessages = this.directMessages.filter(m => m.senderId === targetUserId || m.receiverId === targetUserId);
+    const selectedMessages = this.directMessages
+      .filter(m => m.senderId === targetUser?.id || m.receiverId === targetUser?.id)
+      .map(m => {
+        m.isOwnMessage = m.senderId === this.authService.currentUserUid; // Recalculate isOwnMessage
+        m.senderAvatar = targetUser?.avatarPath;
+        m.displayDate = this.messagesService.formatTimestamp(m.timestamp.toDate());
+        m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
+        return m;
+      });
     this.currentConversation = selectedMessages;
   }
 
@@ -237,7 +246,7 @@ export class DirectMessagesService {
   // }
 
 
-  private async mapDirectMessageData(doc: DocumentSnapshot) {
+  async mapDirectMessageData(doc: DocumentSnapshot) {
     const directMessageData = doc.data();
 
     // Sicherstellen, dass messageData definiert ist
