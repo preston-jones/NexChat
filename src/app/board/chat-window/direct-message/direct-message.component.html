@@ -1,9 +1,9 @@
 <div class="chat-container max-width">
     <div class="chat-header">
-        <div class="selected-user" (click)="this.getSelectedUserInfo(selectedUser?.id)"><img
-                [src]="selectedUser?.avatarPath" alt="">
-            <span *ngIf="selectedUser?.id === this.currentUser?.id">{{ selectedUser?.name + ' (Du)' }}</span>
-            <span *ngIf="selectedUser?.id != this.currentUser?.id">{{ selectedUser?.name }}</span>
+        <div class="selected-user" (click)="this.getSelectedUserInfo(userService.selectedUser?.id)"><img
+                [src]="userService.selectedUser?.avatarPath" alt="">
+            <span *ngIf="userService.selectedUser?.id === this.currentUser?.id">{{ this.currentUser?.name + ' (Du)' }}</span>
+            <span *ngIf="userService.selectedUser?.id != this.currentUser?.id">{{ userService.selectedUser?.name }}</span>
         </div>
     </div>
     <div #chatWindow class="chat-content">
@@ -87,7 +87,7 @@
 
 
                 <div *ngIf="message.isOwnMessage" class="message-sender-container">
-                    <img class="sender-avatar" [src]="message.senderAvatar" alt="">
+                    <img class="sender-avatar" [src]="authService.currentUser()?.avatarPath" alt="">
 
                     <div class="message-area-container" (mouseleave)="closeEditMessageBox()">
                         <div *ngIf="!isEditing(message.messageId || '')" class="message-container">

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewEncapsulation, } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,7 +35,7 @@ import { DirectMessagesService } from '../../../shared/services/messages/direct-
   imports: [MatCardModule, MatButtonModule, MatIconModule, MatDividerModule, FormsModule,
     MatFormFieldModule, MatInputModule, CommonModule, PickerComponent, NgIf, NgFor],
   templateUrl: './direct-message.component.html',
-  styleUrl: './direct-message.component.scss',
+  styleUrls: ['./direct-message.component.scss', '../../../../styles.scss'],
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
 
@@ -44,7 +44,6 @@ import { DirectMessagesService } from '../../../shared/services/messages/direct-
 export class DirectMessageComponent implements OnInit, AfterViewInit {
   message: DirectMessage[] = [];
   selectedMessage: DirectMessage | null = null;
-  messages = this.messagesService.messages;
   users: User[] = [];
   filteredUsers: User[] = [];
   filteredChannels: Channel[] = [];
@@ -78,11 +77,21 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   @Output() openChannelEvent = new EventEmitter<void>();
   @ViewChild('chatWindow', { static: false }) chatWindow!: ElementRef;
 
-  constructor(private firestore: Firestore, private auth: Auth,
-    private userService: UserService, private cd: ChangeDetectorRef,
-    public authService: AuthService, private uploadFileService: UploadFileService,
-    public channelsService: ChannelsService, public dialog: MatDialog, public messagesService: MessagesService, private chatUtilityService: ChatUtilityService,
-    private channelNavigationService: ChannelNavigationService, public noteService: NoteService, public directMessageService: DirectMessagesService) { }
+  constructor(
+    public userService: UserService,
+    private firestore: Firestore,
+    private auth: Auth,
+    private cd: ChangeDetectorRef,
+    public authService: AuthService,
+    private uploadFileService: UploadFileService,
+    public channelsService: ChannelsService,
+    public dialog: MatDialog,
+    public messagesService: MessagesService,
+    private chatUtilityService: ChatUtilityService,
+    private channelNavigationService: ChannelNavigationService,
+    public noteService: NoteService,
+    public directMessageService: DirectMessagesService
+  ) { }
 
   ngOnInit() {
     this.chatUtilityService.messageId$.subscribe(id => {
@@ -91,15 +100,17 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     this.loadData();
     this.currentUser = this.authService.currentUser();
     this.listenToCurrentConversation();
+    setTimeout(() => {
+      this.scrollToBottom();
+      console.log('Scroll to bottom triggered');
+    }, 0);
   }
 
 
   ngAfterViewInit() {
     const observer = new MutationObserver(() => {
-      // console.log('Mutation detected');
       this.scrollToBottom();
     });
-
     observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
   }
 
@@ -574,14 +585,14 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       // this.noteService.addNote(this.directChatMessage);
       this.clearInputField();
       this.clearUploadCache();
-      this.scrollToBottom();
+      // this.scrollToBottom();
     }
     else {
       await this.createNewMessage();
       // Eingabefelder bereinigen und Scrollen
       this.clearInputField();
       this.clearUploadCache();
-      this.scrollToBottom();
+      // this.scrollToBottom();
     }
     this.listenToCurrentConversation();
   }

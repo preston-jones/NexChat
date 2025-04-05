@@ -36,7 +36,7 @@
         <app-welcome-page></app-welcome-page>
     </div>
     <div #chatWindow class="chat-content" *ngIf="channelsService.currentChannelName != 'Willkommen'">
-        <div class="max-width" *ngFor="let message of (messageService.messages); let i = index">
+        <div class="max-width" *ngFor="let message of (messageService.currentChatMessages); let i = index">
             <div *ngIf="message.displayDate" class="posted-date-container">
                 <span class="posted-date">{{ message.displayDate }}</span>
             </div>

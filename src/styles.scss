@@ -1,6 +1,10 @@
 @import "./assets/fonts/fonts.scss";
 @import '@ctrl/ngx-emoji-mart/picker';
 
+* {
+    scroll-behavior: smooth;
+}
+
 html,
 body {
     height: 100%;

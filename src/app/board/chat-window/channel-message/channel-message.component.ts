@@ -87,9 +87,8 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const observer = new MutationObserver(() => {
-      this.scrollToBottom();
+      // this.scrollToBottom();
     });
-
     observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
   }
 
@@ -114,7 +113,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
         let channelsData = doc.data() as Channel;
         return { ...channelsData, id: doc.id };
       }));
-
     });
   }
 
@@ -528,7 +526,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
         this.selectedFile = null; // Reset selectedFile
         this.messageService.loadMessages(this.authService.currentUser()?.id, this.channelsService.currentChannelId);
         // Übergebe die channelId
-        this.scrollToBottom();
+        // this.scrollToBottom();
         this.deleteUpload();
       } else {
         console.error('Kein Benutzer angemeldet');

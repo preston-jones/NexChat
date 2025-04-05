@@ -61,7 +61,7 @@ export class SearchDialogComponent implements OnChanges {
     //     channels.forEach((channel: Channel) => { this.allData.push(channel) });
     //     let users: User[] = await this.userService.loadUsersAsPromise();
     //     users.forEach((user: User) => { this.allData.push(user) });
-    //     let messages: Message[] = await this.messagesService.loadMessagesAsPromise();
+    //     let messages: Message[] = await this.messagesService.loadAllChatMessages();
     //     messages.forEach((message: Message) => { this.allData.push(message) });
     //     let directMessages: DirectMessage[] = await this.directMessagesService.loadDirectMessagesAsPromise();
     //     directMessages.forEach(async (directMessage: DirectMessage) => {

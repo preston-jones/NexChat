@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { UserService } from '../firestore/user-service/user.service';
 import { MessagesService } from './messages.service';
 import { ChatUtilityService } from './chat-utility.service';
@@ -21,6 +21,7 @@ export class DirectMessagesService {
   showChatWindow: boolean = true;
   directMessages: DirectMessage[] = [];
   currentConversation: DirectMessage[] = [];
+  selectedUser: User | null = null;
   notes: Note[] = [];
   users: User[] = [];
   currentUserUid = this.authService.currentUser()?.id;
@@ -34,7 +35,8 @@ export class DirectMessagesService {
     private authService: AuthService,
     private channelsService: ChannelsService,
   ) {
-    this.loadDirectMessages();
+    // this.loadDirectMessages();
+    // this.loadDirectMessagesAsPromise();
   }
 
 
@@ -46,28 +48,32 @@ export class DirectMessagesService {
 
 
   clickUserContainer(clickedUser: User, i: number) {
-    this.currentConversation = [];
+    this.selectedUser = clickedUser;
+    this.userService.selectedUser = clickedUser;
+    this.userService.selectedUserId = clickedUser.id;
+    console.log('Selected User:', this.selectedUser);
+    
     this.userService.clickedUsers.fill(false);
     this.channelsService.clickedChannels.fill(false);
     this.userService.clickedUsers[i] = true;
-    this.getUserName(clickedUser);
+    // this.getUserName(clickedUser);
     this.clickUserEvent.emit();
     console.log('User clicked:', clickedUser);
-
+    console.log(this.userService.selectedUser);
+    
     if (this.authService.currentUserUid) {
       if (clickedUser.id === this.authService.currentUserUid) {
         this.loadNotes();
         console.log('Load Notes.');
       }
       else {
-        this.loadCurrentConversation(clickedUser.id).then(() => {
-          this.currentConversation = this.directMessages.filter(m => m.senderId === clickedUser.id || m.receiverId === clickedUser.id);
-          this.chatUtilityService.setMessageId(null);
-          // this.setAllMessagesAsRead();
-          console.log('Current Conversation:', this.currentConversation);
-        });
+        this.loadCurrentConversation(clickedUser.id);
+        this.chatUtilityService.setMessageId(null);
+        // this.setAllMessagesAsRead();
       }
     }
+    console.log('CURRENT CON.: ', this.currentConversation);
+    
   }
 
 
@@ -77,15 +83,12 @@ export class DirectMessagesService {
 
 
   async loadCurrentConversation(targetUserId: string | null | undefined) {
+    this.currentConversation = [];
     if (targetUserId) {
       // Lade den Benutzer basierend auf der targetUserId und setze selectedUser
-      this.chatUtilityService.directMessageUser = await this.loadSelectedUser(targetUserId);
+      // this.chatUtilityService.directMessageUser = await this.loadSelectedUser(targetUserId);
     }
     const selectedMessages = this.directMessages.filter(m => m.senderId === targetUserId || m.receiverId === targetUserId);
-    selectedMessages.forEach(async msg => {
-      msg.isOwnMessage = (msg.senderId === this.authService.currentUserUid);
-      await this.processConversation(selectedMessages);
-    });
     this.currentConversation = selectedMessages;
   }
 
@@ -146,7 +149,7 @@ export class DirectMessagesService {
     }
   }
 
-  private setMessageDisplayDate(msg: DirectMessage | Note) {
+  setMessageDisplayDate(msg: DirectMessage | Note) {
     let lastDisplayedDate: string | null = null;
 
     const messageDate = msg.timestamp.toDate();
@@ -177,57 +180,61 @@ export class DirectMessagesService {
 
   /* ---- UPDATE ---- */
 
-  async loadDirectMessages() {
-    const directMessagesQuery = this.createDirectMessageQuery();
+  async loadDirectMessages(): Promise<void> {
+    const directMessagesRef = collection(this.firestore, 'direct_messages');
+    const directMessagesQuery = query(directMessagesRef, orderBy('timestamp'));
 
     onSnapshot(directMessagesQuery, async (snapshot) => {
       // Verarbeite die geladenen Nachrichten
-      this.directMessages = await this.processSnapshot(snapshot);
-
-      await Promise.all(this.directMessages.map(async (msg: DirectMessage) => {
-        await this.loadSenderAvatar(msg);
+      this.directMessages = snapshot.docs
+        .map(doc => {
+          const directMessageData = doc.data() as DirectMessage;
+          return {
+            ...directMessageData,
+            messageId: doc.id,
+            timestamp: directMessageData.timestamp || new Date(), // Ensure timestamp is set
+          };
+        })
+        .filter(directMessage =>
+          directMessage.receiverId === this.authService.currentUserUid || directMessage.senderId === this.authService.currentUserUid
+        );
+      this.directMessages.forEach(async msg => {
+        msg.isOwnMessage = (msg.senderId === this.authService.currentUserUid);
         this.setMessageDisplayDate(msg);
-      }));
+        await this.loadSenderAvatar(msg);
+      });
+      console.log('Real-time Direct Messages:', this.directMessages);
     });
   }
 
 
-  private createDirectMessageQuery() {
-    const directMessagesRef = collection(this.firestore, 'direct_messages');
+  // private createDirectMessageQuery() {
+  //   const directMessagesRef = collection(this.firestore, 'direct_messages');
 
-    // Filtere die Nachrichten nach der übergebenen channelId
-    return query(
-      directMessagesRef,
-      where('receiverId', '==', this.authService.currentUserUid),
-      where('senderId', '==', this.authService.currentUserUid),
-      orderBy('timestamp')
-    );
-  }
+  //   // Filtere die Nachrichten nach der übergebenen channelId
+  //   return query(
+  //     directMessagesRef,
+  //     where('receiverId', '==', this.authService.currentUserUid),
+  //     where('senderId', '==', this.authService.currentUserUid),
+  //     orderBy('timestamp')
+  //   );
+  // }
 
 
-  private async processSnapshot(snapshot: any) {
-    let lastDisplayedDate: string | null = null;
-
-    return Promise.all(snapshot.docs.map(async (doc: DocumentSnapshot) => {
-      const directMessage = await this.mapDirectMessageData(doc);
-      const directMessageData = doc.data(); // Hier abrufen
-
-      // Sicherstellen, dass messageData definiert ist
-      if (directMessageData) {
-        const directMessageDate = new Date(directMessageData['timestamp']?.seconds * 1000);
-        const formattedDate = this.formatTimestamp(directMessageDate);
-
-        if (formattedDate !== lastDisplayedDate) {
-          directMessage.displayDate = formattedDate;
-          lastDisplayedDate = formattedDate;
-        } else {
-          directMessage.displayDate = null;
-        }
-      }
-
-      return directMessage;
-    }));
-  }
+  // private async processSnapshot(snapshot: any) {
+  //   snapshot.docs
+  //     .map(doc => {
+  //       const directMessageData = doc.data() as DirectMessage;
+  //       return {
+  //         ...directMessageData,
+  //         messageId: doc.id,
+  //         timestamp: directMessageData.timestamp || new Date(), // Ensure timestamp is set
+  //       };
+  //     })
+  //     .filter(directMessage =>
+  //       directMessage.receiverId === this.authService.currentUserUid || directMessage.senderId === this.authService.currentUserUid
+  //     );
+  // }
 
 
   private async mapDirectMessageData(doc: DocumentSnapshot) {

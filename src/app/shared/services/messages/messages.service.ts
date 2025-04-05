@@ -16,12 +16,13 @@ import { getDocs, updateDoc } from 'firebase/firestore';
     providedIn: 'root'
 })
 export class MessagesService {
+    allChatMessages: Message[] = [];
     chatMessage: string = '';
     editingMessageId: string | null = null;
     showMessageEditArea: boolean = false;
     showMessageEdit = false;
     showEmojiPicker: boolean = false;
-    messages: Message[] = [];
+    currentChatMessages: Message[] = [];
     currentUserUid = this.authService.currentUser()?.id;
     messageArea = true;
     editedMessage = '';
@@ -111,25 +112,25 @@ export class MessagesService {
 
         onSnapshot(messagesQuery, async (snapshot) => {
             // Verarbeite die geladenen Nachrichten
-            this.messages = await this.processSnapshot(snapshot, currentUserUid);
+            this.currentChatMessages = await this.processSnapshot(snapshot, currentUserUid);
 
             // Lade alle Antworten für jede geladene Nachricht
-            await Promise.all(this.messages.map(async (message: Message) => {
+            await Promise.all(this.currentChatMessages.map(async (message: Message) => {
                 await this.loadAnswersForMessage(message);
             }));
-        });
+        });        
     }
 
 
-    async loadMessagesAsPromise(): Promise<Message[]> {
+    async loadAllChatMessages(): Promise<Message[]> {
         let messagesRef = collection(this.firestore, 'messages');
         let messagesQuery = query(messagesRef);
         const querySnapshot = await getDocs(messagesQuery);
-        this.messages = querySnapshot.docs.map(doc => {
+        this.allChatMessages = querySnapshot.docs.map(doc => {
             let messageData = doc.data() as Message;
             return { ...messageData, id: doc.id };
         });
-        return this.messages;
+        return this.allChatMessages;
     }
 
 

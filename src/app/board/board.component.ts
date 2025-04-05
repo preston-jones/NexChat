@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, ViewChild, ViewEncapsulation } from '@angular/core';
 import { WorkspaceComponent } from "./workspace/workspace.component";
 import { ThreadComponent } from './thread/thread.component';
 import { CommonModule, NgIf } from '@angular/common';
@@ -66,7 +66,7 @@ import { DirectMessagesService } from '../shared/services/messages/direct-messag
   styleUrls: ['./board.component.scss', '../../styles.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent {
 
   @ViewChild(SearchDialogComponent) searchDialogComponent!: SearchDialogComponent;
   @ViewChild('drawer') drawer!: MatDrawer;
@@ -102,6 +102,16 @@ export class BoardComponent implements OnInit {
   ) { }
 
 
+  ngOnInit() {
+    // this.directMessagesService.loadDirectMessages();
+    // this.directMessagesService.loadDirectMessagesAsPromise();
+    this.directMessagesService.loadDirectMessages();
+    this.userService.loadUsers();
+    this.channelsService.loadChannels(this.authService.currentUserUid);
+    this.messageService.loadAllChatMessages();
+  }
+
+
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.isSmallScreen = window.innerWidth < 1080;
@@ -121,15 +131,6 @@ export class BoardComponent implements OnInit {
 
     groupLogo.style.display = 'flex';
     devLogo.style.display = 'none';
-  }
-
-
-  async ngOnInit() {
-    // this.channelsService.updateUserChannels(this.authService.currentUserUid, 'Wilkommen');
-    // const currentUser = this.userService.currentUser();
-    // if (currentUser) {
-    //   await this.channelsService.addCurrentUserToChannel(currentUser as User, 'mH2jwT76WrAhdu9LZC5h');
-    // }
   }
 
 

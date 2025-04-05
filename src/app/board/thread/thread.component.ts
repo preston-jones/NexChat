@@ -185,7 +185,7 @@ export class ThreadComponent implements OnInit {
         this.typedMessage = '';
         this.selectedFile = null;
         this.loadMessages();
-        this.sendMessageService.scrollToBottom();
+        // this.sendMessageService.scrollToBottom();
         this.sendMessageService.deleteUpload();
       } else {
         console.error('Kein Benutzer angemeldet');

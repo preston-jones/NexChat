@@ -311,13 +311,13 @@ export class SendMessageService {
 
 
   scrollToBottom(): void {
-    if (this.chatWindow) {
-      try {
-        this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
-      } catch (err) {
-        console.error('Scroll to bottom failed:', err);
-      }
-    }
+    // if (this.chatWindow) {
+    //   try {
+    //     this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
+    //   } catch (err) {
+    //     console.error('Scroll to bottom failed:', err);
+    //   }
+    // }
   }
 
 

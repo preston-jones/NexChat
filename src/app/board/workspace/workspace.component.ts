@@ -112,7 +112,6 @@ export class WorkspaceComponent implements OnInit {
   // method to change background color for channel or user container
   openChannel(channel: Channel, i: number) {
     console.log('Channel clicked:', channel);
-
     this.channelsService.channelIsClicked = true;
     this.channelsService.clickChannelContainer(channel, i);
     this.openChannelEvent.emit();
