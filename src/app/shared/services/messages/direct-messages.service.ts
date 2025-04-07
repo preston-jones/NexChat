@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { UserService } from '../firestore/user-service/user.service';
 import { MessagesService } from './messages.service';
 import { ChatUtilityService } from './chat-utility.service';
@@ -26,6 +26,7 @@ export class DirectMessagesService {
   users: User[] = [];
   currentUserUid = this.authService.currentUser()?.id;
 
+  @Output() clearAndFocusTextarea = new EventEmitter<void>();
 
   constructor(
     private firestore: Firestore,
@@ -47,7 +48,13 @@ export class DirectMessagesService {
   }
 
 
+  triggerClearAndFocus() {
+    this.clearAndFocusTextarea.emit();
+  }
+
+
   clickUserContainer(clickedUser: User, i: number) {
+    this.triggerClearAndFocus();
     this.selectedUser = clickedUser;
     this.userService.selectedUser = clickedUser;
     this.userService.selectedUserId = clickedUser.id;
@@ -64,6 +71,7 @@ export class DirectMessagesService {
 
     if (this.authService.currentUserUid) {
       if (clickedUser.id === this.authService.currentUserUid) {
+        this.currentConversation = [];
         this.loadNotes();
         console.log('Load Notes.');
       }
@@ -213,64 +221,10 @@ export class DirectMessagesService {
         await this.loadSenderAvatar(msg);
       });
       console.log('Real-time Direct Messages:', this.directMessages);
+      await this.loadCurrentConversation(this.selectedUser);
     });
   }
 
-
-  // private createDirectMessageQuery() {
-  //   const directMessagesRef = collection(this.firestore, 'direct_messages');
-
-  //   // Filtere die Nachrichten nach der übergebenen channelId
-  //   return query(
-  //     directMessagesRef,
-  //     where('receiverId', '==', this.authService.currentUserUid),
-  //     where('senderId', '==', this.authService.currentUserUid),
-  //     orderBy('timestamp')
-  //   );
-  // }
-
-
-  // private async processSnapshot(snapshot: any) {
-  //   snapshot.docs
-  //     .map(doc => {
-  //       const directMessageData = doc.data() as DirectMessage;
-  //       return {
-  //         ...directMessageData,
-  //         messageId: doc.id,
-  //         timestamp: directMessageData.timestamp || new Date(), // Ensure timestamp is set
-  //       };
-  //     })
-  //     .filter(directMessage =>
-  //       directMessage.receiverId === this.authService.currentUserUid || directMessage.senderId === this.authService.currentUserUid
-  //     );
-  // }
-
-
-  async mapDirectMessageData(doc: DocumentSnapshot) {
-    const directMessageData = doc.data();
-
-    // Sicherstellen, dass messageData definiert ist
-    if (!directMessageData) {
-      throw new Error('Message data is undefined'); // Fehlerbehandlung
-    }
-
-    const directMessage = new DirectMessage(directMessageData, this.authService.currentUserUid);
-    directMessage.messageId = doc.id;
-    directMessage.isOwnMessage = directMessage.senderId === this.authService.currentUserUid;
-
-    if (directMessage.senderId) {
-      const senderUser = await this.userService.getSelectedUserById(directMessage.senderId);
-      directMessage.senderAvatar = senderUser?.avatarPath || './assets/images/avatars/avatar5.svg';
-    } else {
-      directMessage.senderAvatar = './assets/images/avatars/avatar5.svg';
-    }
-
-    // Sicherstellen, dass timestamp definiert ist
-    const directMessageDate = new Date(directMessageData['timestamp']?.seconds * 1000);
-    directMessage.formattedTimestamp = directMessageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    return directMessage;
-  }
 
 
   formatTimestamp(directMessageDate: Date): string {

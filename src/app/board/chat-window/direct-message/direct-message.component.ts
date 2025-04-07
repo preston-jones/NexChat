@@ -63,7 +63,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   senderName: string | null = null;
   selectedFile: File | null = null;// Service für den Datei-Upload
   filePreviewUrl: string | null = null;
-  @Input() selectedUser = this.chatUtilityService.directMessageUser;
   messageId: string | null = null;
   conversationId = '';
   editingConversationId: string | null = null;
@@ -75,7 +74,10 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   markedChannel: { id: string; name: string }[] = [];
 
   @Output() openChannelEvent = new EventEmitter<void>();
+  @Input() selectedUser = this.chatUtilityService.directMessageUser;
   @ViewChild('chatWindow', { static: false }) chatWindow!: ElementRef;
+  @ViewChild('directChatMessageTextarea', { static: false }) directChatMessageTextarea!: ElementRef<HTMLTextAreaElement>;
+  private isViewInitialized = false;
 
   constructor(
     public userService: UserService,
@@ -94,12 +96,19 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
+    this.directMessageService.clearAndFocusTextarea.subscribe(() => {
+      this.clearAndFocusTextarea();
+    });
+
+
     this.chatUtilityService.messageId$.subscribe(id => {
       this.messageId = id;
     });
+
     this.loadData();
     this.currentUser = this.authService.currentUser();
     this.listenToCurrentConversation();
+
     setTimeout(() => {
       this.scrollToBottom();
       console.log('Scroll to bottom triggered');
@@ -108,6 +117,9 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit() {
+    this.isViewInitialized = true;
+    this.clearAndFocusTextarea();
+
     const observer = new MutationObserver(() => {
       this.scrollToBottom();
     });
@@ -579,6 +591,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     console.error("Kein Kanal ausgewählt.");
   }
 
+
   async sendMessage() {
     this.directChatMessage.trim();
     if (this.currentUser?.id === this.selectedUser?.id) {
@@ -599,16 +612,18 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
   listenToCurrentConversation() {
-    const messagesRef = collection(this.firestore, 'direct_messages');
-    const q = query(
-      messagesRef,
-      orderBy('timestamp', 'asc')
-    );
-  
-    onSnapshot(q, (snapshot) => {
-      this.directMessageService.directMessages = snapshot.docs.map(doc => doc.data() as DirectMessage);
-      this.cd.detectChanges(); // Trigger change detection to update the UI
-    });
+    // const messagesRef = collection(this.firestore, 'direct_messages');
+    // const q = query(
+    //   messagesRef,
+    //   orderBy('timestamp', 'asc')
+    // );
+
+    // onSnapshot(q, (snapshot) => {
+    //   this.directMessageService.directMessages = snapshot.docs.map(doc => doc.data() as DirectMessage);
+    //   this.cd.detectChanges(); // Trigger change detection to update the UI
+    // });
+    console.log('Maaaaah!!!...');
+
   }
 
 
@@ -627,9 +642,9 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       message: this.directChatMessage || '',
       reactions: [],
       timestamp: new Date(),
-      receiverName: this.selectedUser?.name || '',
+      receiverName: this.userService.selectedUser?.name || '',
       senderId: this.currentUser?.id || null,
-      receiverId: this.selectedUser?.id || null,
+      receiverId: this.userService.selectedUser?.id || null,
       fileURL: '',
       markedUser: markedUserDetails || [],
       readedMessage: false,
@@ -637,6 +652,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     });
     await this.updateMessageFileURL(messageDocRef, conversationId);
     await this.updateNewMessage(messageDocRef);
+    this.directMessageService.loadCurrentConversation(this.userService.selectedUser);
   }
 
 
@@ -658,6 +674,18 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
   clearInputField() {
     this.directChatMessage = '';
+  }
+
+
+  clearAndFocusTextarea() {
+    console.log('clearAndFocusTextarea called');
+
+    if (this.isViewInitialized && this.directChatMessageTextarea && this.directChatMessageTextarea.nativeElement) {
+      this.directChatMessage = ''; // Clear the input field
+      this.directChatMessageTextarea.nativeElement.focus(); // Set focus on the input field
+    } else {
+      console.warn('directChatMessageTextarea is not initialized or view is not ready.');
+    }
   }
 
 
