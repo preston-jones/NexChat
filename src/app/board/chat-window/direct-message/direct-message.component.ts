@@ -535,11 +535,11 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
 
-  editMessage(conversationId: string) {
-    this.editingMessageId = conversationId;
+  editMessage(messageId: string) {
+    this.editingMessageId = messageId;
     this.showMessageEditArea = true;         // Bearbeitungsbereich anzeigen
     this.showMessageEdit = false;            // Toggle zurücksetzen
-    this.editingConversationId = conversationId;
+    this.editingMessageId = messageId;
   }
 
 
