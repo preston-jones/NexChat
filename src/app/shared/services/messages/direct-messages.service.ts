@@ -96,17 +96,17 @@ export class DirectMessagesService {
     if (targetUser?.id) {
       // Lade den Benutzer basierend auf der targetUserId und setze selectedUser
       // this.chatUtilityService.directMessageUser = await this.loadSelectedUser(targetUserId);
+      const selectedMessages = this.directMessages
+        .filter(m => m.senderId === targetUser?.id || m.receiverId === targetUser?.id)
+        .map(m => {
+          m.isOwnMessage = m.senderId === this.authService.currentUserUid; // Recalculate isOwnMessage
+          m.senderAvatar = targetUser?.avatarPath;
+          m.displayDate = this.messagesService.formatTimestamp(m.timestamp.toDate());
+          m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          return m;
+        });
+      this.currentConversation = selectedMessages;
     }
-    const selectedMessages = this.directMessages
-      .filter(m => m.senderId === targetUser?.id || m.receiverId === targetUser?.id)
-      .map(m => {
-        m.isOwnMessage = m.senderId === this.authService.currentUserUid; // Recalculate isOwnMessage
-        m.senderAvatar = targetUser?.avatarPath;
-        m.displayDate = this.messagesService.formatTimestamp(m.timestamp.toDate());
-        m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
-        return m;
-      });
-    this.currentConversation = selectedMessages;
   }
 
 
@@ -148,23 +148,26 @@ export class DirectMessagesService {
   }
 
 
-  private async processConversation(conversation: DirectMessage[]) {
-    await Promise.all(conversation.map(async (msg: DirectMessage) => {
-      await this.loadSenderAvatar(msg);
-      this.setMessageDisplayDate(msg);
-    }));
-  }
+  // private async processConversation(conversation: DirectMessage[]) {
+  //   await Promise.all(conversation.map(async (msg: DirectMessage) => {
+  //     await this.loadSenderAvatar(msg);
+  //     this.setMessageDisplayDate(msg);
+  //   }));
+  // }
 
 
-  private async loadSenderAvatar(msg: DirectMessage) {
-    if (msg.senderId) {
-      const senderUser = await this.userService.getSelectedUserById(msg.senderId);
-      msg.senderAvatar = senderUser?.avatarPath || './assets/images/avatars/avatar5.svg';
-    } else {
-      msg.senderAvatar = './assets/images/avatars/avatar5.svg';
-      console.log("Sender ID is undefined for message:", msg);
-    }
-  }
+  // private async loadSenderAvatar(msg: DirectMessage) {
+  //   if (msg.senderId) {
+  //     const senderUser = await this.userService.getSelectedUserById(msg.senderId);
+  //     msg.senderAvatar = senderUser?.avatarPath || './assets/images/avatars/avatar5.svg';
+  //     console.log(" msg Sender ID:", msg.senderId);
+  //     console.log("VAR. ID:", senderUser);
+      
+  //   } else {
+  //     msg.senderAvatar = './assets/images/avatars/avatar5.svg';
+  //     console.log("Sender ID is undefined for message:", msg);
+  //   }
+  // }
 
   setMessageDisplayDate(msg: DirectMessage | Note) {
     let lastDisplayedDate: string | null = null;
@@ -218,7 +221,7 @@ export class DirectMessagesService {
       this.directMessages.forEach(async msg => {
         msg.isOwnMessage = (msg.senderId === this.authService.currentUserUid);
         this.setMessageDisplayDate(msg);
-        await this.loadSenderAvatar(msg);
+        // await this.loadSenderAvatar(msg);
       });
       console.log('Real-time Direct Messages:', this.directMessages);
       await this.loadCurrentConversation(this.selectedUser);

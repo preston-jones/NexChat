@@ -2,8 +2,8 @@
     <div class="chat-header">
         <div class="selected-user" (click)="this.getSelectedUserInfo(userService.selectedUser?.id)"><img
                 [src]="userService.selectedUser?.avatarPath" alt="">
-            <span *ngIf="userService.selectedUser?.id === this.currentUser?.id">{{ this.currentUser?.name + ' (Du)' }}</span>
-            <span *ngIf="userService.selectedUser?.id != this.currentUser?.id">{{ userService.selectedUser?.name }}</span>
+            <span *ngIf="userService.selectedUserId === this.currentUser?.id">{{ currentUser?.name + ' (Du)' }}</span>
+            <span *ngIf="userService.selectedUserId != this.currentUser?.id">{{ userService.selectedUser?.name }}</span>
         </div>
     </div>
     <div #chatWindow class="chat-content">
@@ -205,7 +205,7 @@
 
 
                 <div class="right-icon-container">
-                    <div (click)="sendMessage()" id="sendMessage" class="message-icon send"><mat-icon fontIcon="send"></mat-icon>
+                    <div (click)="sendMessage()" id="sendMessage" class="message-icon send"><mat-icon fontIcon="send" disabled></mat-icon>
                     </div>
                 </div>
             </div>

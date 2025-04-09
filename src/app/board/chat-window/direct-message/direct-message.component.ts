@@ -107,7 +107,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
     this.loadData();
     this.currentUser = this.authService.currentUser();
-    this.listenToCurrentConversation();
 
     setTimeout(() => {
       this.scrollToBottom();
@@ -593,37 +592,23 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
   async sendMessage() {
-    this.directChatMessage.trim();
-    if (this.currentUser?.id === this.selectedUser?.id) {
-      // this.noteService.addNote(this.directChatMessage);
-      this.clearInputField();
-      this.clearUploadCache();
-      // this.scrollToBottom();
+    console.log(this.currentUser?.id);
+    console.log(this.userService.selectedUser?.id);
+    if (this.directChatMessage.length > 0) {
+      this.directChatMessage.trim();
+      if (this.currentUser?.id === this.userService.selectedUser?.id) {
+        // this.noteService.addNote(this.directChatMessage);
+        console.log('Note gespeichert:');
+        
+        this.clearInputField();
+        this.clearUploadCache();
+      }
+      else {
+        await this.createNewMessage();
+        this.clearInputField();
+        this.clearUploadCache();
+      }
     }
-    else {
-      await this.createNewMessage();
-      // Eingabefelder bereinigen und Scrollen
-      this.clearInputField();
-      this.clearUploadCache();
-      // this.scrollToBottom();
-    }
-    this.listenToCurrentConversation();
-  }
-
-
-  listenToCurrentConversation() {
-    // const messagesRef = collection(this.firestore, 'direct_messages');
-    // const q = query(
-    //   messagesRef,
-    //   orderBy('timestamp', 'asc')
-    // );
-
-    // onSnapshot(q, (snapshot) => {
-    //   this.directMessageService.directMessages = snapshot.docs.map(doc => doc.data() as DirectMessage);
-    //   this.cd.detectChanges(); // Trigger change detection to update the UI
-    // });
-    console.log('Maaaaah!!!...');
-
   }
 
 
