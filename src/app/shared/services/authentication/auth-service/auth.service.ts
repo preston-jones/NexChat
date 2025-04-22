@@ -1,11 +1,11 @@
-import { inject, Injectable, signal, EventEmitter, Output } from '@angular/core';
+import { inject, Injectable, signal, EventEmitter, HostListener, Output } from '@angular/core';
+import { Subscription, fromEvent } from 'rxjs';
 import { Router } from '@angular/router';
 import { confirmPasswordReset, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile, verifyBeforeUpdateEmail, getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { UserCredential } from "firebase/auth";
 import { UserService } from '../../firestore/user-service/user.service';
 import { Auth, user, User as AuthUser } from '@angular/fire/auth';
 import { User } from '../../../models/user.class';
-import { Subscription } from 'rxjs';
 import { doc, Firestore, getDoc, getFirestore, onSnapshot, setDoc, updateDoc } from '@angular/fire/firestore';
 import { FirebaseError } from 'firebase/app';
 
@@ -14,6 +14,9 @@ import { FirebaseError } from 'firebase/app';
 })
 export class AuthService {
 
+  subscription: Subscription | null = null;
+  sessionTimer: any = null;
+  userIsActive: boolean = true;
   auth = inject(Auth);
   router = inject(Router);
   userService = inject(UserService);
@@ -30,9 +33,43 @@ export class AuthService {
     this.initializeAuthState();
     this.userUpdated.subscribe((user) => {
       this.userService.setUser(user);
+
+      if (user) {
+        this.startSessionTimer();
+        this.resetSessionTimer();
+      }
+
       console.log('auth.service.currentUser() =', this.currentUser());
       console.log(this.currentUser()?.id);
     });
+  }
+
+
+  resetSessionTimer() {
+    this.subscription =
+      fromEvent(document, 'mousemove')
+        .subscribe(e => {
+          clearTimeout(this.sessionTimer);
+          // console.log('Reset Timout');
+          this.startSessionTimer();
+        });
+  }
+
+
+  ngOnDestroy(): void {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+  }
+
+
+  startSessionTimer() {
+    // this.subscription?.unsubscribe();
+    // console.log('Start Timout');
+    this.sessionTimer = setTimeout(() => {
+      this.logout();
+      alert('Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.');
+    }, 900000); // logout after 15 minutes of inactivity
   }
 
 
@@ -83,12 +120,6 @@ export class AuthService {
       loginState: 'loggedIn',
       channels: user.channels
     } as User;
-  }
-
-  ngOnDestroy(): void {
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
-    }
   }
 
 

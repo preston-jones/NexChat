@@ -1,7 +1,6 @@
 <main>
-    <h2>Hallo {{ this.authService.currentUser()?.name }},</h2>
+    <h2>Willkommen, {{ this.authService.currentUser()?.name }}.</h2>
     <p>
-        willkommen bei DABubble.<br>
         DABubble ist deine neue Kommunikationsplattform für einfaches und intuitives Vernetzen mit deiner Community.
         <br />Ob im Team oder privat – mit Channels und Direktnachrichten bleibst du immer auf dem Laufenden.
     </p>
@@ -33,37 +32,28 @@
     </article>
 
     <article *ngIf="this.authService.currentUser()?.id === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02'">
-        <strong>Deine Möglichkeiten als Gast:</strong>
         <ul>
-            <li class="check">
-                Nachrichten schreiben
-            </li>
-            <li class="check">
-                Deine Nachrichten editieren
-            </li>
-            <li class="check">
-                Mit Emojis auf Nachrichten reagieren
-            </li>
-            <li class="check">
-                Eigene Channels anlegen
-            </li>
-            <li class="check">
-                Avatar in deinem Profil anpassen
-            </li>
-            <li class="not">
-                Bitte beachten: Als Gast kannst du keine Dateien hochladen und kein eigenes Profilfoto hochladen.
+            <li class="warning">
+                <strong>Bitte beachte:</strong>
+                <br />
+                Als Gast kannst du keine Dateien hochladen und kein eigenes Profilfoto hochladen.
+                <br />
+                <br />
+                Beim Ausloggen wird dein gesamter erstellter Content vollständig gelöscht. Stelle sicher, dass du
+                alles abgeschlossen hast, bevor du dich abmeldest.
             </li>
         </ul>
     </article>
+    <hr />
     <article>
         <p>
-            Nutze die Logout-Funktion oben rechts im Profil-Menü. ☝️
+            Nutze die Logout-Funktion oben rechts im Profil-Menü um dich abzumelden. ☝️
         </p>
-    </article>
-    <article *ngIf="this.authService.currentUser()?.id === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02'">
         <p>
-            <strong>Wichtig: </strong>Beim Ausloggen wird dein gesamter erstellter Content vollständig gelöscht. Stelle sicher, dass du
-            alles abgeschlossen hast, bevor du dich abmeldest.
+            Nach 15 Minuten Inaktivität wird deine Session automatisch beendet und du wirst ausgeloggt.
+            <br />
+            <br />
+            Du kannst dich jederzeit wieder anmelden, um deine Nachrichten und Channels zu sehen.
         </p>
     </article>
     <strong>Starte jetzt und entdecke DABubble</strong>
