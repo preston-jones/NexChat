@@ -15,6 +15,7 @@ import { Firestore, collection, onSnapshot, query, orderBy, where, Timestamp, Do
 export class DirectMessagesService {
   clickUserEvent = new EventEmitter<void>();
 
+  preventScroll = false;
   workspaceOpen: boolean = false;
   showDirectMessage: boolean = true;
   showChannelMessage: boolean = false;
@@ -53,7 +54,13 @@ export class DirectMessagesService {
   }
 
 
+  resetSrollPrevent() {
+    this.preventScroll = false;
+  }
+
+
   clickUserContainer(clickedUser: User, i: number) {
+    this.resetSrollPrevent();
     this.triggerClearAndFocus();
     this.selectedUser = clickedUser;
     this.userService.selectedUser = clickedUser;

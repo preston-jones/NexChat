@@ -118,13 +118,19 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     this.clearAndFocusTextarea();
 
     const observer = new MutationObserver(() => {
-      this.scrollToBottom();
+      if (!this.directMessageService.preventScroll) {
+        this.scrollToBottom();
+      }
     });
     observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
   }
 
 
   scrollToBottom() {
+    if (this.directMessageService.preventScroll) {
+      this.directMessageService.preventScroll = false; // Reset the flag
+      return; // Prevent scrolling
+    }
     if (this.chatWindow && this.chatWindow.nativeElement) {
       this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
     }
@@ -524,6 +530,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
   showMessageEditToggle() {
+    this.directMessageService.preventScroll = true;
     this.showMessageEdit = !this.showMessageEdit;
   }
 
@@ -533,7 +540,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
 
-  editMessage(messageId: string, messageText: string | null) {  
+  editMessage(messageId: string, messageText: string | null) {
     this.editingMessageId = messageId;
     this.editedMessage = messageText || '';
     this.showMessageEditArea = true;         // Bearbeitungsbereich anzeigen
@@ -551,7 +558,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       }).catch(error => {
         console.error("Fehler beim Speichern der Nachricht: ", error);
       });
-        
+
     } else {
       console.error("Ungültige Nachricht oder Conversation-ID.");
     }
@@ -583,7 +590,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       if (this.currentUser?.id === this.userService.selectedUser?.id) {
         // this.noteService.addNote(this.directChatMessage);
         console.log('Note gespeichert:');
-        
+
         this.clearInputField();
         this.clearUploadCache();
       }
