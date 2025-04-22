@@ -64,8 +64,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   selectedFile: File | null = null;// Service für den Datei-Upload
   filePreviewUrl: string | null = null;
   messageId: string | null = null;
-  conversationId = '';
-  editingConversationId: string | null = null;
   searchQuery: string = '';
   isSearching: boolean = false;
   isUserSelect: boolean = false;
@@ -306,12 +304,12 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     }, 200); // 200ms Verzögerung, anpassbar nach Bedarf
   }
 
-  showEmojiForReact(message: DirectMessage, conversationId: string): void {
+  showEmojiForReact(message: DirectMessage, messageId: string): void {
     this.showEmojiPicker = false;  // Deaktiviere den Emoji-Picker, falls er sichtbar ist
     this.showEmojiPickerEdit = false; // Deaktiviere den Bearbeitungsmodus des Emoji-Pickers
 
     // Setze die conversationId und die Nachricht
-    this.conversationId = conversationId;
+    this.messageId = messageId;
     this.selectedMessage = message;
     const conversation = this.selectedMessage
     // console.log(conversation);
@@ -346,7 +344,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.conversationId = messageId;
+    this.messageId = messageId;
     this.selectedMessage = message;
     const conversation = this.selectedMessage
     const senderID = currentUser.id ?? '';
@@ -456,10 +454,10 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       // Überprüfe, ob selectedMessage die KonversationId enthält
       if (this.selectedMessage.messageId) {
         // Konversation gefunden, füge oder aktualisiere die Reaktion
-        this.addOrUpdateReaction(this.selectedMessage, emoji, this.conversationId);
+        this.addOrUpdateReaction(this.selectedMessage, emoji, this.messageId || '');
         this.showEmojiPickerReact = false;
         console.log(this.selectedMessage);
-        console.log(this.conversationId);
+        console.log(this.messageId);
       } else {
         console.warn('Konversation mit der ID nicht gefunden!');
       }
@@ -535,38 +533,25 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
 
-  editMessage(messageId: string) {
+  editMessage(messageId: string, messageText: string | null) {  
     this.editingMessageId = messageId;
+    this.editedMessage = messageText || '';
     this.showMessageEditArea = true;         // Bearbeitungsbereich anzeigen
     this.showMessageEdit = false;            // Toggle zurücksetzen
-    this.editingMessageId = messageId;
   }
 
 
-  saveMessage(message: DirectMessage, messageId: string | null) {
-    console.log(this.conversationId);
+  saveMessage(message: DirectMessage) {
+    if (message && this.editingMessageId) {
+      const messageRef = doc(this.firestore, `direct_messages/${this.editingMessageId}`);
 
-    if (message && this.messageId) {
-      const messageRef = doc(this.firestore, `direct_messages/${this.messageId}`);
-
-      // const updatedConversation = (message.conversation || []).map(convo => {
-      //   if (convo.messageId === messageId) {
-      //     return {
-      //       ...convo,
-      //       message: convo.message // Aktualisiere nur das `message`-Feld
-      //     };
-      //   }
-      //   return convo;
-      // });
-
-      // updateDoc(messageRef, { conversation: updatedConversation })
-      //   .then(() => {
-      //     this.closeMessageEdit();
-      //     console.log("Nachricht erfolgreich aktualisiert.");
-      //   })
-      //   .catch(error => {
-      //     console.error("Fehler beim Speichern der Nachricht:", error);
-      //   });
+      updateDoc(messageRef, { message: this.editedMessage }).then(() => {
+        this.editingMessageId = null;
+        this.showMessageEditArea = false;
+      }).catch(error => {
+        console.error("Fehler beim Speichern der Nachricht: ", error);
+      });
+        
     } else {
       console.error("Ungültige Nachricht oder Conversation-ID.");
     }
@@ -575,14 +560,13 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
   closeMessageEdit() {
     this.editingMessageId = null;
-    this.conversationId = '';
+    this.messageId = '';
     this.editedMessage = '';
     this.showMessageEditArea = false;
-    this.editingConversationId = null;
   }
 
-  isEditing(conversationId: string): boolean {
-    return this.editingConversationId === conversationId; // Prüfe gegen die Firestore-Dokument-ID
+  isEditing(messageId: string): boolean {
+    return this.editingMessageId === messageId; // Prüfe gegen die Firestore-Dokument-ID
   }
 
 

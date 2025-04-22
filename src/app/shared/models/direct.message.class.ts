@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 export class DirectMessage {
     timestamp: Timestamp;
-    messageId: string | null;
+    messageId: string;
     senderId: string | null;
     senderName: string | null;
     message: string | null;

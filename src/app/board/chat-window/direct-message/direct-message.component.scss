@@ -380,37 +380,37 @@
     width: 100%;
 }
 
-// .edit-message {
-//     width: 100%;
-//     background-color: white;
-//     padding: 8px 0;
-//     gap: 5px;
-//     border-radius: 0px 30px 30px 30px;
-//     border: 1px solid rgba(173, 176, 217, 1);
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     position: absolute;
-//     top: 45px;
-//     left: 126px;
-//     transform: translateX(80px);
-//     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+.edit-message {
+    width: 100%;
+    background-color: white;
+    padding: 8px 0;
+    gap: 5px;
+    border-radius: 0px 30px 30px 30px;
+    border: 1px solid rgba(173, 176, 217, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 45px;
+    left: 126px;
+    transform: translateX(80px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
 
-//     >span {
-//         border-radius: 30px;
-//         padding: 10px;
-//         font-size: 18px;
-//         font-weight: 700;
-//         cursor: pointer;
-//         color: black;
+    >span {
+        border-radius: 30px;
+        padding: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        color: black;
 
-//         &:hover {
-//             background: #ECEEFE;
-//             transition: background 0.3s ease;
-//             color: #535AF1;
-//         }
-//     }
-// }
+        &:hover {
+            background: #ECEEFE;
+            transition: background 0.3s ease;
+            color: #535AF1;
+        }
+    }
+}
 
 .reaction-name-popup {
     background-color: rgba(83, 90, 241, 1);

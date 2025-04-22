@@ -90,7 +90,7 @@
                     <img class="sender-avatar" [src]="authService.currentUser()?.avatarPath" alt="">
 
                     <div class="message-area-container" (mouseleave)="closeEditMessageBox()">
-                        <div *ngIf="!isEditing(message.messageId || '')" class="message-container">
+                        <div *ngIf="!isEditing(message.messageId)" class="message-container">
                             <div class="reaction-container-sender">
                                 <div class="reaction-icon"><img src="./assets/images/reaction/check_mark.png"
                                         alt="Check Mark"
@@ -107,7 +107,7 @@
                                 <div (click)="showMessageEditToggle()" class="reaction-icon edit-message-icon"><mat-icon
                                         fontIcon="more_vert"></mat-icon></div>
                                 <div *ngIf="message.messageId && showMessageEdit" class="edit-message">
-                                    <span (click)="editMessage(message.messageId)">Nachricht bearbeiten</span>
+                                    <span (click)="editMessage(message.messageId, message.message)">Nachricht bearbeiten</span>
                                 </div>
                             </div>
 
@@ -162,6 +162,20 @@
                                     {{ reaction.count }}
                                 </div>
 
+                            </div>
+                        </div>
+
+                        <div *ngIf="isEditing(message.messageId)" class="message-edit-container">
+                            <textarea class="message-input" id="edit-message" type="text"
+                                [(ngModel)]="editedMessage"></textarea>
+                            <div class="message-edit-buttons">
+                                <div (click)="showEmojiForEdit()" class="message-icon">
+                                    <mat-icon fontIcon="sentiment_satisfied"></mat-icon>
+                                </div>
+                                <div class="message-edit-action">
+                                    <button (click)="closeMessageEdit()">Abbrechen</button>
+                                    <button (click)="saveMessage(message)" class="save-btn">Speichern</button>
+                                </div>
                             </div>
                         </div>
 
