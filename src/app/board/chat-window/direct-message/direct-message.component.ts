@@ -300,37 +300,29 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     this.showEmojiPickerEdit = false; // Blendet den anderen Picker sofort aus
     setTimeout(() => {
       this.showEmojiPicker = !this.showEmojiPicker;
-    }, 200); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
   }
 
   showEmojiForEdit() {
     this.showEmojiPicker = false; // Blendet den anderen Picker sofort aus
     setTimeout(() => {
       this.showEmojiPickerEdit = !this.showEmojiPickerEdit;
-    }, 200); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
   }
 
-  showEmojiForReact(message: DirectMessage, messageId: string): void {
+  showEmojiForReact(message: DirectMessage): void {
+    this.directMessageService.preventScroll = true; // Verhindert das Scrollen, wenn der Emoji-Picker geöffnet ist
     this.showEmojiPicker = false;  // Deaktiviere den Emoji-Picker, falls er sichtbar ist
     this.showEmojiPickerEdit = false; // Deaktiviere den Bearbeitungsmodus des Emoji-Pickers
 
     // Setze die conversationId und die Nachricht
-    this.messageId = messageId;
+    this.messageId = message.messageId;
     this.selectedMessage = message;
-    const conversation = this.selectedMessage
-    // console.log(conversation);
-
-    if (conversation) {
-      console.log('Gefundene Konversation:', conversation);
-    } else {
-      console.warn('Konversation nicht gefunden!');
-    }
-
-    // Toggle den Emoji-Picker nach einer kurzen Verzögerung
+    // Füge eine Verzögerung hinzu, bevor der aktuelle Picker angezeigt wird
     setTimeout(() => {
-      this.showEmojiPickerReact = !this.showEmojiPickerReact;  // Wechsel zwischen Anzeigen und Verbergen
-      this.cd.markForCheck();  // Force a check for updates to the component
-    }, 200);
+      this.showEmojiPickerReact = !this.showEmojiPickerReact;
+      console.log('showEmojiPickerReact:', this.showEmojiPickerReact);
+    }, 0);
   }
 
 
@@ -343,16 +335,15 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  addOrUpdateReaction(message: DirectMessage, emoji: string, messageId: string): void {
+  addOrUpdateReaction(message: DirectMessage, emoji: string): void {
     const currentUser = this.currentUser;
     if (!currentUser) {
       console.warn('Kein Benutzer gefunden!');
       return;
     }
 
-    this.messageId = messageId;
+    this.messageId = message.messageId;
     this.selectedMessage = message;
-    const conversation = this.selectedMessage
     const senderID = currentUser.id ?? '';
     const senderName = currentUser.name || '';
     const safeSenderID = senderID ?? '';
@@ -411,64 +402,23 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   async updateMessageReactions(message: DirectMessage): Promise<void> {
     const messageDocRef = doc(this.firestore, `direct_messages/${this.messageId}`);
 
-    // // Hole das aktuelle conversation-Array aus Firestore
-    // const messageSnapshot = await getDoc(messageDocRef);
-    // if (!messageSnapshot.exists()) {
-    //   console.error('Nachricht existiert nicht in Firestore.');
-    //   return;
-    // }
-
-    // const data = messageSnapshot.data() as DirectMessage;
-    // const currentConversations = data.conversation || [];
-
-    // // Finde die Konversation mit der gegebenen conversationId
-    // const conversationIndex = currentConversations.findIndex(conv => conv.conversationId === this.conversationId);
-
-    // if (conversationIndex === -1) {
-    //   console.error(`Konversation mit der ID ${this.conversationId} nicht gefunden.`);
-    //   return;
-    // }
-
-    // // Überprüfe, ob selectedMessage und selectedMessage.reactions existieren
-    // if (!this.selectedMessage || !Array.isArray(this.selectedMessage.reactions)) {
-    //   console.warn('selectedMessage oder selectedMessage.reactions ist null oder undefined');
-    //   return;
-    // }
-
-    // // Update nur das reactions-Array in der gefundenen Konversation
-    // const updatedConversation = [...currentConversations];
-    // updatedConversation[conversationIndex] = {
-    //   ...updatedConversation[conversationIndex],
-    //   reactions: this.selectedMessage.reactions // Setze das reactions-Array von selectedMessage
-    // };
-
-    // try {
-    //   // Setze das aktualisierte conversation-Array in Firestore
-    //   await updateDoc(messageDocRef, { conversation: updatedConversation });
-    //   console.log('Reaktionen erfolgreich aktualisiert');
-    // } catch (error) {
-    //   console.error('Fehler beim Aktualisieren der Reaktionen:', error);
-    // }
+    updateDoc(messageDocRef, { reactions: message.reactions })
+      .then(() => {
+        console.log('Reaktionen erfolgreich aktualisiert.');
+        this.cd.markForCheck(); // Komponenten-Update anstoßen
+      })
+      .catch(error => {
+        console.error('Fehler beim Aktualisieren der Reaktionen: ', error);
+      });
   }
 
 
 
   addEmojiForReact(event: any): void {
-    const emoji = event.emoji.native;
-    // Überprüfe, ob selectedMessage nicht null ist
-    if (this.selectedMessage !== null) {
-      // Überprüfe, ob selectedMessage die KonversationId enthält
-      if (this.selectedMessage.messageId) {
-        // Konversation gefunden, füge oder aktualisiere die Reaktion
-        this.addOrUpdateReaction(this.selectedMessage, emoji, this.messageId || '');
-        this.showEmojiPickerReact = false;
-        console.log(this.selectedMessage);
-        console.log(this.messageId);
-      } else {
-        console.warn('Konversation mit der ID nicht gefunden!');
-      }
-    } else {
-      console.warn('Nachricht oder Konversation ist null oder leer!');
+    const emoji = event.emoji.native; // Emoji aus dem Event extrahieren
+    if (this.selectedMessage) {
+      this.addOrUpdateReaction(this.selectedMessage, emoji); // Nutzung der bestehenden Funktion zum Hinzufügen oder Aktualisieren von Reaktionen
+      this.showEmojiPickerReact = false; // Emoji-Picker schließen, falls er geöffnet ist
     }
   }
 

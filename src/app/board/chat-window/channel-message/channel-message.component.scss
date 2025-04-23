@@ -159,13 +159,13 @@
 }
 
 .message-received-container {
+    cursor: default;
     position: relative;
     width: 100%;
     padding: 20px 40px 20px 40px !important;
     display: flex;
     gap: 30px;
     transition: background 0.3s ease;
-    cursor: pointer;
     box-sizing: border-box;
 
     &:hover {
@@ -177,6 +177,7 @@
         }
 
         .reaction-container-received {
+            cursor: pointer;
             opacity: 1;
             visibility: visible;
             transform: translateX(0);
@@ -305,6 +306,7 @@
 }
 
 .message-sender-container {
+    cursor: default;
     position: relative;
     width: 100%;
     padding: 20px 40px 20px 40px !important;
@@ -312,7 +314,6 @@
     flex-direction: row-reverse;
     gap: 30px;
     transition: background 0.3s ease;
-    cursor: pointer;
     box-sizing: border-box;
 
 
@@ -320,6 +321,7 @@
         background: rgba(236, 238, 254, 1);
 
         .reaction-container-sender {
+            cursor: pointer;
             opacity: 1;
             visibility: visible;
             transform: translateX(0);
@@ -357,6 +359,7 @@
     gap: 10px;
 
     >.reaction-icon-button {
+        cursor: pointer;
         position: relative;
         display: flex;
         align-items: center;

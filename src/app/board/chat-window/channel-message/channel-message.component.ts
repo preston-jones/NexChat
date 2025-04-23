@@ -295,7 +295,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     // Füge eine Verzögerung hinzu, bevor der aktuelle Picker angezeigt wird
     setTimeout(() => {
       this.showEmojiPicker = !this.showEmojiPicker;
-    }, 200); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
   }
 
   showEmojiForEdit() {
@@ -304,7 +304,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     // Füge eine Verzögerung hinzu, bevor der aktuelle Picker angezeigt wird
     setTimeout(() => {
       this.showEmojiPickerEdit = !this.showEmojiPickerEdit;
-    }, 200); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
   }
 
   showEmojiForReact(message: Message) {
@@ -316,7 +316,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.showEmojiPickerReact = !this.showEmojiPickerReact;
       console.log('showEmojiPickerReact:', this.showEmojiPickerReact);
-    }, 200); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0);
   }
 
 
@@ -395,8 +395,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
   addEmojiForReact(event: any): void {
-    console.log(this.selectedMessage);
-
     const emoji = event.emoji.native; // Emoji aus dem Event extrahieren
     if (this.selectedMessage) {
       this.addOrUpdateReaction(this.selectedMessage, emoji); // Nutzung der bestehenden Funktion zum Hinzufügen oder Aktualisieren von Reaktionen

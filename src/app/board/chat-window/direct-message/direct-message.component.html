@@ -8,10 +8,11 @@
     </div>
     <div #chatWindow class="chat-content">
 
-        <span *ngIf="selectedUser?.id === this.currentUser?.id" class="message-received-container info-text">
-            Dies ist dein persönlicher Space. Hier kannst du dir Notizen machen, To-Dos auflisten, oder Links und Files
+        <span *ngIf="directMessageService.selectedUser?.id" class="message-received-container" id="info-text">
+            Dies ist dein <strong>persönlicher Space</strong>. Hier kannst du dir Notizen machen, To-Dos auflisten, oder Links und Files
             griffbereit ablegen.
             Du kannst hier auch Dinge mit dir selbst besprechen.
+            <hr>
         </span>
 
         <div class="message-box">
@@ -25,12 +26,12 @@
                         <div class="reaction-container-received">
                             <div class="reaction-icon"><img src="./assets/images/reaction/check_mark.png"
                                     alt="Check Mark"
-                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png', message.messageId || '')">
+                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png')">
                             </div>
                             <div class="reaction-icon"><img src="./assets/images/reaction/hands_up.png" alt="Hands Up"
-                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png', message.messageId || '')">
+                                    (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png')">
                             </div>
-                            <div (click)="showEmojiForReact(message, message.messageId || '')"
+                            <div (click)="showEmojiForReact(message)"
                                 class="reaction-icon">
                                 <mat-icon fontIcon="add_reaction"></mat-icon>
                             </div>
@@ -55,7 +56,7 @@
 
                         <div class="show-reactions">
                             <div class="reaction-icon-button" *ngFor="let reaction of message.reactions"
-                                (click)="addOrUpdateReaction(message, reaction.emoji, message.messageId || '')">
+                                (click)="addOrUpdateReaction(message, reaction.emoji)">
 
                                 <!-- Überprüfung, ob reaction.emoji ein Bildpfad ist -->
                                 <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
@@ -94,13 +95,13 @@
                             <div class="reaction-container-sender">
                                 <div class="reaction-icon"><img src="./assets/images/reaction/check_mark.png"
                                         alt="Check Mark"
-                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png', message.messageId || '')">
+                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/check_mark.png')">
                                 </div>
                                 <div class="reaction-icon"><img src="./assets/images/reaction/hands_up.png"
                                         alt="Hands Up"
-                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png', message.messageId || '')">
+                                        (click)="addOrUpdateReaction(message, './assets/images/reaction/hands_up.png')">
                                 </div>
-                                <div (click)="showEmojiForReact(message, message.messageId || '')"
+                                <div (click)="showEmojiForReact(message)"
                                     class="reaction-icon">
                                     <mat-icon fontIcon="add_reaction"></mat-icon>
                                 </div>
@@ -136,7 +137,7 @@
 
                             <div class="show-reactions">
                                 <div class="reaction-icon-button" *ngFor="let reaction of message.reactions"
-                                    (click)="addOrUpdateReaction(message, reaction.emoji, message.messageId || '')">
+                                    (click)="addOrUpdateReaction(message, reaction.emoji)">
 
                                     <!-- Überprüfung, ob reaction.emoji ein Bildpfad ist -->
                                     <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
