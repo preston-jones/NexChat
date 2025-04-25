@@ -1,0 +1,136 @@
+.message-area-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.message-edit-container {
+    height: 180px;
+    // width: 100%;
+
+    background-color: white !important;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgb(173, 176, 217) !important;
+    border-radius: 30px;
+    padding: 20px;
+}
+
+.edit-message {
+    width: 100%;
+    background-color: white;
+    padding: 8px 0;
+    gap: 5px;
+    border-radius: 0px 30px 30px 30px;
+    border: 1px solid rgba(173, 176, 217, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 45px;
+    // left: 126px;
+    left: 100px;
+    transform: translateX(80px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+
+    >span {
+        border-radius: 30px;
+        padding: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        color: black;
+
+        &:hover {
+            background: #ECEEFE;
+            transition: background 0.3s ease;
+            color: #535AF1;
+        }
+    }
+}
+
+
+.message-editor-textarea {
+    // background-color: white !important;
+    // border: 1px solid rgba(173, 176, 217, 1) !important;
+    // border-radius: 20px;
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: Nunito;
+    font-size: 18px;
+    resize: none;
+    hyphens: auto;
+
+    border: none;
+}
+
+
+.reaction-name-popup {
+    background-color: rgba(83, 90, 241, 1);
+    height: 112px;
+    width: 158px;
+    border-radius: 30px 30px 30px 0px;
+    position: absolute;
+    bottom: 36px;
+    left: 34px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(80px);
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+
+    >h3 {
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    >span {
+        font-weight: 400;
+        font-size: 16px;
+    }
+}
+
+.message-edit-buttons {
+    width: 100%;
+    // position: absolute;
+    bottom: 0px;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    right: 0;
+    padding: 0px;
+    align-items: center;
+    cursor: default;
+}
+
+.message-edit-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    ;
+
+    >.save-btn {
+        background: #444DF2;
+        color: white;
+    }
+
+    >button {
+        border-radius: 30px;
+        height: 38px;
+        width: 130px;
+        cursor: pointer;
+        color: #444DF2;
+        font-size: 18px;
+        font-weight: 700;
+        background: white;
+        border: 1px solid #797EF3
+    }
+}

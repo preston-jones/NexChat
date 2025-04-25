@@ -201,7 +201,7 @@
 
                     </div>
                     <div *ngIf="isEditing(message.messageId)" class="message-edit-container">
-                        <textarea class="message-input" id="edit-message" type="text"
+                        <textarea class="message-editor-textarea" id="edit-message" type="text"
                             [(ngModel)]="editedMessage"></textarea>
                         <div class="message-edit-buttons">
                             <div (click)="showEmojiForEdit()" class="message-icon">

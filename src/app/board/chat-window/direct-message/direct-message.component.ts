@@ -35,7 +35,12 @@ import { DirectMessagesService } from '../../../shared/services/messages/direct-
   imports: [MatCardModule, MatButtonModule, MatIconModule, MatDividerModule, FormsModule,
     MatFormFieldModule, MatInputModule, CommonModule, PickerComponent, NgIf, NgFor,],
   templateUrl: './direct-message.component.html',
-  styleUrls: ['./direct-message.component.scss', '../../../../styles.scss'],
+  styleUrls: ['./direct-message.component.scss',
+    '../../../../styles.scss',
+    '../../../shared/styles/message-editor.scss',
+    '../../../shared/styles/message-textfield.scss',
+    '../../../shared/styles/chat-window.scss'
+  ],
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
 
@@ -441,17 +446,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     if (this.showEmojiPickerReact && !target.closest('emoji-mart') && !target.closest('.message-icon')) {
       this.showEmojiPickerReact = false;
     }
-  }
-
-
-  formatMessageContent(message: string | null): string {
-    console.log('999999999999999999999S');
-    console.log(message);
-    
-    
-    if (!message) return '';
-    
-    return message.replace(/\n/g, '<br>');
   }
 
 

@@ -107,6 +107,12 @@ export class MessagesService {
     }
 
 
+    formatMessageContent(message: string | null): string {
+        if (!message) return '';
+        return message.replace(/\n/g, '<br>');
+    }
+
+
     async loadMessages(currentUserUid: string | null | undefined, channelId: string) {
         const messagesQuery = this.createMessageQuery(channelId);
 
@@ -118,7 +124,7 @@ export class MessagesService {
             await Promise.all(this.currentChatMessages.map(async (message: Message) => {
                 await this.loadAnswersForMessage(message);
             }));
-        });        
+        });
     }
 
 

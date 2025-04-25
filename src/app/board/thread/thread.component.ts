@@ -35,7 +35,13 @@ import { ThreadMessagesComponent } from './thread-messages/thread-messages.compo
     ThreadMessagesComponent
   ],
   templateUrl: './thread.component.html',
-  styleUrl: './thread.component.scss',
+  styleUrls: [
+    './thread.component.scss',
+    '../../../styles.scss',
+    '../../shared/styles/message-editor.scss',
+    '../../shared/styles/message-textfield.scss',
+    '../../shared/styles/chat-window.scss'
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })

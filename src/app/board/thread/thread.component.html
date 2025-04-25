@@ -2,113 +2,58 @@
   <div class="thread-header">
     <div class="thread-header-content">
       <h1 class="thread-header-title">Thread</h1>
-      <span class="thread-header-subtitle"
-        ># {{ channelsService.currentChannelName }}</span
-      >
+      <span class="thread-header-subtitle"># {{ channelsService.currentChannelName }}</span>
     </div>
-    <button
-      mat-icon-button
-      aria-label="Close Thread"
-      class="close-btn"
-      (click)="closeThread()"
-    >
+    <button mat-icon-button aria-label="Close Thread" class="close-btn" (click)="closeThread()">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
   <!-- Messages -->
-  <app-thread-messages
-    class="max-width"
-    style="overflow-y: auto"
-    [messages]="messages"
-    [selectedMessage]="selectedMessage"
-  ></app-thread-messages>
+  <app-thread-messages class="max-width" style="overflow-y: auto" [messages]="messages"
+    [selectedMessage]="selectedMessage"></app-thread-messages>
 
   <!-- Nachrichteneingabebereich -->
-  <div class="thread-message-input-container">
-    <textarea
-      class="message-input"
-      placeholder="Schreiben Sie Ihre Nachricht"
-      [(ngModel)]="typedMessage"
-      type="text"
-      required=""
-    ></textarea>
+  <div class="chat-message-input-container">
+    <textarea class="message-input" placeholder="Schreiben Sie Ihre Nachricht" [(ngModel)]="typedMessage" type="text"
+      required=""></textarea>
     <div class="message-icon-container">
       <div class="left-icon-container">
-        <input
-          type="file"
-          id="fileInput"
-          (change)="sendMessageService.onFileSelected($event)"
-          hidden
-        />
-        <div
-          class="message-icon"
-          (click)="sendMessageService.triggerFileInput()"
-        >
+        <input type="file" id="fileInput" (change)="sendMessageService.onFileSelected($event)" hidden />
+        <div class="message-icon" (click)="sendMessageService.triggerFileInput()">
           <mat-icon fontIcon="add"></mat-icon>
         </div>
         <div class="separator"></div>
         <div class="thread-message-icon">
-          <mat-icon
-            (click)="showEmoji(typedMessage)"
-            fontIcon="sentiment_satisfied"
-          ></mat-icon>
+          <mat-icon (click)="showEmoji(typedMessage)" fontIcon="sentiment_satisfied"></mat-icon>
         </div>
         <div class="message-icon" (click)="toggleUserList()">
           <mat-icon fontIcon="alternate_email"></mat-icon>
         </div>
         <div *ngIf="showUserList" class="user-list">
-          <div
-            *ngFor="let user of users"
-            class="user-item"
-            (click)="markUser(user.name)"
-          >
-            <img
-              [src]="user.avatarPath"
-              alt="{{ user.name }}"
-              class="user-avatar"
-            />
+          <div *ngFor="let user of users" class="user-item" (click)="markUser(user.name)">
+            <img [src]="user.avatarPath" alt="{{ user.name }}" class="user-avatar" />
             <span class="user-name">{{ user.name }}</span>
           </div>
         </div>
         <div *ngIf="filePreviewUrl" class="file-preview">
-          <img
-            *ngIf="selectedFile && selectedFile.type.startsWith('image/')"
-            [src]="filePreviewUrl"
-            alt="Dateivorschau"
-          />
-          <a
-            *ngIf="selectedFile && selectedFile.type === 'application/pdf'"
-            [href]="filePreviewUrl"
-            target="_blank"
-            >PDF anzeigen</a
-          >
-          <mat-icon
-            class="delete-upload"
-            fontIcon="close"
-            (click)="sendMessageService.deleteUpload()"
-          ></mat-icon>
+          <img *ngIf="selectedFile && selectedFile.type.startsWith('image/')" [src]="filePreviewUrl"
+            alt="Dateivorschau" />
+          <a *ngIf="selectedFile && selectedFile.type === 'application/pdf'" [href]="filePreviewUrl" target="_blank">PDF
+            anzeigen</a>
+          <mat-icon class="delete-upload" fontIcon="close" (click)="sendMessageService.deleteUpload()"></mat-icon>
         </div>
       </div>
       <div class="right-icon-container">
-        <button
-          class="message-icon send-btn send"
-          (click)="sendMessage()"
-          [disabled]="!typedMessage || typedMessage.trim().length === 0"
-          [ngClass]="{
+        <button class="message-icon send-btn send" (click)="sendMessage()"
+          [disabled]="!typedMessage || typedMessage.trim().length === 0" [ngClass]="{
             disabled: !typedMessage || typedMessage.trim().length === 0
-          }"
-        >
+          }">
           <mat-icon fontIcon="send"></mat-icon>
         </button>
       </div>
     </div>
-    <emoji-mart
-      *ngIf="showEmojiPicker"
-      (emojiSelect)="addEmoji($event)"
-      [darkMode]="false"
-      title="Pick your emoji…"
-      emoji="point_up"
-    ></emoji-mart>
+    <emoji-mart *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)" [darkMode]="false" title="Pick your emoji…"
+      emoji="point_up"></emoji-mart>
   </div>
 </div>

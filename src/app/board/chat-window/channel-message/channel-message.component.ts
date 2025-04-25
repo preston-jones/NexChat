@@ -35,7 +35,13 @@ import { WelcomePageComponent } from '../../../shared/templates/welcome-page/wel
   imports: [MatCardModule, MatButtonModule, MatIconModule, MatDividerModule, FormsModule,
     MatFormFieldModule, MatInputModule, CommonModule, PickerComponent, NgIf, NgFor, WelcomePageComponent],
   templateUrl: './channel-message.component.html',
-  styleUrl: './channel-message.component.scss',
+  styleUrls: [
+    './channel-message.component.scss',
+    '../../../../styles.scss',
+    '../../../shared/styles/message-editor.scss',
+    '../../../shared/styles/message-textfield.scss',
+    '../../../shared/styles/chat-window.scss'
+  ],
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
 })
