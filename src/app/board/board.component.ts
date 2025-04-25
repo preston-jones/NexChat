@@ -32,6 +32,7 @@ import { MemberAddedInfoComponent } from "../dialogs/member-added-info/member-ad
 import { ChannelCreatedInfoComponent } from "../dialogs/channel-created-info/channel-created-info.component";
 import { BehaviorSubject } from 'rxjs';
 import { DirectMessagesService } from '../shared/services/messages/direct-messages.service';
+import { NoteService } from '../shared/services/notes/notes.service';
 
 @Component({
   selector: 'app-board',
@@ -60,7 +61,7 @@ import { DirectMessagesService } from '../shared/services/messages/direct-messag
     MembersDialogComponent,
     AddMemberDialogComponent,
     MemberAddedInfoComponent,
-    ChannelCreatedInfoComponent
+    ChannelCreatedInfoComponent,
   ],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss', '../../styles.scss'],
@@ -98,14 +99,14 @@ export class BoardComponent {
     public chatUtilityService: ChatUtilityService,
     public cd: ChangeDetectorRef,
     public channelsService: ChannelsService,
-    public directMessagesService: DirectMessagesService
+    public directMessagesService: DirectMessagesService,
+    public noteService: NoteService,
   ) { }
 
 
   ngOnInit() {
-    // this.directMessagesService.loadDirectMessages();
-    // this.directMessagesService.loadDirectMessagesAsPromise();
     this.directMessagesService.loadDirectMessages();
+    this.noteService.loadNotes();
     this.userService.loadUsers();
     this.channelsService.loadChannels(this.authService.currentUserUid);
     this.messageService.loadAllChatMessages();

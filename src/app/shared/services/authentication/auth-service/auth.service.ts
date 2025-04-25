@@ -6,8 +6,11 @@ import { UserCredential } from "firebase/auth";
 import { UserService } from '../../firestore/user-service/user.service';
 import { Auth, user, User as AuthUser } from '@angular/fire/auth';
 import { User } from '../../../models/user.class';
-import { doc, Firestore, getDoc, getFirestore, onSnapshot, setDoc, updateDoc } from '@angular/fire/firestore';
+import { doc, Firestore, getDoc, getFirestore, onSnapshot, setDoc, updateDoc, deleteDoc, where, query, collection, getDocs } from '@angular/fire/firestore';
 import { FirebaseError } from 'firebase/app';
+import { Message } from '../../../models/message.class';
+import { DirectMessage } from '../../../models/direct.message.class';
+import { Dir } from '@angular/cdk/bidi';
 
 @Injectable({
   providedIn: 'root'
@@ -34,13 +37,14 @@ export class AuthService {
     this.userUpdated.subscribe((user) => {
       this.userService.setUser(user);
 
-      if (user) {
+      if (user && user.loginState === 'loggedIn') {
         this.startSessionTimer();
         this.resetSessionTimer();
       }
 
       console.log('auth.service.currentUser() =', this.currentUser());
       console.log(this.currentUser()?.id);
+      console.log('User =', user);
     });
   }
 
@@ -68,8 +72,9 @@ export class AuthService {
     // console.log('Start Timout');
     this.sessionTimer = setTimeout(() => {
       this.logout();
+      this.subscription?.unsubscribe();
       alert('Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.');
-    }, 900000); // logout after 15 minutes of inactivity
+    }, 900000); // logout after 15 minutes of inactivity 900000
   }
 
 
@@ -143,7 +148,8 @@ export class AuthService {
 
   async logout(): Promise<void> {
     if (this.auth.currentUser?.uid === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02') {
-      this.resetGuestUser();
+      await this.resetGuestUserProfile();
+      await this.resetGuestUserData();
     }
     try {
       if (this.auth.currentUser) {
@@ -160,6 +166,7 @@ export class AuthService {
     }
   }
 
+
   async guestLogin(): Promise<void> {
     const guestEmail = 'guest@test.de';
     const guestPassword = 'guestUser';
@@ -168,27 +175,44 @@ export class AuthService {
   }
 
 
-  resetGuestUser() {
+  async resetGuestUserData() {
+    await this.deleteGuestData('direct_messages', 'senderId');
+    await this.deleteGuestData('messages', 'senderID');
+    await this.deleteGuestData('channels', 'channelAuthorId');
+    await this.deleteGuestData('notes', 'noteAuthorId');
+  }
+
+
+  async deleteGuestData(firebaseCollection: string, filterField: string): Promise<void> {
+    const q = query(collection(this.firestore, firebaseCollection), where(filterField, '==', this.auth.currentUser?.uid));
+    const querySnapshot = await getDocs(q);
+
+    // Iterate through the documents, get their IDs, and delete them
+    for (const docSnap of querySnapshot.docs) {
+      const docId = docSnap.id; // Get the document ID
+      const docRef = doc(this.firestore, firebaseCollection, docId); // Create a reference to the document
+      await deleteDoc(docRef); // Use the document reference to delete
+      console.log(`Deleted document with ID: ${docId}`);
+    }
+  }
+
+
+  async resetGuestUserProfile(): Promise<void> {
     let changes = {
       name: 'Gast',
       email: 'guest@test.de',
       avatarPath: './assets/images/avatars/avatar_default.png'
     };
-    this.userService.updateUserInFirestore(this.auth.currentUser!.uid, changes);
-    this.updateUserProfile(changes);
+    return this.userService.updateUserInFirestore(this.auth.currentUser!.uid, changes)
+      .then(() => {
+        this.updateUserProfile(changes);
+      });
   }
 
 
   async updateUserProfile(changes: {}): Promise<void> {
-    try {
-      if (this.auth.currentUser) {
-        await updateProfile(this.auth.currentUser, changes);
-      }
-    } catch (err: any) {
-
-      this.errorCode = err.code;
-      console.error('Error while updating auth user profile', err.code);
-      throw err;
+    if (this.auth.currentUser) {
+      await updateProfile(this.auth.currentUser, changes);
     }
   }
 

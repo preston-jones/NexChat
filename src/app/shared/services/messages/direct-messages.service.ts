@@ -7,6 +7,7 @@ import { ChannelsService } from '../channels/channels.service';
 import { User } from '../../models/user.class';
 import { DirectMessage } from '../../models/direct.message.class';
 import { Note } from '../../models/note.class';
+import { NoteService } from '../notes/notes.service';
 import { Firestore, collection, onSnapshot, query, orderBy, where, Timestamp, DocumentSnapshot, QuerySnapshot, DocumentData, doc, getDoc, getDocs, updateDoc, collectionData, docData } from '@angular/fire/firestore';
 
 @Injectable({
@@ -36,10 +37,8 @@ export class DirectMessagesService {
     private chatUtilityService: ChatUtilityService,
     private authService: AuthService,
     private channelsService: ChannelsService,
-  ) {
-    // this.loadDirectMessages();
-    // this.loadDirectMessagesAsPromise();
-  }
+    private noteService: NoteService
+  ) { }
 
 
   openDirectMessage(selectedUserId: string | null | undefined) {
@@ -67,6 +66,7 @@ export class DirectMessagesService {
     this.userService.selectedUserId = clickedUser.id;
     console.log('Selected User:', this.selectedUser);
     console.log('SERVICE User:', this.userService.selectedUser);
+    console.log('SERVICE User:', this.userService.selectedUser);
 
     this.userService.clickedUsers.fill(false);
     this.channelsService.clickedChannels.fill(false);
@@ -79,7 +79,7 @@ export class DirectMessagesService {
     if (this.authService.currentUserUid) {
       if (clickedUser.id === this.authService.currentUserUid) {
         this.currentConversation = [];
-        this.loadNotes();
+        this.noteService.loadNotes();
         console.log('Load Notes.');
       }
       else {
@@ -117,65 +117,6 @@ export class DirectMessagesService {
   }
 
 
-  async loadNotes() {
-    this.notes = [];
-    this.notes.forEach(async note => {
-      this.setMessageDisplayDate(note);
-    });
-  }
-
-
-  async loadDirectMessagesAsPromise(): Promise<void> {
-    const directMessagesRef = collection(this.firestore, 'direct_messages');
-    const directMessagesQuery = query(directMessagesRef, orderBy('timestamp'));
-
-    // Set up a real-time listener with onSnapshot
-    onSnapshot(directMessagesQuery, (querySnapshot) => {
-      this.directMessages = querySnapshot.docs
-        .map(doc => {
-          const directMessageData = doc.data() as DirectMessage;
-          return {
-            ...directMessageData,
-            messageId: doc.id,
-            timestamp: directMessageData.timestamp || new Date(), // Ensure timestamp is set
-          };
-        })
-        .filter(directMessage =>
-          directMessage.receiverId === this.authService.currentUserUid || directMessage.senderId === this.authService.currentUserUid
-        );
-
-      // Order the messages after fetching
-      this.orderedDirectMessages(this.directMessages);
-
-      // Log the updated messages
-      console.log('Real-time Direct Messages:', this.directMessages);
-    }, (error) => {
-      console.error('Error listening to direct messages:', error);
-    });
-  }
-
-
-  // private async processConversation(conversation: DirectMessage[]) {
-  //   await Promise.all(conversation.map(async (msg: DirectMessage) => {
-  //     await this.loadSenderAvatar(msg);
-  //     this.setMessageDisplayDate(msg);
-  //   }));
-  // }
-
-
-  // private async loadSenderAvatar(msg: DirectMessage) {
-  //   if (msg.senderId) {
-  //     const senderUser = await this.userService.getSelectedUserById(msg.senderId);
-  //     msg.senderAvatar = senderUser?.avatarPath || './assets/images/avatars/avatar5.svg';
-  //     console.log(" msg Sender ID:", msg.senderId);
-  //     console.log("VAR. ID:", senderUser);
-      
-  //   } else {
-  //     msg.senderAvatar = './assets/images/avatars/avatar5.svg';
-  //     console.log("Sender ID is undefined for message:", msg);
-  //   }
-  // }
-
   setMessageDisplayDate(msg: DirectMessage | Note) {
     let lastDisplayedDate: string | null = null;
 
@@ -204,8 +145,6 @@ export class DirectMessagesService {
     return await this.userService.getSelectedUserById(targetUserId);
   }
 
-
-  /* ---- UPDATE ---- */
 
   async loadDirectMessages(): Promise<void> {
     const directMessagesRef = collection(this.firestore, 'direct_messages');

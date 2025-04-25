@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, NgModule, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,7 +33,7 @@ import { DirectMessagesService } from '../../../shared/services/messages/direct-
   selector: 'app-direct-message',
   standalone: true,
   imports: [MatCardModule, MatButtonModule, MatIconModule, MatDividerModule, FormsModule,
-    MatFormFieldModule, MatInputModule, CommonModule, PickerComponent, NgIf, NgFor],
+    MatFormFieldModule, MatInputModule, CommonModule, PickerComponent, NgIf, NgFor,],
   templateUrl: './direct-message.component.html',
   styleUrls: ['./direct-message.component.scss', '../../../../styles.scss'],
   changeDetection: ChangeDetectionStrategy.Default,
@@ -75,6 +75,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   @Input() selectedUser = this.chatUtilityService.directMessageUser;
   @ViewChild('chatWindow', { static: false }) chatWindow!: ElementRef;
   @ViewChild('directChatMessageTextarea', { static: false }) directChatMessageTextarea!: ElementRef<HTMLTextAreaElement>;
+
   private isViewInitialized = false;
 
   constructor(
@@ -310,7 +311,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
   }
 
-  showEmojiForReact(message: DirectMessage): void {
+  showEmojiForReact(message: any): void {
     this.directMessageService.preventScroll = true; // Verhindert das Scrollen, wenn der Emoji-Picker geöffnet ist
     this.showEmojiPicker = false;  // Deaktiviere den Emoji-Picker, falls er sichtbar ist
     this.showEmojiPickerEdit = false; // Deaktiviere den Bearbeitungsmodus des Emoji-Pickers
@@ -335,7 +336,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  addOrUpdateReaction(message: DirectMessage, emoji: string): void {
+  addOrUpdateReaction(message: any, emoji: string): void {
     const currentUser = this.currentUser;
     if (!currentUser) {
       console.warn('Kein Benutzer gefunden!');
@@ -355,7 +356,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     // Überprüfe, ob `reactions` ein Array ist
     if (!Array.isArray(this.selectedMessage?.reactions)) {
       console.warn('Reactions sind nicht korrekt formatiert! Initialisiere als leeres Array.');
-      this.selectedMessage.reactions = [];
+      this.selectedMessage!.reactions = [];
     }
 
 
@@ -372,8 +373,8 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
         emojiReaction.count -= 1;
 
         if (emojiReaction.count === 0) {
-          const emojiIndex = this.selectedMessage.reactions.indexOf(emojiReaction);
-          this.selectedMessage.reactions.splice(emojiIndex, 1);
+          const emojiIndex = this.selectedMessage!.reactions.indexOf(emojiReaction);
+          this.selectedMessage!.reactions.splice(emojiIndex, 1);
         } else {
           emojiReaction.senderID = senderIDs.join(', ');
           emojiReaction.senderName = senderNames.join(', ');
@@ -386,7 +387,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       }
     } else {
       // Neue Reaktion hinzufügen, wenn sie noch nicht existiert
-      this.selectedMessage.reactions.push({
+      this.selectedMessage!.reactions.push({
         emoji: emoji,
         senderID: senderID,
         senderName: senderName,
@@ -441,6 +442,18 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       this.showEmojiPickerReact = false;
     }
   }
+
+
+  formatMessageContent(message: string | null): string {
+    console.log('999999999999999999999S');
+    console.log(message);
+    
+    
+    if (!message) return '';
+    
+    return message.replace(/\n/g, '<br>');
+  }
+
 
   formatSenderNames(senderNames: string, senderIDs: string): string {
     const senderIDList = senderIDs.split(', ');
@@ -498,7 +511,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  saveMessage(message: DirectMessage) {
+  saveMessage(message: any) {
     if (message && this.editingMessageId) {
       const messageRef = doc(this.firestore, `direct_messages/${this.editingMessageId}`);
 
@@ -538,9 +551,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     if (this.directChatMessage.length > 0) {
       this.directChatMessage.trim();
       if (this.currentUser?.id === this.userService.selectedUser?.id) {
-        // this.noteService.addNote(this.directChatMessage);
-        console.log('Note gespeichert:');
-
+        await this.noteService.createNewNote(this.directChatMessage, this.currentUser!);
         this.clearInputField();
         this.clearUploadCache();
       }

@@ -8,19 +8,94 @@
     </div>
     <div #chatWindow class="chat-content">
 
-        <span *ngIf="directMessageService.selectedUser?.id" class="message-received-container" id="info-text">
+        <span *ngIf="directMessageService.selectedUser?.id === this.currentUser?.id" class="message-received-container" id="info-text">
             Dies ist dein <strong>persönlicher Space</strong>. Hier kannst du dir Notizen machen, To-Dos auflisten, oder Links und Files
             griffbereit ablegen.
             Du kannst hier auch Dinge mit dir selbst besprechen.
-            <hr>
         </span>
 
-        <div class="message-box">
+<!-- ------- -->
+
+        <div class="message-box" *ngIf="directMessageService.selectedUser?.id === this.currentUser?.id">
+            <div class="message-content" *ngFor="let note of noteService.notes; let i = index">
+                <div *ngIf="note.displayDate" class="posted-date-container">
+                    <span class="posted-date">{{ note.displayDate }}</span>
+                </div>
+                <div class="message-received-container full-width">
+
+                    <div class="message-container full-width">
+                        <div class="reaction-container-received">
+                            <div class="reaction-icon"><img src="./assets/images/reaction/check_mark.png"
+                                    alt="Check Mark"
+                                    (click)="addOrUpdateReaction(note, './assets/images/reaction/check_mark.png')">
+                            </div>
+                            <div class="reaction-icon"><img src="./assets/images/reaction/hands_up.png" alt="Hands Up"
+                                    (click)="addOrUpdateReaction(note, './assets/images/reaction/hands_up.png')">
+                            </div>
+                            <div (click)="showEmojiForReact(note)"
+                                class="reaction-icon">
+                                <mat-icon fontIcon="add_reaction"></mat-icon>
+                            </div>
+
+                        </div>
+                        <span class="message-infos-sender">
+                            <span class="message-time">{{ note.formattedTimestamp }}</span>
+                        </span>
+                        <span class="message-recieved">
+                            <p [innerHTML]="formatMessageContent(note.note)"></p>
+                            <!-- Bildvorschau für URLs, die Bilddateien sind -->
+                            <a *ngIf="isImageFile(note.fileURL)" [href]="note.fileURL" target="_blank">
+                                <img class="image-preview" [src]="note.fileURL" alt="Bildvorschau" width="100%" />
+                            </a>
+                            <!-- Datei-Link für alle anderen Dateitypen -->
+                            <a *ngIf="note.fileURL && !isImageFile(note.fileURL) && !note.fileURL?.endsWith('.pdf')"
+                                class="file-link" [href]="note.fileURL" target="_blank"> {{
+                                getFileNameFromURL(note.fileURL) }}</a>
+                        </span>
+
+                        <div class="show-reactions">
+                            <div class="reaction-icon-button" *ngFor="let reaction of note.reactions"
+                                (click)="addOrUpdateReaction(note, reaction.emoji)">
+
+                                <!-- Überprüfung, ob reaction.emoji ein Bildpfad ist -->
+                                <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+                                    <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+                                </ng-container>
+                                <ng-template #emojiText>
+                                    {{ reaction.emoji }}
+                                </ng-template>
+
+                                <!-- Popup zur Anzeige der Namen und der Reaktionsbeschreibung -->
+                                <div class="reaction-name-popup">
+                                    <ng-container *ngIf="reaction.emoji.includes('.png'); else emojiText">
+                                        <img [src]="reaction.emoji" alt="Reaction Icon" class="reaction-image">
+                                    </ng-container>
+                                    <h3>
+
+                                        {{ formatSenderNames(reaction.senderName, reaction.senderID) }}
+                                    </h3>
+                                    <span>{{ getReactionVerb(reaction.senderName, reaction.senderID) }}</span>
+                                </div>
+
+                                <!-- Reaktionsanzahl anzeigen -->
+                                {{ reaction.count }}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+<!-- ------- -->
+
+        <div class="message-box" *ngIf="directMessageService.selectedUser?.id != this.currentUser?.id">
             <div class="message-content" *ngFor="let message of directMessageService.currentConversation; let i = index">
                 <div *ngIf="message.displayDate" class="posted-date-container">
                     <span class="posted-date">{{ message.displayDate }}</span>
                 </div>
-                <div *ngIf="!message.isOwnMessage" class="message-received-container">
+                <div class="message-received-container">
                     <img class="sender-avatar" [src]="message.senderAvatar" alt="">
                     <div class="message-container">
                         <div class="reaction-container-received">
@@ -168,7 +243,7 @@
 
                         <div *ngIf="isEditing(message.messageId)" class="message-edit-container">
                             <textarea class="message-input" id="edit-message" type="text"
-                                [(ngModel)]="editedMessage"></textarea>
+                                [(ngModel)]="editedMessage" wrap=physical></textarea>
                             <div class="message-edit-buttons">
                                 <div (click)="showEmojiForEdit()" class="message-icon">
                                     <mat-icon fontIcon="sentiment_satisfied"></mat-icon>
