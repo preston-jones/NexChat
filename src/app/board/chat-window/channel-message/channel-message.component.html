@@ -32,7 +32,7 @@
             </a>
         </div>
     </div>
-    <div #chatWindow class="welcome-page-container" *ngIf="channelsService.currentChannelName === 'Willkommen'">
+    <div class="welcome-page-container" *ngIf="channelsService.currentChannelName === 'Willkommen'">
         <app-welcome-page></app-welcome-page>
     </div>
     <div #chatWindow class="chat-content" *ngIf="channelsService.currentChannelName != 'Willkommen'">
@@ -56,7 +56,7 @@
                                 fontIcon="comment"></mat-icon></div>
                     </div>
                     <span class="message-infos-sender">
-                        <span class="sender-name" (click)="this.getSelectedUserInfo(message.senderID)">
+                        <span class="sender-name" (click)="userService.getSelectedUserById(message.senderID!)">
                             {{message.senderName }}
                         </span>
                         <span class="message-time">{{ message.formattedTimestamp }}</span>
@@ -139,7 +139,7 @@
                         </div>
 
                         <span class="message-infos-reciever">
-                            <span class="my-name" (click)="openUserProfile($event)">
+                            <span class="my-name" (click)="userService.openUserProfile($event)">
                                 {{ message.senderName }}
                             </span>
                             <span class="message-time">{{

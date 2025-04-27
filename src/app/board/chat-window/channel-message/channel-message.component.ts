@@ -85,15 +85,41 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit() {
+    console.log('CHANNEL!!! ChannelMessageComponent initialized');
+    
     this.loadData();
     this.channelNavigationService.channelSelected$.subscribe(({ channel, index }) => {
       this.openChanneFromDirectMessage(channel, index);
     });
+
+    setTimeout(() => {
+      this.scrollToBottom();
+      console.log('CHANNEL!!! Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
+    }, 0);
   }
 
+
+  // ngAfterViewChecked() {
+  //   if (this.chatWindow && this.chatWindow.nativeElement) {
+  //     console.log('chatWindow is now available:');
+  //     // Perform any actions that depend on chatWindow here
+  //     this.scrollToBottom();
+  //   }
+  // }
+
+
   ngAfterViewInit() {
+
+    if (!this.chatWindow) {
+      console.error('chatWindow is not available');
+      return;
+    }
+
     const observer = new MutationObserver(() => {
-      // this.scrollToBottom();
+      console.log('MutationObserver triggered');
+      if (!this.channelsService.preventScroll) {
+        this.scrollToBottom();
+      }
     });
     observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
   }
@@ -138,7 +164,11 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
   scrollToBottom() {
-    if (this.chatWindow && this.chatWindow.nativeElement && this.channelsService.currentChannelName != 'Willkommen') {
+    if (this.channelsService.preventScroll) {
+      this.channelsService.preventScroll = false; // Reset the flag
+      return; // Prevent scrolling
+    }
+    if (this.chatWindow && this.chatWindow.nativeElement) {
       this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
     }
   }
@@ -297,11 +327,9 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
   showEmoji() {
     this.showEmojiPickerEdit = false; // Blendet den anderen Picker sofort aus
-
-    // Füge eine Verzögerung hinzu, bevor der aktuelle Picker angezeigt wird
     setTimeout(() => {
       this.showEmojiPicker = !this.showEmojiPicker;
-    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0);
   }
 
   showEmojiForEdit() {
@@ -310,18 +338,16 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     // Füge eine Verzögerung hinzu, bevor der aktuelle Picker angezeigt wird
     setTimeout(() => {
       this.showEmojiPickerEdit = !this.showEmojiPickerEdit;
-    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0);
   }
 
   showEmojiForReact(message: Message) {
+    this.channelsService.preventScroll = true; // Verhindert das Scrollen
     this.showEmojiPicker = false; // Blendet den anderen Picker sofort aus
     this.showEmojiPickerEdit = false;
     this.selectedMessage = message;
-    console.log(this.selectedMessage);
-    // Füge eine Verzögerung hinzu, bevor der aktuelle Picker angezeigt wird
     setTimeout(() => {
       this.showEmojiPickerReact = !this.showEmojiPickerReact;
-      console.log('showEmojiPickerReact:', this.showEmojiPickerReact);
     }, 0);
   }
 
@@ -388,7 +414,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  updateMessageReactions(message: Message): void {
+  async updateMessageReactions(message: Message): Promise<void> {
     const messageDocRef = doc(this.firestore, `messages/${message.messageId}`);
     updateDoc(messageDocRef, { reactions: message.reactions })
       .then(() => {
@@ -433,6 +459,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
   closeEditMessageBox() {
+    this.channelsService.preventScroll = true; // Erlaube das Scrollen wieder
     this.showMessageEdit = false;
   }
 
@@ -634,19 +661,4 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     const fileName = decodedUrl.split('?')[0].split('/').pop();
     return fileName || 'Datei'; // Wenn kein Dateiname gefunden wird, 'Datei' als Fallback anzeigen
   }
-
-  async getSelectedUserInfo(selectedUserId: string | null) {
-    console.log('!!!selectedUserId', selectedUserId);
-
-    this.userService.showUserInfo.set(true);
-    await this.userService.getSelectedUserById(selectedUserId as string);
-  }
-
-
-  openUserProfile(event: Event) {
-    event.stopPropagation();
-    this.userService.showProfile.set(true);
-    this.userService.showOverlay.set(true);
-  }
-
 }

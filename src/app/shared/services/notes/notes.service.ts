@@ -16,33 +16,33 @@ export class NoteService {
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private firestore: Firestore
+    private firestore: Firestore,
   ) { }
 
 
-    async loadNotes(): Promise<void> {
-      const noteRef = collection(this.firestore, 'notes');
-      const notesQuery = query(noteRef, orderBy('timestamp'));
-  
-      onSnapshot(notesQuery, async (snapshot) => {
-        // Verarbeite die geladenen Nachrichten
-        this.notes = snapshot.docs
-          .map(doc => {
-            const noteData = doc.data() as Note;
-            return {
-              ...noteData,
-              noteId: doc.id,
-              timestamp: noteData.timestamp || new Date(), // Ensure timestamp is set
-            };
-          })
-          .filter(note =>
-            note.noteAuthorId === this.authService.currentUserUid);
-        this.notes.forEach(async note => {
-          this.setNoteDisplayDate(note);
-        });
-        console.log('Real-time Direct Messages:', this.notes);
+  async loadNotes(): Promise<void> {
+    const noteRef = collection(this.firestore, 'notes');
+    const notesQuery = query(noteRef, orderBy('timestamp'));
+
+    onSnapshot(notesQuery, async (snapshot) => {
+      // Verarbeite die geladenen Nachrichten
+      this.notes = snapshot.docs
+        .map(doc => {
+          const noteData = doc.data() as Note;
+          return {
+            ...noteData,
+            noteId: doc.id,
+            timestamp: noteData.timestamp || new Date(), // Ensure timestamp is set
+          };
+        })
+        .filter(note =>
+          note.noteAuthorId === this.authService.currentUserUid);
+      this.notes.forEach(async note => {
+        this.setNoteDisplayDate(note);
       });
-    }
+      console.log('Real-time Direct Messages:', this.notes);
+    });
+  }
 
 
   async createNewNote(note: string, currentUser: User) {
@@ -96,30 +96,29 @@ export class NoteService {
   }
 
 
-    // async loadNotes() {
-    //   this.notes = [];
-    //   this.notes.forEach(async note => {
-    //     this.setNoteDisplayDate(note);
-    //   });
-    // }
-  
-  
-    setNoteDisplayDate(note: Note | Note) {
-      let lastDisplayedDate: string | null = null;
-  
-      const noteDate = note.timestamp.toDate();
-      const formattedDate = this.formatTimestamp(noteDate);
-  
-      // Setze das Anzeigen-Datum
-      if (formattedDate !== lastDisplayedDate) {
-        note.displayDate = formattedDate;
-        lastDisplayedDate = formattedDate;
-      } else {
-        note.displayDate = null;
-      }
-  
-      // Setze formattedTimestamp für die Nachricht
-      note.formattedTimestamp = noteDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  setNoteDisplayDate(note: Note | Note) {
+    let lastDisplayedDate: string | null = null;
+
+    const noteDate = note.timestamp.toDate();
+    const formattedDate = this.formatTimestamp(noteDate);
+
+    // Setze das Anzeigen-Datum
+    if (formattedDate !== lastDisplayedDate) {
+      note.displayDate = formattedDate;
+      lastDisplayedDate = formattedDate;
+    } else {
+      note.displayDate = null;
     }
 
+    // Setze formattedTimestamp für die Nachricht
+    note.formattedTimestamp = noteDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+
+  saveNote(note: Note, editingNoteId: string, editedNote: string) {
+    if (note && editingNoteId) {
+      const noteRef = doc(this.firestore, `notes/${editingNoteId}`);
+      updateDoc(noteRef, { note: editedNote });
+    }
+  }
 }

@@ -117,7 +117,9 @@ export class UserService {
 
 
   async getSelectedUserById(userId: string): Promise<User | null> {
-    // this.selectedUser = new User();
+    // this.showUserInfo.set(true);
+    // console.log(this.showUserInfo);
+    
     const userRef = this.getUserDocReference(userId);
     const userDoc = await getDoc(userRef);
 
@@ -134,5 +136,12 @@ export class UserService {
     } else {
       return null;
     }
+  }
+
+
+  openUserProfile(event: Event) {
+    event.stopPropagation();
+    this.showProfile.set(true);
+    this.showOverlay.set(true);
   }
 }

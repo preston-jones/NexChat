@@ -21,6 +21,10 @@ export class DirectMessagesService {
   showDirectMessage: boolean = true;
   showChannelMessage: boolean = false;
   showChatWindow: boolean = true;
+  showMessageEdit = false;
+  showMessageEditArea = false;
+  editedMessage = '';
+  editingMessageId: string | null = null;
   directMessages: DirectMessage[] = [];
   currentConversation: DirectMessage[] = [];
   selectedUser: User | null = null;
@@ -54,6 +58,8 @@ export class DirectMessagesService {
 
 
   resetSrollPrevent() {
+    console.log('resetSrollPrevent DIRECT', this.preventScroll);
+    
     this.preventScroll = false;
   }
 
@@ -64,23 +70,15 @@ export class DirectMessagesService {
     this.selectedUser = clickedUser;
     this.userService.selectedUser = clickedUser;
     this.userService.selectedUserId = clickedUser.id;
-    console.log('Selected User:', this.selectedUser);
-    console.log('SERVICE User:', this.userService.selectedUser);
-    console.log('SERVICE User:', this.userService.selectedUser);
-
     this.userService.clickedUsers.fill(false);
     this.channelsService.clickedChannels.fill(false);
     this.userService.clickedUsers[i] = true;
-    // this.getUserName(clickedUser);
     this.clickUserEvent.emit();
-    console.log('User clicked:', clickedUser);
-    console.log(this.userService.selectedUser);
 
     if (this.authService.currentUserUid) {
       if (clickedUser.id === this.authService.currentUserUid) {
         this.currentConversation = [];
         this.noteService.loadNotes();
-        console.log('Load Notes.');
       }
       else {
         this.loadCurrentConversation(clickedUser);
@@ -88,8 +86,6 @@ export class DirectMessagesService {
         // this.setAllMessagesAsRead();
       }
     }
-    console.log('CURRENT CON.: ', this.currentConversation); // update currentConversation after message is send, or firestore is updated!!!
-
   }
 
 
@@ -191,6 +187,14 @@ export class DirectMessagesService {
     } else {
       // Format "13. September"
       return directMessageDate.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' });
+    }
+  }
+
+
+  saveMessage(message: DirectMessage, editingMessageId: string, editedMessage: string) {
+    if (message && editingMessageId) {
+      const messageRef = doc(this.firestore, `direct_messages/${editingMessageId}`);
+      updateDoc(messageRef, { message: editedMessage });
     }
   }
 }

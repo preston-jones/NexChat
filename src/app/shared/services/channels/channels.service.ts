@@ -12,6 +12,7 @@ import { getDocs, updateDoc, where, getDoc } from 'firebase/firestore';
 })
 export class ChannelsService implements OnInit {
 
+  preventScroll = false;
   clickedChannels: boolean[] = [];
   clickedUsers: boolean[] = [];
   currentChannelName: string = '';
@@ -106,14 +107,21 @@ export class ChannelsService implements OnInit {
     channel.memberUids.forEach(async (uid) => {
       this.userService.getSelectedUserById(uid).then((user) => {
         if (this.currentChannelMembers && user) {
-          this.currentChannelMembers.push(user);          
+          this.currentChannelMembers.push(user);
         }
       });
     });
   }
 
 
+  resetSrollPrevent() {
+    console.log('resetSrollPrevent CHANNEL', this.preventScroll);
+    this.preventScroll = false;
+  }
+
+
   clickChannelContainer(channel: Channel, i: number) {
+    this.resetSrollPrevent();
     this.clickedChannels.fill(false);
     this.clickedUsers.fill(false);
     this.clickedChannels[i] = true;

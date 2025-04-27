@@ -1,6 +1,6 @@
 <div class="chat-container max-width">
     <div class="chat-header">
-        <div class="selected-user" (click)="this.getSelectedUserInfo(userService.selectedUser?.id)"><img
+        <div class="selected-user" (click)="userService.getSelectedUserById(userService.selectedUser?.id!)"><img
                 [src]="userService.selectedUser?.avatarPath" alt="">
             <span *ngIf="userService.selectedUserId === this.currentUser?.id">{{ currentUser?.name + ' (Du)' }}</span>
             <span *ngIf="userService.selectedUserId != this.currentUser?.id">{{ userService.selectedUser?.name }}</span>
@@ -41,7 +41,7 @@
                                 </div>
                                 <div (click)="showMessageEditToggle()" class="reaction-icon edit-message-icon"><mat-icon
                                         fontIcon="more_vert"></mat-icon></div>
-                                <div *ngIf="note.noteId && showMessageEdit" class="edit-message">
+                                <div *ngIf="note.noteId && directMessageService.showMessageEdit" class="edit-message">
                                     <span (click)="editMessage(note.noteId, note.note)">Notiz
                                         bearbeiten</span>
                                 </div>
@@ -93,14 +93,14 @@
                         </div>
                         <div *ngIf="isEditing(note.noteId)" class="message-edit-container">
                             <textarea class="message-editor-textarea" id="edit-message" type="text"
-                                [(ngModel)]="editedMessage" wrap=physical></textarea>
+                                [(ngModel)]="directMessageService.editedMessage" wrap=physical></textarea>
                             <div class="message-edit-buttons">
                                 <div (click)="showEmojiForEdit()" class="message-icon">
                                     <mat-icon fontIcon="sentiment_satisfied"></mat-icon>
                                 </div>
                                 <div class="message-edit-action">
                                     <button (click)="closeMessageEdit()">Abbrechen</button>
-                                    <button (click)="saveMessage(note)" class="save-btn">Speichern</button>
+                                    <button (click)="saveEditedMessage(note)" class="save-btn">Speichern</button>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
 
                         </div>
                         <span class="message-infos-sender">
-                            <span class="sender-name" (click)="this.getSelectedUserInfo(message.senderId)">
+                            <span class="sender-name" (click)="userService.getSelectedUserById(message.senderId!)">
                                 {{message.senderName }}
                             </span>
                             <span class="message-time">{{ message.formattedTimestamp }}</span>
@@ -204,14 +204,14 @@
                                 </div>
                                 <div (click)="showMessageEditToggle()" class="reaction-icon edit-message-icon"><mat-icon
                                         fontIcon="more_vert"></mat-icon></div>
-                                <div *ngIf="message.messageId && showMessageEdit" class="edit-message">
+                                <div *ngIf="message.messageId && directMessageService.showMessageEdit" class="edit-message">
                                     <span (click)="editMessage(message.messageId, message.message)">Nachricht
                                         bearbeiten</span>
                                 </div>
                             </div>
 
                             <span class="message-infos-reciever">
-                                <span class="my-name" (click)="openUserProfile($event)">
+                                <span class="my-name" (click)="userService.openUserProfile($event)">
                                     {{ message.senderName }}
                                 </span>
                                 <span class="message-time">{{
@@ -267,14 +267,14 @@
 
                         <div *ngIf="isEditing(message.messageId)" class="message-edit-container">
                             <textarea class="message-editor-textarea" id="edit-message" type="text"
-                                [(ngModel)]="editedMessage" wrap=physical></textarea>
+                                [(ngModel)]="directMessageService.editedMessage" wrap=physical></textarea>
                             <div class="message-edit-buttons">
                                 <div (click)="showEmojiForEdit()" class="message-icon">
                                     <mat-icon fontIcon="sentiment_satisfied"></mat-icon>
                                 </div>
                                 <div class="message-edit-action">
                                     <button (click)="closeMessageEdit()">Abbrechen</button>
-                                    <button (click)="saveMessage(message)" class="save-btn">Speichern</button>
+                                    <button (click)="saveEditedMessage(message)" class="save-btn">Speichern</button>
                                 </div>
                             </div>
                         </div>

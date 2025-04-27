@@ -26,6 +26,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EmojiReaction } from '../../../shared/models/emoji-reaction.model';
 import { ChannelNavigationService } from '../../../shared/services/chat/channel-navigation.service';
 import { DirectMessagesService } from '../../../shared/services/messages/direct-messages.service';
+import { Note } from '../../../shared/models/note.class';
 
 
 
@@ -57,13 +58,9 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   showEmojiPicker = false;
   showEmojiPickerEdit: boolean = false;
   showEmojiPickerReact: boolean = false;
-  showMessageEdit = false;
-  showMessageEditArea = false;
   channelChatMessage = '';
   directChatMessage = '';
   messageArea = true;
-  editedMessage = '';
-  editingMessageId: string | null = null;
   senderAvatar: string | null = null;
   senderName: string | null = null;
   selectedFile: File | null = null;// Service für den Datei-Upload
@@ -114,16 +111,18 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
     setTimeout(() => {
       this.scrollToBottom();
-      console.log('Scroll to bottom triggered');
+      console.log('Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
     }, 0);
   }
 
 
   ngAfterViewInit() {
+    console.log('chatWindow:', this.chatWindow);
     this.isViewInitialized = true;
     this.clearAndFocusTextarea();
 
     const observer = new MutationObserver(() => {
+      console.log('MutationObserver triggered');
       if (!this.directMessageService.preventScroll) {
         this.scrollToBottom();
       }
@@ -306,28 +305,24 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     this.showEmojiPickerEdit = false; // Blendet den anderen Picker sofort aus
     setTimeout(() => {
       this.showEmojiPicker = !this.showEmojiPicker;
-    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0);
   }
 
   showEmojiForEdit() {
     this.showEmojiPicker = false; // Blendet den anderen Picker sofort aus
     setTimeout(() => {
       this.showEmojiPickerEdit = !this.showEmojiPickerEdit;
-    }, 0); // 200ms Verzögerung, anpassbar nach Bedarf
+    }, 0);
   }
 
   showEmojiForReact(message: any): void {
     this.directMessageService.preventScroll = true; // Verhindert das Scrollen, wenn der Emoji-Picker geöffnet ist
     this.showEmojiPicker = false;  // Deaktiviere den Emoji-Picker, falls er sichtbar ist
     this.showEmojiPickerEdit = false; // Deaktiviere den Bearbeitungsmodus des Emoji-Pickers
-
-    // Setze die conversationId und die Nachricht
     this.messageId = message.messageId;
     this.selectedMessage = message;
-    // Füge eine Verzögerung hinzu, bevor der aktuelle Picker angezeigt wird
     setTimeout(() => {
       this.showEmojiPickerReact = !this.showEmojiPickerReact;
-      console.log('showEmojiPickerReact:', this.showEmojiPickerReact);
     }, 0);
   }
 
@@ -337,7 +332,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
   addEmojiForEdit(event: any) {
-    this.editedMessage += event.emoji.native;
+    this.directMessageService.editedMessage += event.emoji.native;
   }
 
 
@@ -488,49 +483,45 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
   showMessageEditToggle() {
     this.directMessageService.preventScroll = true;
-    this.showMessageEdit = !this.showMessageEdit;
+    this.directMessageService.showMessageEdit = !this.directMessageService.showMessageEdit;
   }
 
   closeEditMessageBox() {
-    this.showMessageEdit = false;
+    this.directMessageService.showMessageEdit = false;
   }
 
 
 
   editMessage(messageId: string, messageText: string | null) {
-    this.editingMessageId = messageId;
-    this.editedMessage = messageText || '';
-    this.showMessageEditArea = true;         // Bearbeitungsbereich anzeigen
-    this.showMessageEdit = false;            // Toggle zurücksetzen
+    this.directMessageService.editingMessageId = messageId;
+    this.directMessageService.editedMessage = messageText || '';
+    this.directMessageService.showMessageEditArea = true;         // Bearbeitungsbereich anzeigen
+    this.directMessageService.showMessageEdit = false;            // Toggle zurücksetzen
   }
 
 
-  saveMessage(message: any) {
-    if (message && this.editingMessageId) {
-      const messageRef = doc(this.firestore, `direct_messages/${this.editingMessageId}`);
-
-      updateDoc(messageRef, { message: this.editedMessage }).then(() => {
-        this.editingMessageId = null;
-        this.showMessageEditArea = false;
-      }).catch(error => {
-        console.error("Fehler beim Speichern der Nachricht: ", error);
-      });
-
-    } else {
-      console.error("Ungültige Nachricht oder Conversation-ID.");
+  saveEditedMessage(message: any) {
+    if (message.messageId) {
+      this.directMessageService.saveMessage(message, this.directMessageService.editingMessageId!, this.directMessageService.editedMessage);
     }
+    else if (message.noteId) {
+      this.noteService.saveNote(message, this.directMessageService.editingMessageId!, this.directMessageService.editedMessage);
+    }
+    this.directMessageService.editingMessageId = null;
+    this.directMessageService.showMessageEditArea = false;
   }
 
 
   closeMessageEdit() {
-    this.editingMessageId = null;
+    this.directMessageService.editingMessageId = null;
     this.messageId = '';
-    this.editedMessage = '';
-    this.showMessageEditArea = false;
+    this.directMessageService.editedMessage = '';
+    this.directMessageService.showMessageEditArea = false;
   }
 
+  
   isEditing(messageId: string): boolean {
-    return this.editingMessageId === messageId; // Prüfe gegen die Firestore-Dokument-ID
+    return this.directMessageService.editingMessageId === messageId; // Prüfe gegen die Firestore-Dokument-ID
   }
 
 
@@ -609,8 +600,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
   clearAndFocusTextarea() {
-    console.log('clearAndFocusTextarea called');
-
     if (this.isViewInitialized && this.directChatMessageTextarea && this.directChatMessageTextarea.nativeElement) {
       this.directChatMessage = ''; // Clear the input field
       this.directChatMessageTextarea.nativeElement.focus(); // Set focus on the input field
@@ -619,22 +608,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-  // // Funktion zum Bereinigen der Nachricht und Entfernen der @Benutzername
-  // cleanMessage(message: string): string {
-  //   // Durchlaufe alle markierten Benutzer und entferne jede `@Benutzername`-Markierung
-  //   this.markedUser.forEach(user => {
-  //     const userTag = `@${user.name}`;
-  //     const userTagIndex = message.indexOf(userTag);
-
-  //     if (userTagIndex !== -1) {
-  //       // Entfernt die `@Benutzername`-Markierung aus der Nachricht
-  //       message = message.replace(userTag, '').trim();
-  //     }
-  //   });
-
-  //   return message; // Bereinigte Nachricht wird zurückgegeben
-  // }
 
   onFileSelected(event: Event) {
     const fileInput = event.target as HTMLInputElement;
@@ -693,20 +666,4 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     const fileName = decodedUrl.split('?')[0].split('/').pop();
     return fileName || 'Datei'; // Wenn kein Dateiname gefunden wird, 'Datei' als Fallback anzeigen
   }
-
-
-  async getSelectedUserInfo(selectedUserId: string | null | undefined) {
-    console.log('Selected User ID:', selectedUserId);
-
-    this.userService.showUserInfo.set(true);
-    await this.userService.getSelectedUserById(selectedUserId as string);
-  }
-
-
-  openUserProfile(event: Event) {
-    event.stopPropagation();
-    this.userService.showProfile.set(true);
-    this.userService.showOverlay.set(true);
-  }
-
 }
