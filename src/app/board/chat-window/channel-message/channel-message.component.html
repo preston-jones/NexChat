@@ -36,6 +36,7 @@
         <app-welcome-page></app-welcome-page>
     </div>
     <div #chatWindow class="chat-content" *ngIf="channelsService.currentChannelName != 'Willkommen'">
+        <div class="message-box"></div>
         <div class="max-width" *ngFor="let message of (messageService.currentChatMessages); let i = index">
             <div *ngIf="message.displayDate" class="posted-date-container">
                 <span class="posted-date">{{ message.displayDate }}</span>
@@ -252,7 +253,12 @@
 
 
             <div class="right-icon-container">
-                <div (click)="sendMessage()" class="message-icon send"><mat-icon fontIcon="send"></mat-icon></div>
+                <button (click)="sendMessage()" id="sendMessage" class="message-icon send-btn send"
+                [disabled]="!channelChatMessage || channelChatMessage.trim().length === 0" [ngClass]="{
+                    disabled: !channelChatMessage || channelChatMessage.trim().length === 0
+                  }">
+                    <mat-icon fontIcon="send"></mat-icon>
+                </button>
             </div>
         </div>
         <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)" [darkMode]="false"

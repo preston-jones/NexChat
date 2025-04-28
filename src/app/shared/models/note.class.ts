@@ -11,6 +11,7 @@ export class Note {
     displayDate: string | null;
     noteAuthorId: string | null | undefined;
     fileURL: string | null;
+    markedUser: { id: string; name: string }[] = [];
 
     constructor(obj?: any, currentUserUid?: string | null) {
         this.timestamp = obj ? obj.timestamp : null;
@@ -22,5 +23,6 @@ export class Note {
         this.formattedTimestamp = '';
         this.displayDate = null;
         this.fileURL = obj ? obj.fileURL : null;
+        this.markedUser = obj?.markedUser || [];
     }
 }

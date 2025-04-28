@@ -317,9 +317,12 @@
 
                 </div>
                 <div class="right-icon-container">
-                    <div (click)="sendMessage()" id="sendMessage" class="message-icon send"><mat-icon fontIcon="send"
-                            disabled></mat-icon>
-                    </div>
+                    <button (click)="sendMessage()" id="sendMessage" class="message-icon send-btn send"
+                    [disabled]="!directChatMessage || directChatMessage.trim().length === 0" [ngClass]="{
+                        disabled: !directChatMessage || directChatMessage.trim().length === 0
+                      }">
+                        <mat-icon fontIcon="send"></mat-icon>
+                    </button>
                 </div>
             </div>
             <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"

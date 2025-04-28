@@ -86,43 +86,39 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     console.log('CHANNEL!!! ChannelMessageComponent initialized');
-    
+
     this.loadData();
     this.channelNavigationService.channelSelected$.subscribe(({ channel, index }) => {
       this.openChanneFromDirectMessage(channel, index);
     });
-
-    setTimeout(() => {
-      this.scrollToBottom();
-      console.log('CHANNEL!!! Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
-    }, 0);
+    if (this.chatWindow) {
+      setTimeout(() => {
+        this.scrollToBottom();
+        console.log('CHANNEL!!! Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
+      }, 0);
+    }
   }
 
 
   // ngAfterViewChecked() {
   //   if (this.chatWindow && this.chatWindow.nativeElement) {
-  //     console.log('chatWindow is now available:');
-  //     // Perform any actions that depend on chatWindow here
   //     this.scrollToBottom();
   //   }
   // }
 
 
   ngAfterViewInit() {
-
-    if (!this.chatWindow) {
-      console.error('chatWindow is not available');
-      return;
+    if (this.chatWindow) {
+      const observer = new MutationObserver(() => {
+        console.log('MutationObserver triggered');
+        if (!this.channelsService.preventScroll) {
+          this.scrollToBottom();
+        }
+      });
+      observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
     }
-
-    const observer = new MutationObserver(() => {
-      console.log('MutationObserver triggered');
-      if (!this.channelsService.preventScroll) {
-        this.scrollToBottom();
-      }
-    });
-    observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
   }
+
 
   async loadData() {
     this.auth.onAuthStateChanged(async (user) => {

@@ -45,14 +45,13 @@ export class NoteService {
   }
 
 
-  async createNewNote(note: string, currentUser: User) {
+  async createNewNote(note: string, currentUser: User, markedUser: any[] = []) {
     const noteRef = collection(this.firestore, 'notes');
-    const conversationId = uuidv4();
 
-    // const markedUserDetails = this.markedUser.map(user => ({
-    //   id: user.id,
-    //   name: user.name,
-    // }));
+    const markedUserDetails = markedUser.map(user => ({
+      id: user.id,
+      name: user.name,
+    }));
 
     // Füge die neue Message in Firestore hinzu
     const noteDocRef = await addDoc(noteRef, {
@@ -63,6 +62,7 @@ export class NoteService {
       note: note,
       reactions: [],
       fileURL: '',
+      markedUser: markedUserDetails || [],
       readedMessage: false,
     });
     // await this.updateMessageFileURL(messageDocRef, conversationId);

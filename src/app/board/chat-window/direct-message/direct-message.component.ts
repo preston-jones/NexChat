@@ -394,23 +394,26 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
         count: 1
       });
     }
-
     // Aktualisierung der Reaktionen für die spezifische Nachricht in Firestore
     this.updateMessageReactions(message);
   }
 
 
-  async updateMessageReactions(message: DirectMessage): Promise<void> {
-    const messageDocRef = doc(this.firestore, `direct_messages/${this.messageId}`);
-
-    updateDoc(messageDocRef, { reactions: message.reactions })
+  async updateMessageReactions(message: any): Promise<void> {
+    if (message.messageId) {
+      const messageDocRef = doc(this.firestore, `direct_messages/${message.messageId}`);
+      updateDoc(messageDocRef, { reactions: message.reactions })
       .then(() => {
-        console.log('Reaktionen erfolgreich aktualisiert.');
         this.cd.markForCheck(); // Komponenten-Update anstoßen
-      })
-      .catch(error => {
-        console.error('Fehler beim Aktualisieren der Reaktionen: ', error);
       });
+    }
+    else if (message.noteId) {
+      const messageDocRef = doc(this.firestore, `notes/${message.noteId}`);
+      updateDoc(messageDocRef, { reactions: message.reactions })
+      .then(() => {
+        this.cd.markForCheck(); // Komponenten-Update anstoßen
+      });
+    }
   }
 
 
@@ -531,17 +534,21 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
   async sendMessage() {
+    console.log('Marked User:', this.markedUser);
+    console.log('Marked Channel:', this.markedChannel);
+    
+    
     console.log(this.currentUser?.id);
     console.log(this.userService.selectedUser?.id);
     if (this.directChatMessage.length > 0) {
       this.directChatMessage.trim();
       if (this.currentUser?.id === this.userService.selectedUser?.id) {
-        await this.noteService.createNewNote(this.directChatMessage, this.currentUser!);
+        await this.noteService.createNewNote(this.directChatMessage, this.currentUser!, this.markedUser);
         this.clearInputField();
         this.clearUploadCache();
       }
       else {
-        await this.createNewMessage();
+        await this.directMessageService.createNewMessage(this.directChatMessage, this.currentUser!, this.markedUser);
         this.clearInputField();
         this.clearUploadCache();
       }
@@ -549,46 +556,10 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  async createNewMessage() {
-    const messagesRef = collection(this.firestore, 'direct_messages');
-    const conversationId = uuidv4();
-
-    const markedUserDetails = this.markedUser.map(user => ({
-      id: user.id,
-      name: user.name,
-    }));
-
-    // Füge die neue Message in Firestore hinzu
-    const messageDocRef = await addDoc(messagesRef, {
-      senderName: this.currentUser?.name || '',
-      message: this.directChatMessage || '',
-      reactions: [],
-      timestamp: new Date(),
-      receiverName: this.userService.selectedUser?.name || '',
-      senderId: this.currentUser?.id || null,
-      receiverId: this.userService.selectedUser?.id || null,
-      fileURL: '',
-      markedUser: markedUserDetails || [],
-      readedMessage: false,
-      messageId: ''
-    });
-    await this.updateMessageFileURL(messageDocRef, conversationId);
-    await this.updateNewMessage(messageDocRef);
-    this.directMessageService.loadCurrentConversation(this.userService.selectedUser);
-  }
-
-
-  async updateNewMessage(messageDocRef: any) {
-    await updateDoc(messageDocRef, {
-      messageId: messageDocRef.id,
-    });
-  }
-
-
-  async updateMessageFileURL(messageDocRef: any, conversationId: string) {
+  async updateMessageFileURL(messageDocRef: any) {
     if (this.selectedFile) {
       await updateDoc(messageDocRef, {
-        fileURL: await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, messageDocRef.id),
+        fileURL: await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, messageDocRef.id),
       });
     }
   }

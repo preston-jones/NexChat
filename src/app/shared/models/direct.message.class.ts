@@ -13,6 +13,7 @@ export class DirectMessage {
     fileURL: string | null;
     receiverId: string | null;
     receiverName: string | null;
+    markedUser: { id: string; name: string }[] = [];
 
     constructor(obj?: any, currentUserUid?: string | null) {
         this.timestamp = obj ? obj.timestamp : null;
@@ -26,6 +27,7 @@ export class DirectMessage {
         this.fileURL = obj ? obj.fileURL : null;
         this.receiverId = obj ? obj.receiverId : null;
         this.receiverName = obj ? obj.receiverName : null;
+        this.markedUser = obj?.markedUser || [];
 
         // Typensicherer Vergleich, um sowohl null als auch undefined abzudecken
         if (currentUserUid && this.senderId) {

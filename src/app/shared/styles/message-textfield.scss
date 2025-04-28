@@ -71,6 +71,19 @@ textarea:focus {
     }
 }
 
+.send-btn {
+    background-color: white;
+    border: none;
+  
+    &.disabled {
+      cursor: not-allowed;
+  
+      mat-icon {
+        cursor: not-allowed;
+      }
+    }
+  }
+
 .mat-icon {
     height: 40px !important;
     width: 40px !important;

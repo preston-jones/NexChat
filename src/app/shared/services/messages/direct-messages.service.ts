@@ -8,7 +8,7 @@ import { User } from '../../models/user.class';
 import { DirectMessage } from '../../models/direct.message.class';
 import { Note } from '../../models/note.class';
 import { NoteService } from '../notes/notes.service';
-import { Firestore, collection, onSnapshot, query, orderBy, where, Timestamp, DocumentSnapshot, QuerySnapshot, DocumentData, doc, getDoc, getDocs, updateDoc, collectionData, docData } from '@angular/fire/firestore';
+import { Firestore, collection, onSnapshot, query, orderBy, addDoc, where, Timestamp, DocumentSnapshot, QuerySnapshot, DocumentData, doc, getDoc, getDocs, updateDoc, collectionData, docData } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -197,4 +197,39 @@ export class DirectMessagesService {
       updateDoc(messageRef, { message: editedMessage });
     }
   }
+
+
+    async createNewMessage(message: string, currentUser: User, markedUser: any[] = []) {
+      const messagesRef = collection(this.firestore, 'direct_messages');
+  
+      const markedUserDetails = markedUser.map(user => ({
+        id: user.id,
+        name: user.name,
+      }));
+  
+      // Füge die neue Message in Firestore hinzu
+      const messageDocRef = await addDoc(messagesRef, {
+        senderName: currentUser?.name || '',
+        message: message || '',
+        reactions: [],
+        timestamp: new Date(),
+        receiverName: this.userService.selectedUser?.name || '',
+        senderId: currentUser?.id || null,
+        receiverId: this.userService.selectedUser?.id || null,
+        fileURL: '',
+        markedUser: markedUserDetails || [],
+        readedMessage: false,
+        messageId: ''
+      });
+      // await this.updateMessageFileURL(messageDocRef, conversationId);
+      await this.updateNewMessage(messageDocRef);
+      this.loadCurrentConversation(this.userService.selectedUser);
+    }
+
+
+    async updateNewMessage(messageDocRef: any) {
+      await updateDoc(messageDocRef, {
+        messageId: messageDocRef.id,
+      });
+    }
 }

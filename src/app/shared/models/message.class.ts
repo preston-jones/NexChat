@@ -14,6 +14,7 @@ export class Message {
     parentMessageId: string | null;
     fileURL: string | null;
     lastAnswer: string | null;
+    markedUser: { id: string; name: string }[] = [];
 
     constructor(obj?: any, currentUserUid?: string | null) {
         this.messageId = obj ? obj.messageId : null;
@@ -27,6 +28,8 @@ export class Message {
         this.displayDate = null;
         this.parentMessageId = obj ? obj.parentMessageId : null;
         this.fileURL = obj ? obj.fileURL : null;
+        this.senderAvatar = obj ? obj.senderAvatar : null;
+        this.markedUser = obj?.markedUser || [];
 
         // Setze lastAnswer, wenn Antworten existieren
         this.lastAnswer = this.answers.length > 0 ? this.answers[this.answers.length - 1].message : null;

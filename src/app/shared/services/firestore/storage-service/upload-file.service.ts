@@ -60,7 +60,7 @@ export class UploadFileService {
     return new Blob([ab], { type: mimeString });
   }
 
-  async uploadFileWithIdsDirectMessages(file: File, conversationId: string, messageId: string): Promise<string> {
+  async uploadFileWithIdsDirectMessages(file: File, messageId: string): Promise<string> {
     const storage = getStorage();
 
     // Stelle sicher, dass der Dateiname existiert und hole die Dateiendung
@@ -75,9 +75,9 @@ export class UploadFileService {
     let folder = '';
 
     if (['png', 'jpeg', 'jpg', 'gif', 'bmp'].includes(fileType)) {
-      folder = `images/${messageId}/${conversationId}`;
+      folder = `images/${messageId}`;
     } else if (['pdf'].includes(fileType)) {
-      folder = `files/${messageId}/${conversationId}`;
+      folder = `files/${messageId}`;
     } else {
       console.error('Dateityp nicht unterstützt');
       throw new Error('Dateityp nicht unterstützt'); // Fehler werfen, wenn der Dateityp nicht unterstützt wird

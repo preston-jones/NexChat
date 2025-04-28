@@ -152,7 +152,7 @@ export class SendMessageService {
       }]
     });
     if (this.selectedFile) {
-      await this.uploadFileDirectMessage(messageDocRef, conversationId, currentUser);
+      await this.uploadFileDirectMessage(messageDocRef, currentUser);
     }
   }
 
@@ -202,13 +202,12 @@ export class SendMessageService {
   }
 
 
-  async uploadFileDirectMessage(messageDocRef: any, conversationId: string, currentUser: any) {
-    if (this.selectedFile && this.currentUser()?.id && conversationId) {
+  async uploadFileDirectMessage(messageDocRef: any, currentUser: any) {
+    if (this.selectedFile && this.currentUser()?.id) {
       try {
         // Datei hochladen und URL erhalten
         const fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(
           this.selectedFile,
-          conversationId,
           messageDocRef.id
         );
 
@@ -262,7 +261,7 @@ export class SendMessageService {
         let fileURL = '';
 
         if (this.selectedFile) {
-          fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, conversationId, this.messageId);
+          fileURL = await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, this.messageId);
         }
 
         // Finde die Nachricht mit `conversationId` und aktualisiere die `fileURL`, falls vorhanden
