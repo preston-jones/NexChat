@@ -514,6 +514,11 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       if (currentUser) {
         const messagesRef = collection(this.firestore, 'messages');
 
+        const markedUserDetails = this.markedUser.map(user => ({
+          id: user.id,
+          name: user.name,
+        }));
+
         const newMessage: Message = new Message({
           senderID: this.currentUser()?.id,
           senderName: this.currentUser()?.name,
@@ -522,6 +527,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
           reactions: [],
           answers: [],
           fileURL: this.selectedFile ? '' : null,
+          markedUser: markedUserDetails || [],
         });
 
         const messageDocRef = await addDoc(messagesRef, {
@@ -533,6 +539,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
           reaction: newMessage.reactions,
           answers: newMessage.answers,
           timestamp: new Date(),
+          markedUser: newMessage.markedUser,
         });
 
         if (this.selectedFile && this.currentUser()?.id) {

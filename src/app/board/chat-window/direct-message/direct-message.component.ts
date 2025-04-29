@@ -533,24 +533,20 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  async sendMessage() {
-    console.log('Marked User:', this.markedUser);
-    console.log('Marked Channel:', this.markedChannel);
-    
-    
-    console.log(this.currentUser?.id);
-    console.log(this.userService.selectedUser?.id);
+  async sendMessage() { 
     if (this.directChatMessage.length > 0) {
       this.directChatMessage.trim();
       if (this.currentUser?.id === this.userService.selectedUser?.id) {
         await this.noteService.createNewNote(this.directChatMessage, this.currentUser!, this.markedUser);
         this.clearInputField();
         this.clearUploadCache();
+        this.markedUser = [];
       }
       else {
         await this.directMessageService.createNewMessage(this.directChatMessage, this.currentUser!, this.markedUser);
         this.clearInputField();
         this.clearUploadCache();
+        this.markedUser = [];
       }
     }
   }
