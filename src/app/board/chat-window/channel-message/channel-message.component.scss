@@ -215,28 +215,6 @@
     }
 }
 
-.show-members-button {
-    display: flex;
-    align-items: center;
-    // min-width: 142px;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 3px 10px 3px 10px;
-    border-radius: 30px;
-
-    &:hover {
-        cursor: pointer;
-        background-color: #ECEEFE;
-    }
-}
-
-.member-images {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    // gap: 16px;
-}
-
 @media screen and (max-width: 480px) {
     .chat-header-button>span {
         font-size: 20px;
