@@ -23,7 +23,7 @@
                 (openChannelEvent)="openChannelMessage()" (clickUserEvent)="openDirectMessage()"></app-search-dialog>
         </div>
         <div class="profile-menu-container" (click)="toggleProfileMenu()">
-            <span>{{ authService.currentUser()?.name }}</span>
+            <span id="user-name-header">{{ authService.currentUser()?.name }}</span>
             <div class="avatar-container">
                 <img src="{{ authService.currentUser()?.avatarPath }}" alt="Profil Icon"
                     *ngIf="authService.currentUser()?.loginState === 'loggedIn'">

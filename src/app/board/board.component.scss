@@ -357,6 +357,28 @@ mat-toolbar-row {
     width: 54px;
 }
 
+@media screen and (max-width: 768px) {
+    .chat-content {
+        margin-top: 78px;
+    }
+
+    .members-list {
+        display: none;
+    }
+
+    .chat-header {
+        height: 60px;
+        padding: 0 20px 0 20px;
+    }
+}
+
+
+@media screen and (max-width: 480px) {
+    #user-name-header {
+        display: none;
+    }
+}
+
 @media screen and (max-width: 1080px) {
 
     .board-container .navigation-toggle-btn {
@@ -443,11 +465,6 @@ mat-toolbar-row {
         margin-bottom: 0 !important;
     }
 
-    .thread-message-input-container,
-    .chat-message-input-container {
-        bottom: 0 !important;
-    }
-
     .thread-header {
         padding: 0 !important;
     }
@@ -489,13 +506,17 @@ mat-toolbar-row {
         left: 50%;
         transform: translate(-50%);
         right: 0;
-        min-height: 180px; /* Minimum height */
-        max-height: calc(100vh - 164px); /* Maximum height based on viewport height */
+        min-height: 180px;
+        /* Minimum height */
+        max-height: calc(100vh - 164px);
+        /* Maximum height based on viewport height */
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        height: auto; /* Adjust height based on content */
-        overflow-y: auto; /* Allow vertical scrolling if content overflows */
+        height: auto;
+        /* Adjust height based on content */
+        overflow-y: auto;
+        /* Allow vertical scrolling if content overflows */
     }
 
     .profil-details,

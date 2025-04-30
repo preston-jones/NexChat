@@ -98,3 +98,15 @@ textarea:focus {
     height: 30px;
     border: 1px solid #ADB0D9
 }
+
+
+@media screen and (max-width: 1080px) {
+
+    .thread-message-input-container,
+    .chat-message-input-container {
+        bottom: 4px;
+        left: 4px;
+        right: 4px;
+        padding: 12px;
+    }
+}

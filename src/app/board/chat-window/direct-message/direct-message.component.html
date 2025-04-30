@@ -186,7 +186,7 @@
 
 
                 <div *ngIf="message.isOwnMessage" class="message-sender-container">
-                    <img class="sender-avatar" [src]="authService.currentUser()?.avatarPath" alt="">
+                    <!-- <img class="sender-avatar" [src]="authService.currentUser()?.avatarPath" alt=""> -->
 
                     <div class="message-area-container" (mouseleave)="closeEditMessageBox()">
                         <div *ngIf="!isEditing(message.messageId)" class="message-container">
@@ -211,9 +211,9 @@
                             </div>
 
                             <span class="message-infos-reciever">
-                                <span class="my-name" (click)="userService.openUserProfile($event)">
+                                <!-- <span class="my-name" (click)="userService.openUserProfile($event)">
                                     {{ message.senderName }}
-                                </span>
+                                </span> -->
                                 <span class="message-time">{{
                                     message.formattedTimestamp }}
                                     Uhr
