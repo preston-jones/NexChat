@@ -108,7 +108,7 @@ export class BoardComponent {
     this.directMessagesService.loadDirectMessages();
     this.noteService.loadNotes();
     this.userService.loadUsers();
-    this.channelsService.loadChannels(this.authService.currentUserUid);
+    this.channelsService.loadChannels();  
     this.messageService.loadAllChatMessages();
   }
 

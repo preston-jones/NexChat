@@ -25,12 +25,13 @@ export class DirectMessagesService {
   showMessageEditArea = false;
   editedMessage = '';
   editingMessageId: string | null = null;
-  directMessages: DirectMessage[] = [];
   currentConversation: DirectMessage[] = [];
   selectedUser: User | null = null;
   notes: Note[] = [];
   users: User[] = [];
   currentUserUid = this.authService.currentUser()?.id;
+
+  directMessages: DirectMessage[] = [];
 
   @Output() clearAndFocusTextarea = new EventEmitter<void>();
 
@@ -58,8 +59,6 @@ export class DirectMessagesService {
 
 
   resetSrollPrevent() {
-    console.log('resetSrollPrevent DIRECT', this.preventScroll);
-    
     this.preventScroll = false;
   }
 
@@ -147,7 +146,6 @@ export class DirectMessagesService {
     const directMessagesQuery = query(directMessagesRef, orderBy('timestamp'));
 
     onSnapshot(directMessagesQuery, async (snapshot) => {
-      // Verarbeite die geladenen Nachrichten
       this.directMessages = snapshot.docs
         .map(doc => {
           const directMessageData = doc.data() as DirectMessage;

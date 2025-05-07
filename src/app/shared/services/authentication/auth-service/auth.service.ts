@@ -37,10 +37,10 @@ export class AuthService {
     this.userUpdated.subscribe((user) => {
       this.userService.setUser(user);
 
-      if (user && user.loginState === 'loggedIn') {
-        this.startSessionTimer();
-        this.resetSessionTimer();
-      }
+      // if (user != null && user != undefined && user.loginState === 'loggedIn') {
+      //   this.startSessionTimer();
+      //   this.resetSessionTimer();
+      // }
 
       console.log('auth.service.currentUser() =', this.currentUser());
       console.log(this.currentUser()?.id);

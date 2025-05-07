@@ -1,4 +1,4 @@
-import { Injectable, OnInit, signal } from '@angular/core';
+import { Injectable, OnInit, signal, EventEmitter, Output } from '@angular/core';
 import { Firestore, doc, onSnapshot, collection, query, orderBy, arrayUnion } from '@angular/fire/firestore';
 import { Channel } from '../../models/channel.class';
 import { User } from '../../models/user.class';
@@ -6,11 +6,13 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../authentication/auth-service/auth.service';
 import { UserService } from '../firestore/user-service/user.service';
 import { getDocs, updateDoc, where, getDoc } from 'firebase/firestore';
+import { MessagesService } from '../messages/messages.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ChannelsService implements OnInit {
+export class ChannelsService {
+  clickUserEvent = new EventEmitter<void>();
 
   preventScroll = false;
   clickedChannels: boolean[] = [];
@@ -32,50 +34,89 @@ export class ChannelsService implements OnInit {
   public channels: Channel[] = [];
   public currentUserChannels: Channel[] = [];
 
+  @Output() clearAndFocusTextarea = new EventEmitter<void>();
 
-  constructor(private firestore: Firestore, private authService: AuthService, private userService: UserService) {
-    // Initialize authentication state listener
-    this.authService.auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.loadChannels(user.uid); // Pass the user ID to loadChannels
-      } else {
-        // Handle the case where the user is not logged in
-        console.log('No user logged in');
-      }
-    });
+
+  constructor(
+    private firestore: Firestore,
+    private authService: AuthService,
+    private userService: UserService,
+    // private messagesService: MessagesService,
+  ) {
+    // // Initialize authentication state listener
+    // this.authService.auth.onAuthStateChanged((user) => {
+    //   if (user) {
+    //     this.loadChannels(user.uid); // Pass the user ID to loadChannels
+    //   } else {
+    //     // Handle the case where the user is not logged in
+    //     console.log('No user logged in');
+    //   }
+    // });
   }
 
-  ngOnInit(): void {
+
+  openChannel(selectedUserId: string | null | undefined) {
+    // let channel = this.channels.find((channel: Channel) => channel.memberUids === selectedUserId);
+    // let index = this.userService.users.findIndex((user: User) => user.id === selectedUserId);
+    // this.clickChannelContainer(channel!, index);
   }
 
-  async loadChannels(currentUserId: string) {
+
+  triggerClearAndFocus() {
+    this.clearAndFocusTextarea.emit();
+  }
+
+
+  resetSrollPrevent() {
+    this.preventScroll = false;
+  }
+
+
+  clickChannelContainer(channel: Channel, i: number) {
+    this.resetSrollPrevent();
+    this.triggerClearAndFocus();
+    this.clickedChannels.fill(false);
+    this.clickedUsers.fill(false);
+    this.clickedChannels[i] = true;
+    this.getChannelData(channel);
+    this.getChannelUsers(channel);
+    this.currentChannelId = channel.id;
+    this.clickUserEvent.emit();
+  }
+
+
+  async loadChannels(): Promise<void> {
     let channelsRef = collection(this.firestore, 'channels');
     let channelsQuery = query(channelsRef, orderBy('name'));
 
     onSnapshot(channelsQuery, async (snapshot) => {
-      this.channels = await Promise.all(snapshot.docs.map(async (doc) => {
-        let channelData = doc.data() as Channel;
-        return { ...channelData, id: doc.id };
-      }));
-
-      if (currentUserId) {
-        let userChannels = this.channels.filter(channel => {
-          return channel.memberUids && channel.memberUids.includes(currentUserId);
-        });
-
-        // Ensure the channel with the Name 'Willkommen' is always first
-        const wellcomeChannel = 'Willkommen';
-        const specialChannelIndex = userChannels.findIndex(channel => channel.name === wellcomeChannel);
-        if (specialChannelIndex !== -1) {
-          const [specialChannel] = userChannels.splice(specialChannelIndex, 1);
-          userChannels.unshift(specialChannel);
-        }
-
-        this.currentUserChannels = userChannels;
-      } else {
-        this.currentUserChannels = [];
-      }
+      this.currentUserChannels = snapshot.docs
+        .map(doc => {
+          const channelData = doc.data() as Channel;
+          return {
+            ...channelData, id: doc.id
+          };
+        })
+        .filter(userChannel =>
+          userChannel.memberUids.includes(this.authService.currentUserUid) || userChannel.channelAuthorId === this.authService.currentUserUid
+        );
+      // this.channels.forEach(async channel => {
+      //   this.messagesService.loadMessages(channel.id, this.authService.currentUserUid);
+      // });
+      this.orderChannels();
+      console.log('Real-time Channels:', this.currentUserChannels);
     });
+  }
+
+
+  orderChannels() {
+    // Ensure the channel with the Name 'Willkommen' is always first
+    const wellcomeChannel = 'Willkommen';
+    const specialChannelIndex = this.currentUserChannels.findIndex(channel => channel.name === wellcomeChannel);
+    if (specialChannelIndex !== -1) {
+      const [specialChannel] = this.currentUserChannels.splice(specialChannelIndex, 1);
+      this.currentUserChannels.unshift(specialChannel);
+    }
   }
 
 
@@ -113,22 +154,6 @@ export class ChannelsService implements OnInit {
     });
   }
 
-
-  resetSrollPrevent() {
-    console.log('resetSrollPrevent CHANNEL', this.preventScroll);
-    this.preventScroll = false;
-  }
-
-
-  clickChannelContainer(channel: Channel, i: number) {
-    this.resetSrollPrevent();
-    this.clickedChannels.fill(false);
-    this.clickedUsers.fill(false);
-    this.clickedChannels[i] = true;
-    this.getChannelData(channel);
-    this.getChannelUsers(channel);
-    this.currentChannelId = channel.id;
-  }
 
   initializeArrays(channelCount: number, userCount: number) {
     this.clickedChannels = new Array(channelCount).fill(false);
@@ -223,7 +248,7 @@ export class ChannelsService implements OnInit {
         this.memberAddedInfo = true;
         setTimeout(() => {
           this.memberAddedInfo = false;
-        }, 3000);
+        }, 0);
 
       } catch (error) {
         console.error("Fehler beim Aktualisieren des Channels:", error);

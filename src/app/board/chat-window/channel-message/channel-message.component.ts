@@ -74,9 +74,12 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   isChannelSelect: boolean = false;
   markedUser: { id: string; name: string }[] = [];
   markedChannel: { id: string; name: string }[] = [];
-  @Output() openChannelEvent = new EventEmitter<void>();
+  private isViewInitialized = false;
 
+  @Output() openChannelEvent = new EventEmitter<void>();
   @ViewChild('chatWindow', { static: false }) chatWindow!: ElementRef;
+  @ViewChild('chatMessageTextarea', { static: false }) chatMessageTextarea!: ElementRef<HTMLTextAreaElement>;
+
   constructor(private firestore: Firestore, private auth: Auth,
     public userService: UserService, private cd: ChangeDetectorRef,
     private authService: AuthService, private uploadFileService: UploadFileService,
@@ -85,7 +88,9 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit() {
-    console.log('CHANNEL!!! ChannelMessageComponent initialized');
+    this.channelsService.clearAndFocusTextarea.subscribe(() => {
+      this.clearAndFocusTextarea();
+    });
 
     this.loadData();
     this.channelNavigationService.channelSelected$.subscribe(({ channel, index }) => {
@@ -100,11 +105,14 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  // ngAfterViewChecked() {
-  //   if (this.chatWindow && this.chatWindow.nativeElement) {
-  //     this.scrollToBottom();
-  //   }
-  // }
+  clearAndFocusTextarea() {
+    if (this.isViewInitialized && this.chatMessageTextarea && this.chatMessageTextarea.nativeElement) {
+      this.channelChatMessage = ''; // Clear the input field
+      this.chatMessageTextarea.nativeElement.focus(); // Set focus on the input field
+    } else {
+      console.warn('chatMessageTextarea is not initialized or view is not ready.');
+    }
+  }
 
 
   ngAfterViewInit() {
@@ -125,7 +133,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       if (user) {
         this.loadUsers();
         this.loadChannels();
-        this.channelsService.loadChannels(user.uid);
+        this.channelsService.loadChannels();
       } else {
         console.log('Kein Benutzer angemeldet');
       }

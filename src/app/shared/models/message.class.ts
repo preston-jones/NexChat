@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 export class Message {
     messageId: string;
     channelId: string | null;
@@ -15,6 +16,7 @@ export class Message {
     fileURL: string | null;
     lastAnswer: string | null;
     markedUser: { id: string; name: string }[] = [];
+    timestamp: Timestamp;
 
     constructor(obj?: any, currentUserUid?: string | null) {
         this.messageId = obj ? obj.messageId : null;
@@ -30,6 +32,7 @@ export class Message {
         this.fileURL = obj ? obj.fileURL : null;
         this.senderAvatar = obj ? obj.senderAvatar : null;
         this.markedUser = obj?.markedUser || [];
+        this.timestamp = obj ? obj.timestamp : null;
 
         // Setze lastAnswer, wenn Antworten existieren
         this.lastAnswer = this.answers.length > 0 ? this.answers[this.answers.length - 1].message : null;
