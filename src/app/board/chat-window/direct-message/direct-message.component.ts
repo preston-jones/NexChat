@@ -117,7 +117,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit() {
-    console.log('chatWindow:', this.chatWindow);
     this.isViewInitialized = true;
     this.clearAndFocusTextarea();
 
@@ -301,6 +300,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /// Auslagern ???
   showEmoji() {
     this.showEmojiPickerEdit = false; // Blendet den anderen Picker sofort aus
     setTimeout(() => {
@@ -446,6 +446,8 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // --------------------------
+
 
   formatSenderNames(senderNames: string, senderIDs: string): string {
     const senderIDList = senderIDs.split(', ');
@@ -576,6 +578,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
 
+    /// Auslagern ???
   onFileSelected(event: Event) {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files?.[0];
@@ -633,4 +636,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     const fileName = decodedUrl.split('?')[0].split('/').pop();
     return fileName || 'Datei'; // Wenn kein Dateiname gefunden wird, 'Datei' als Fallback anzeigen
   }
+
+    // ----------------
 }

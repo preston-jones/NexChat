@@ -130,18 +130,6 @@ export class MessagesService {
 
 
     async loadAllChatMessages(): Promise<void> {
-        // console.log('!!!', this.channelsService.channels);
-
-        // let messagesRef = collection(this.firestore, 'messages');
-        // let messagesQuery = query(messagesRef, orderBy('timestamp'));
-
-        // const querySnapshot = await getDocs(messagesQuery);
-        // this.allChatMessages = querySnapshot.docs.map(doc => {
-        //     let messageData = doc.data() as Message;
-        //     return { ...messageData, id: doc.id };
-        // });
-        // return this.allChatMessages;
-
         const messagesRef = collection(this.firestore, 'messages');
         const messagesQuery = query(messagesRef, orderBy('timestamp'));
 

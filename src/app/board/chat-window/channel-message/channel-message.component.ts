@@ -26,6 +26,7 @@ import { MembersDialogComponent } from '../../../dialogs/members-dialog/members-
 import { ChannelNavigationService } from '../../../shared/services/chat/channel-navigation.service';
 import { ChatUtilityService } from '../../../shared/services/messages/chat-utility.service';
 import { WelcomePageComponent } from '../../../shared/templates/welcome-page/welcome-page.component';
+import { EmojiReaction } from '../../../shared/models/emoji-reaction.model';
 
 
 
@@ -93,9 +94,10 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     });
 
     this.loadData();
-    this.channelNavigationService.channelSelected$.subscribe(({ channel, index }) => {
-      this.openChanneFromDirectMessage(channel, index);
-    });
+    // ???
+    // this.channelNavigationService.channelSelected$.subscribe(({ channel, index }) => {
+    //   this.openChanneFromDirectMessage(channel, index);
+    // });
     if (this.chatWindow) {
       setTimeout(() => {
         this.scrollToBottom();
@@ -116,6 +118,8 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit() {
+    this.isViewInitialized = true;
+    this.clearAndFocusTextarea();
     if (this.chatWindow) {
       const observer = new MutationObserver(() => {
         console.log('MutationObserver triggered');
@@ -132,23 +136,10 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     this.auth.onAuthStateChanged(async (user) => {
       if (user) {
         this.loadUsers();
-        this.loadChannels();
         this.channelsService.loadChannels();
       } else {
         console.log('Kein Benutzer angemeldet');
       }
-    });
-  }
-
-  async loadChannels() {
-    let channelsRef = collection(this.firestore, 'channels');
-    let channelsQuery = query(channelsRef, orderBy('name'));
-
-    onSnapshot(channelsQuery, async (snapshot) => {
-      this.channels = await Promise.all(snapshot.docs.map(async (doc) => {
-        let channelsData = doc.data() as Channel;
-        return { ...channelsData, id: doc.id };
-      }));
     });
   }
 
@@ -261,7 +252,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     } else {
       console.error("currentUserUid is null");
     }
-    this.loadChannels();
+    this.channelsService.loadChannels();
   }
 
   selectUser(user: User) {
@@ -329,6 +320,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     this.dialog.open(ChannelDescriptionDialogComponent)
   }
 
+   /// Auslagern ???
   showEmoji() {
     this.showEmojiPickerEdit = false; // Blendet den anderen Picker sofort aus
     setTimeout(() => {
@@ -365,7 +357,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     this.editedMessage += event.emoji.native;
   }
 
-  addOrUpdateReaction(message: Message, emoji: string): void {
+  addOrUpdateReaction(message: any, emoji: string): void {
     const currentUser = this.currentUser();
     if (!currentUser) {
       console.warn('Kein Benutzer gefunden!');
@@ -374,7 +366,8 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
     const senderID = currentUser.id;
     const senderName = currentUser.name || '';
-    const emojiReaction = message.reactions.find(r => r.emoji === emoji);
+    const emojiReaction = message.reactions.find(
+      (r: EmojiReaction) => r.emoji === emoji);
 
     // Sicherstellen, dass senderID immer ein string ist
     const safeSenderID = senderID ?? '';  // Fällt auf einen leeren String zurück, wenn senderID null oder undefined ist
@@ -418,7 +411,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
 
-  async updateMessageReactions(message: Message): Promise<void> {
+  async updateMessageReactions(message: any): Promise<void> {
     const messageDocRef = doc(this.firestore, `messages/${message.messageId}`);
     updateDoc(messageDocRef, { reactions: message.reactions })
       .then(() => {
@@ -457,6 +450,9 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       this.showEmojiPickerReact = false;
     }
   }
+
+    // --------------------------
+    
 
   showMessageEditToggle() {
     this.showMessageEdit = !this.showMessageEdit;
@@ -614,6 +610,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
 
+  /// Auslagern ???
   onFileSelected(event: Event) {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files?.[0];
@@ -672,4 +669,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     const fileName = decodedUrl.split('?')[0].split('/').pop();
     return fileName || 'Datei'; // Wenn kein Dateiname gefunden wird, 'Datei' als Fallback anzeigen
   }
+
+  // ----------------
 }

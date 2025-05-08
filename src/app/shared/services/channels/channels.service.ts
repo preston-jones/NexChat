@@ -42,17 +42,7 @@ export class ChannelsService {
     private authService: AuthService,
     private userService: UserService,
     // private messagesService: MessagesService,
-  ) {
-    // // Initialize authentication state listener
-    // this.authService.auth.onAuthStateChanged((user) => {
-    //   if (user) {
-    //     this.loadChannels(user.uid); // Pass the user ID to loadChannels
-    //   } else {
-    //     // Handle the case where the user is not logged in
-    //     console.log('No user logged in');
-    //   }
-    // });
-  }
+  ) { }
 
 
   openChannel(selectedUserId: string | null | undefined) {
@@ -100,9 +90,6 @@ export class ChannelsService {
         .filter(userChannel =>
           userChannel.memberUids.includes(this.authService.currentUserUid) || userChannel.channelAuthorId === this.authService.currentUserUid
         );
-      // this.channels.forEach(async channel => {
-      //   this.messagesService.loadMessages(channel.id, this.authService.currentUserUid);
-      // });
       this.orderChannels();
       console.log('Real-time Channels:', this.currentUserChannels);
     });
