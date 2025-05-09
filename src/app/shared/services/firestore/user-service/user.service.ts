@@ -119,7 +119,7 @@ export class UserService {
   async getSelectedUserById(userId: string): Promise<User | null> {
     // this.showUserInfo.set(true);
     // console.log(this.showUserInfo);
-    
+
     const userRef = this.getUserDocReference(userId);
     const userDoc = await getDoc(userRef);
 
@@ -133,6 +133,20 @@ export class UserService {
       });
 
       return this.selectedUser;
+    } else {
+      return null;
+    }
+  }
+
+
+  async getSelectedUserAvatar(userId: string) {
+    const userRef = this.getUserDocReference(userId);
+    const userDoc = await getDoc(userRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data() as User; // Access document data
+      const selectedUserAvatar = userData.avatarPath;
+      return selectedUserAvatar;
     } else {
       return null;
     }

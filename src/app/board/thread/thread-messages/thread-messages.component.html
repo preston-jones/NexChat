@@ -139,7 +139,7 @@
     </div>
 
     <!-- Kommentare -->
-    <div *ngFor="let message of messages; let i = index" style="width: 100%">
+    <div *ngFor="let message of selectedMessage?.answers; let i = index" style="width: 100%">
       <div class="thread-message-container" *ngIf="!message.isOwnMessage">
         <img [src]="message.senderAvatar" alt="Profile Image" class="avatar" />
         <div class="thread-message-details">
@@ -148,7 +148,7 @@
           </div>
           <div class="thread-message-info">
             <span class="thread-message-sender">{{ message.senderName }}</span>
-            <span class="thread-message-time">{{ message.formattedTimestamp }}</span>
+            <span class="thread-message-time">{{ message.displayDate }} {{ message.formattedTimestamp }}</span>
           </div>
           <div class="thread-message-bubble">
             <p class="thread-message-text">
@@ -180,7 +180,7 @@
       </div>
     </div>
 
-    <div *ngFor="let message of messages; let i = index" style="width: 100%">
+    <div *ngFor="let message of selectedMessage?.answers; let i = index" style="width: 100%">
       <div class="thread-message-container user-message-container" *ngIf="message.isOwnMessage">
         <img [src]="message.senderAvatar" alt="Profile Image" class="avatar" />
         <div class="thread-message-details" *ngIf="!isEditing(message.messageId)">
@@ -193,7 +193,7 @@
           </div>
           <div class="user-message-info">
             <span class="thread-message-sender">{{ message.senderName }}</span>
-            <span class="thread-message-time">{{ message.formattedTimestamp }}</span>
+            <span class="thread-message-time">{{ message.displayDate }} {{ message.formattedTimestamp }}</span>
           </div>
           <div class="user-message-bubble">
             <p>

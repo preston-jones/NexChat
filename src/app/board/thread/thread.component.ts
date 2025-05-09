@@ -68,13 +68,13 @@ export class ThreadComponent implements OnInit {
 
   ngOnInit() {
     this.getCurrentUser();
-    this.loadMessages();
+    // this.loadMessages();
     this.loadAllUsers()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedMessage'] && this.selectedMessage) {
-      this.loadMessages();
+      // this.loadMessages();
     }
   }
 
@@ -128,27 +128,29 @@ export class ThreadComponent implements OnInit {
     this.showUserList = false;
   }
 
-  async loadMessages() {
-    if (!this.selectedMessage) {
-      this.messages = [];
-      return;
-    }
+  // async loadMessages() {
+  //   console.log('loadMessages', this.selectedMessage);
+    
+  //   if (!this.selectedMessage) {
+  //     this.messages = [];
+  //     return;
+  //   }
 
-    const messageRef = doc(this.firestore, 'messages', this.selectedMessage.messageId);
-    const messageSnap = await getDoc(messageRef);
+  //   const messageRef = doc(this.firestore, 'messages', this.selectedMessage.messageId);
+  //   const messageSnap = await getDoc(messageRef);
 
-    if (messageSnap.exists()) {
-      const selectedMessageData = messageSnap.data();
-      const answers = selectedMessageData['answers'] || [];
-      this.selectedMessage.isOwnMessage = this.selectedMessage.senderID === this.currentUserUid;
+  //   if (messageSnap.exists()) {
+  //     const selectedMessageData = messageSnap.data();
+  //     const answers = selectedMessageData['answers'] || [];
+  //     this.selectedMessage.isOwnMessage = this.selectedMessage.senderID === this.currentUserUid;
 
-      this.messages = await Promise.all(
-        answers.map((answer: any) => this.checkLoadMessagesDetails(answer))
-      );
+  //     this.messages = await Promise.all(
+  //       answers.map((answer: any) => this.checkLoadMessagesDetails(answer))
+  //     );
 
-      this.cd.detectChanges();
-    }
-  }
+  //     this.cd.detectChanges();
+  //   }
+  // }
 
   private async checkLoadMessagesDetails(answer: any): Promise<Message> {
     const message = new Message(answer, this.currentUserUid);
@@ -160,8 +162,7 @@ export class ThreadComponent implements OnInit {
       message.senderAvatar = './assets/images/avatars/avatar5.svg';
     }
 
-    const messageDate = new Date(answer.timestamp.seconds * 1000);
-    message.formattedTimestamp = messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
 
     return message;
   }
@@ -190,7 +191,7 @@ export class ThreadComponent implements OnInit {
 
         this.typedMessage = '';
         this.selectedFile = null;
-        this.loadMessages();
+        // this.loadMessages();
         // this.sendMessageService.scrollToBottom();
         this.sendMessageService.deleteUpload();
       } else {

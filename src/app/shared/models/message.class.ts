@@ -11,7 +11,7 @@ export class Message {
     isOwnMessage: boolean = false;
     isOwnChatMessage: boolean = false;
     displayDate: string | null;
-    senderAvatar: string | null | undefined;
+    senderAvatar: string | null;
     parentMessageId: string | null;
     fileURL: string | null;
     lastAnswer: string | null;

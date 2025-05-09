@@ -320,7 +320,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     this.dialog.open(ChannelDescriptionDialogComponent)
   }
 
-   /// Auslagern ???
+  /// Auslagern ???
   showEmoji() {
     this.showEmojiPickerEdit = false; // Blendet den anderen Picker sofort aus
     setTimeout(() => {
@@ -451,8 +451,8 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     }
   }
 
-    // --------------------------
-    
+  // --------------------------
+
 
   showMessageEditToggle() {
     this.showMessageEdit = !this.showMessageEdit;
@@ -494,11 +494,19 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     return this.editingMessageId === docId; // Prüfe gegen die Firestore-Dokument-ID
   }
 
-  showThread(message: Message) {
+  async showThread(message: Message) {
+    for (const answer of message.answers) {
+      answer.isOwnMessage = (answer.senderID === this.authService.currentUserUid);
+      answer.displayDate = this.messageService.formatTimestamp(answer.timestamp.toDate());
+      answer.formattedTimestamp = answer.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      answer.senderAvatar = await this.userService.getSelectedUserAvatar(answer.senderID!);
+    }
+
     this.selectedMessage = message;
-    this.showThreadEvent.emit(message); // Lade Antworten nach Auswahl der Nachricht
+    this.showThreadEvent.emit(message); // Emit the updated message
     console.log(message);
   }
+
 
   showError() {
     console.error("Kein Kanal ausgewählt.");

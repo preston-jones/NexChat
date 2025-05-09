@@ -102,8 +102,6 @@ export class MessagesService {
 
     showThread() {
         this.showThreadEvent.emit();
-        console.log();
-
     }
 
 
@@ -114,18 +112,16 @@ export class MessagesService {
 
 
     async loadMessages(currentUserUid: string | null | undefined, channelId: string) {
-        const messagesQuery = this.createMessageQuery(channelId);
-
-        onSnapshot(messagesQuery, async (snapshot) => {
-            // Verarbeite die geladenen Nachrichten
-            this.currentChatMessages = await this.processSnapshot(snapshot, currentUserUid);
-
-            // Lade alle Antworten für jede geladene Nachricht
-            await Promise.all(this.currentChatMessages.map(async (message: Message) => {
-                await this.loadAnswersForMessage(message);
-            }));
-            console.log('Real-time Messages:', this.currentChatMessages);
-        });
+        this.currentChatMessages = [];
+        const selectedChatMessages = this.allChatMessages.filter(message => message.channelId === channelId)
+            .map(m => {
+                m.isOwnChatMessage = m.senderID === this.authService.currentUserUid; // Recalculate isOwnMessage
+                m.displayDate = this.formatTimestamp(m.timestamp.toDate());
+                m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                return m;
+            });
+        this.currentChatMessages = selectedChatMessages;
+        console.log('Aktuelle Nachrichten:', this.currentChatMessages);
     }
 
 
@@ -134,126 +130,30 @@ export class MessagesService {
         const messagesQuery = query(messagesRef, orderBy('timestamp'));
 
         onSnapshot(messagesQuery, async (snapshot) => {
-            this.allChatMessages = snapshot.docs
-                .map(doc => {
+            const resolvedMessages = await Promise.all(
+                snapshot.docs.map(async doc => {
                     const messageData = doc.data() as Message;
+                    const senderAvatar = messageData.senderID
+                        ? await this.userService.getSelectedUserAvatar(messageData.senderID)
+                        : './assets/images/avatars/avatar5.svg'; // Default avatar
+
                     return {
                         ...messageData,
                         messageId: doc.id,
                         timestamp: messageData.timestamp || new Date(), // Ensure timestamp is set
+                        isOwnChatMessage: messageData.senderID === this.authService.currentUserUid,
+                        senderAvatar, // Resolved avatar
                     };
                 })
-                .filter(message =>
-                    this.channelsService.currentUserChannels.some(channel => channel.id === message.channelId) // Filtere nach den Channel-IDs
             );
+
+            // Now filter the resolved messages
+            this.allChatMessages = resolvedMessages.filter(message =>
+                this.channelsService.currentUserChannels.some(channel => channel.id === message.channelId) // Filter by channel IDs
+            );
+
             console.log('Real-time Messages:', this.allChatMessages);
         });
-    }
-
-
-    async loadAnswersForMessage(message: Message) {
-        const messageRef = doc(this.firestore, 'messages', message.messageId);
-        const messageSnap = await getDoc(messageRef);
-
-        if (messageSnap.exists()) {
-            const messageData = messageSnap.data();
-            const answers = messageData['answers'] || []; // Antworten abrufen
-
-            // Setze lastAnswer auf den Timestamp der letzten Antwort, falls Antworten vorhanden sind
-            if (answers.length > 0) {
-                const lastAnswerTimestamp = answers[answers.length - 1].timestamp;
-                if (lastAnswerTimestamp && lastAnswerTimestamp.seconds) {
-                    const lastAnswerDate = new Date(lastAnswerTimestamp.seconds * 1000);
-                    message.lastAnswer = this.formatTimestamp(lastAnswerDate); // Formatierung mit der Funktion
-                } else {
-                    message.lastAnswer = null;
-                }
-            } else {
-                message.lastAnswer = null;
-            }
-
-            // Lade alle Antworten als Message-Objekte
-            message.answers = await Promise.all(answers.map(async (answerData: any) => {
-                const answerMessage = new Message(answerData, this.currentUserUid);
-
-                if (answerMessage.senderID) {
-                    const senderUser = await this.userService.getSelectedUserById(answerMessage.senderID);
-                    answerMessage.senderAvatar = senderUser?.avatarPath || './assets/images/avatars/avatar5.svg';
-                } else {
-                    answerMessage.senderAvatar = './assets/images/avatars/avatar5.svg'; // Standard-Avatar
-                }
-
-                const answerDate = new Date(answerData.timestamp.seconds * 1000);
-                answerMessage.formattedTimestamp = this.formatTimestamp(answerDate); // Formatierung mit der Funktion
-
-                return answerMessage;
-            }));
-        } else {
-            console.error(`Message ${message.messageId} exists nicht`);
-        }
-    }
-
-
-    private createMessageQuery(channelId: string) {
-        const messagesRef = collection(this.firestore, 'messages');
-
-        // Filtere die Nachrichten nach der übergebenen channelId
-        return query(
-            messagesRef,
-            where('channelId', '==', channelId), // Filter nach channelId
-            orderBy('timestamp')
-        );
-    }
-
-
-    private async processSnapshot(snapshot: any, currentUserUid: string | null | undefined) {
-        let lastDisplayedDate: string | null = null;
-
-        return Promise.all(snapshot.docs.map(async (doc: DocumentSnapshot) => {
-            const message = await this.mapMessageData(doc, currentUserUid);
-            const messageData = doc.data(); // Hier abrufen
-
-            // Sicherstellen, dass messageData definiert ist
-            if (messageData) {
-                const messageDate = new Date(messageData['timestamp']?.seconds * 1000);
-                const formattedDate = this.formatTimestamp(messageDate);
-
-                if (formattedDate !== lastDisplayedDate) {
-                    message.displayDate = formattedDate;
-                    lastDisplayedDate = formattedDate;
-                } else {
-                    message.displayDate = null;
-                }
-            }
-
-            return message;
-        }));
-    }
-
-    private async mapMessageData(doc: DocumentSnapshot, currentUserUid: string | null | undefined) {
-        const messageData = doc.data();
-
-        // Sicherstellen, dass messageData definiert ist
-        if (!messageData) {
-            throw new Error('Message data is undefined'); // Fehlerbehandlung
-        }
-
-        const message = new Message(messageData, currentUserUid);
-        message.messageId = doc.id;
-        message.isOwnChatMessage = message.senderID === currentUserUid;
-
-        if (message.senderID) {
-            const senderUser = await this.userService.getSelectedUserById(message.senderID);
-            message.senderAvatar = senderUser?.avatarPath || './assets/images/avatars/avatar5.svg';
-        } else {
-            message.senderAvatar = './assets/images/avatars/avatar5.svg';
-        }
-
-        // Sicherstellen, dass timestamp definiert ist
-        const messageDate = new Date(messageData['timestamp']?.seconds * 1000);
-        message.formattedTimestamp = messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        return message;
     }
 
 
@@ -298,8 +198,8 @@ export class MessagesService {
 
 
     updateSendernameOfAnswer(messageId: string, senderName: string, answerIndex: number) {
-        // const messageRef = doc(this.firestore, 'messages', messageId);
-        // updateDoc(messageRef, { [`answers.senderName`]: senderName });
+        const messageRef = doc(this.firestore, 'messages', messageId);
+        updateDoc(messageRef, { [`answers.senderName`]: senderName });
     }
 
 
