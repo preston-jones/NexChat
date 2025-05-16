@@ -17,6 +17,7 @@ import { arrayUnion, getDoc, getDocs } from 'firebase/firestore';
 import { ChannelsService } from '../../shared/services/channels/channels.service';
 import { Channel } from '../../shared/models/channel.class';
 import { SendMessageService } from '../../shared/services/messages/send-message.service';
+import { MessagesService } from '../../shared/services/messages/messages.service';
 import { ThreadMessagesComponent } from './thread-messages/thread-messages.component';
 
 @Component({
@@ -64,17 +65,27 @@ export class ThreadComponent implements OnInit {
   selectedMessageId: string | null = null;
   showUserList = false;
 
-  constructor(private firestore: Firestore, private auth: Auth, private userService: UserService, private cd: ChangeDetectorRef, private authService: AuthService, private uploadFileService: UploadFileService, public channelsService: ChannelsService, public sendMessageService: SendMessageService) { }
+  constructor(
+    private firestore: Firestore,
+    private auth: Auth,
+    private userService: UserService,
+    private cd: ChangeDetectorRef,
+    private authService: AuthService,
+    private uploadFileService: UploadFileService,
+    public channelsService: ChannelsService,
+    public sendMessageService: SendMessageService,
+    public messagesService: MessagesService
+  ) { }
 
   ngOnInit() {
     this.getCurrentUser();
-    // this.loadMessages();
+    this.loadAnswers();
     this.loadAllUsers()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedMessage'] && this.selectedMessage) {
-      // this.loadMessages();
+      this.loadAnswers();
     }
   }
 
@@ -128,29 +139,36 @@ export class ThreadComponent implements OnInit {
     this.showUserList = false;
   }
 
-  // async loadMessages() {
-  //   console.log('loadMessages', this.selectedMessage);
-    
-  //   if (!this.selectedMessage) {
-  //     this.messages = [];
-  //     return;
-  //   }
+async loadAnswers() {
+  console.log('Listening for changes to selectedMessage:', this.selectedMessage);
 
-  //   const messageRef = doc(this.firestore, 'messages', this.selectedMessage.messageId);
-  //   const messageSnap = await getDoc(messageRef);
+  if (!this.selectedMessage) {
+    this.messages = [];
+    this.cd.markForCheck(); // Mark for change detection
+    return;
+  }
 
-  //   if (messageSnap.exists()) {
-  //     const selectedMessageData = messageSnap.data();
-  //     const answers = selectedMessageData['answers'] || [];
-  //     this.selectedMessage.isOwnMessage = this.selectedMessage.senderID === this.currentUserUid;
+  const messageRef = doc(this.firestore, 'messages', this.selectedMessage.messageId);
 
-  //     this.messages = await Promise.all(
-  //       answers.map((answer: any) => this.checkLoadMessagesDetails(answer))
-  //     );
+  // Set up a real-time listener
+  onSnapshot(messageRef, async (messageSnap) => {
+    if (messageSnap.exists()) {
+      const selectedMessageData = messageSnap.data();
+      const answers = selectedMessageData['answers'] || [];
+      this.selectedMessage!.isOwnMessage = this.selectedMessage!.senderID === this.currentUserUid;
 
-  //     this.cd.detectChanges();
-  //   }
-  // }
+      this.messages = await Promise.all(
+        answers.map((answer: any) => this.checkLoadMessagesDetails(answer))
+      );
+
+      this.cd.markForCheck(); // Mark for change detection
+    } else {
+      console.warn('Selected message does not exist in Firestore.');
+      this.messages = [];
+      this.cd.markForCheck(); // Mark for change detection
+    }
+  });
+}
 
   private async checkLoadMessagesDetails(answer: any): Promise<Message> {
     const message = new Message(answer, this.currentUserUid);
@@ -191,8 +209,8 @@ export class ThreadComponent implements OnInit {
 
         this.typedMessage = '';
         this.selectedFile = null;
-        // this.loadMessages();
-        // this.sendMessageService.scrollToBottom();
+        this.loadAnswers();
+        this.sendMessageService.scrollToBottom();
         this.sendMessageService.deleteUpload();
       } else {
         console.error('Kein Benutzer angemeldet');

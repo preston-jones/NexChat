@@ -136,7 +136,8 @@ export class MessagesService {
                     const senderAvatar = messageData.senderID
                         ? await this.userService.getSelectedUserAvatar(messageData.senderID)
                         : './assets/images/avatars/avatar5.svg'; // Default avatar
-
+                        const lastAnswer = messageData.answers.length > 0 ? messageData.answers[messageData.answers.length - 1].message : null;
+                        messageData.lastAnswer = lastAnswer?.slice(0, 20) + '...';
                     return {
                         ...messageData,
                         messageId: doc.id,

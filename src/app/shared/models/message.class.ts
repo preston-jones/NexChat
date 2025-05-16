@@ -33,6 +33,7 @@ export class Message {
         this.senderAvatar = obj ? obj.senderAvatar : null;
         this.markedUser = obj?.markedUser || [];
         this.timestamp = obj ? obj.timestamp : null;
+        this.lastAnswer = obj ? obj.lastAnswer : null;
 
         // Setze lastAnswer, wenn Antworten existieren
         this.lastAnswer = this.answers.length > 0 ? this.answers[this.answers.length - 1].message : null;

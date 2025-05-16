@@ -78,8 +78,8 @@
                     <span *ngIf="message?.answers && message.answers.length > 0" (click)="showThread(message)"
                         class="answers-block">
                         {{ message.answers.length }} Antworten
-                        <span class="message-time">Letzte Antwort
-                            <span class="message-time">{{ message.lastAnswer }}</span>
+                        <span class="message-time">Letzte Antwort:
+                            <span class="message-time">"{{ message.lastAnswer }}"</span>
                         </span>
                     </span>
                     <div class="show-reactions">
