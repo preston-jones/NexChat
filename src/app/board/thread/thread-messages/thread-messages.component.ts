@@ -8,6 +8,7 @@ import { doc, Firestore, updateDoc } from '@angular/fire/firestore';
 import { getDoc } from 'firebase/firestore';
 import { SendMessageService } from '../../../shared/services/messages/send-message.service';
 import { AuthService } from '../../../shared/services/authentication/auth-service/auth.service';
+import { MessagesService } from '../../../shared/services/messages/messages.service';
 
 @Component({
   selector: 'app-thread-messages',
@@ -40,7 +41,12 @@ export class ThreadMessagesComponent {
   editingMessageId: string | null = null;
   editingMessage: string | null = null;
 
-  constructor(private firestore: Firestore, private cd: ChangeDetectorRef, private authService: AuthService, public sendMessageService: SendMessageService) { }
+  constructor(private firestore: Firestore,
+    private cd: ChangeDetectorRef,
+    private authService: AuthService,
+    public sendMessageService: SendMessageService,
+    public messagesService: MessagesService,
+  ) { }
 
   ngOnInit(): void {
     const userSignal = this.authService.getUserSignal();

@@ -81,12 +81,14 @@ export class ThreadComponent implements OnInit {
     this.getCurrentUser();
     this.loadAnswers();
     this.loadAllUsers()
+
+    console.log('selectedMessageId:', this.messagesService.selectedMessage?.messageId);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedMessage'] && this.selectedMessage) {
-      this.loadAnswers();
-    }
+
+    this.loadAnswers();
+
   }
 
   closeThread() {
@@ -139,36 +141,46 @@ export class ThreadComponent implements OnInit {
     this.showUserList = false;
   }
 
-async loadAnswers() {
-  console.log('Listening for changes to selectedMessage:', this.selectedMessage);
+  async loadAnswers() {
 
-  if (!this.selectedMessage) {
-    this.messages = [];
-    this.cd.markForCheck(); // Mark for change detection
-    return;
+
+
+    // this.messages = [];
+    // const selectedMessage = this.messagesService.allChatMessages.find(message => message.messageId === this.selectedMessage?.messageId);
+    // this.messages = selectedMessage;
+    // console.log('Aktuelle Nachrichten:', this.messages);
+    // console.log('Service:', selectedMessage);
+
+
+    // console.log('Listening for changes to selectedMessage:', this.selectedMessage);
+
+    // if (!this.selectedMessage) {
+    //   this.messages = [];
+    //   this.cd.markForCheck(); // Mark for change detection
+    //   return;
+    // }
+
+    // const messageRef = doc(this.firestore, 'messages', this.selectedMessage.messageId);
+
+    // // Set up a real-time listener
+    // onSnapshot(messageRef, async (messageSnap) => {
+    //   if (messageSnap.exists()) {
+    //     const selectedMessageData = messageSnap.data();
+    //     const answers = selectedMessageData['answers'] || [];
+    //     this.selectedMessage!.isOwnMessage = this.selectedMessage!.senderID === this.currentUserUid;
+
+    //     this.messages = await Promise.all(
+    //       answers.map((answer: any) => this.checkLoadMessagesDetails(answer))
+    //     );
+
+    //     this.cd.markForCheck(); // Mark for change detection
+    //   } else {
+    //     console.warn('Selected message does not exist in Firestore.');
+    //     this.messages = [];
+    //     this.cd.markForCheck(); // Mark for change detection
+    //   }
+    // });
   }
-
-  const messageRef = doc(this.firestore, 'messages', this.selectedMessage.messageId);
-
-  // Set up a real-time listener
-  onSnapshot(messageRef, async (messageSnap) => {
-    if (messageSnap.exists()) {
-      const selectedMessageData = messageSnap.data();
-      const answers = selectedMessageData['answers'] || [];
-      this.selectedMessage!.isOwnMessage = this.selectedMessage!.senderID === this.currentUserUid;
-
-      this.messages = await Promise.all(
-        answers.map((answer: any) => this.checkLoadMessagesDetails(answer))
-      );
-
-      this.cd.markForCheck(); // Mark for change detection
-    } else {
-      console.warn('Selected message does not exist in Firestore.');
-      this.messages = [];
-      this.cd.markForCheck(); // Mark for change detection
-    }
-  });
-}
 
   private async checkLoadMessagesDetails(answer: any): Promise<Message> {
     const message = new Message(answer, this.currentUserUid);
@@ -211,7 +223,7 @@ async loadAnswers() {
         this.selectedFile = null;
         this.loadAnswers();
         this.sendMessageService.scrollToBottom();
-        this.sendMessageService.deleteUpload();
+        this.sendMessageService.deleteUpload();        
       } else {
         console.error('Kein Benutzer angemeldet');
       }

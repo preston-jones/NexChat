@@ -47,7 +47,6 @@ import { EmojiReaction } from '../../../shared/models/emoji-reaction.model';
   encapsulation: ViewEncapsulation.None,
 })
 export class ChannelMessageComponent implements OnInit, AfterViewInit {
-  @Output() showThreadEvent = new EventEmitter<Message>();
   messages: Message[] = [];
   selectedMessage: Message | null = null;
   users: User[] = [];
@@ -77,6 +76,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   markedChannel: { id: string; name: string }[] = [];
   private isViewInitialized = false;
 
+  @Output() showThreadEvent = new EventEmitter<Message>();
   @Output() openChannelEvent = new EventEmitter<void>();
   @ViewChild('chatWindow', { static: false }) chatWindow!: ElementRef;
   @ViewChild('chatMessageTextarea', { static: false }) chatMessageTextarea!: ElementRef<HTMLTextAreaElement>;
@@ -129,6 +129,8 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       });
       observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
     }
+    console.log('TEST');
+    
   }
 
 
@@ -495,6 +497,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   }
 
   async showThread(message: Message) {
+    this.messageService.selectedMessage = message;
     for (const answer of message.answers) {
       answer.isOwnMessage = (answer.senderID === this.authService.currentUserUid);
       answer.displayDate = this.messageService.formatTimestamp(answer.timestamp.toDate());
@@ -504,7 +507,9 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
     this.selectedMessage = message;
     this.showThreadEvent.emit(message); // Emit the updated message
-    console.log(message);
+    // console.log(message);
+    console.log('Selected message:', this.messageService.selectedMessage.messageId);
+    
   }
 
 

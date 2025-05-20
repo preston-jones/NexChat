@@ -136,8 +136,8 @@ export class MessagesService {
                     const senderAvatar = messageData.senderID
                         ? await this.userService.getSelectedUserAvatar(messageData.senderID)
                         : './assets/images/avatars/avatar5.svg'; // Default avatar
-                        const lastAnswer = messageData.answers.length > 0 ? messageData.answers[messageData.answers.length - 1].message : null;
-                        messageData.lastAnswer = lastAnswer?.slice(0, 20) + '...';
+                    const lastAnswer = messageData.answers.length > 0 ? messageData.answers[messageData.answers.length - 1].message : null;
+                    messageData.lastAnswer = lastAnswer?.slice(0, 20) + '...';
                     return {
                         ...messageData,
                         messageId: doc.id,
@@ -152,6 +152,12 @@ export class MessagesService {
             this.allChatMessages = resolvedMessages.filter(message =>
                 this.channelsService.currentUserChannels.some(channel => channel.id === message.channelId) // Filter by channel IDs
             );
+
+            if (this.selectedMessage) {
+                const selectedAnswers = this.allChatMessages.find(message => message.messageId === this.selectedMessage?.messageId);
+                this.selectedMessage = selectedAnswers || null;
+                console.log('Aktuelle Antworten:', this.selectedMessage);
+            }
 
             console.log('Real-time Messages:', this.allChatMessages);
         });

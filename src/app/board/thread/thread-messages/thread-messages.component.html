@@ -139,7 +139,7 @@
     </div>
 
     <!-- Kommentare -->
-    <div *ngFor="let message of selectedMessage?.answers; let i = index" style="width: 100%">
+    <div *ngFor="let message of this.messagesService.selectedMessage?.answers; let i = index" style="width: 100%">
       <div class="thread-message-container" *ngIf="!message.isOwnMessage">
         <img [src]="message.senderAvatar" alt="Profile Image" class="avatar" />
         <div class="thread-message-details">
