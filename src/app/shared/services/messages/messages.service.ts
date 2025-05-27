@@ -127,8 +127,7 @@ export class MessagesService {
                     const senderAvatar = messageData.senderID
                         ? await this.userService.getSelectedUserAvatar(messageData.senderID)
                         : './assets/images/avatars/avatar5.svg'; // Default avatar
-                    const lastAnswer = messageData.answers.length > 0 ? messageData.answers[messageData.answers.length - 1].displayDate : null;
-                    messageData.lastAnswer = lastAnswer;
+                    this.formatLastAnswerTimestamp(messageData);
                     return {
                         ...messageData,
                         messageId: doc.id,
@@ -138,20 +137,27 @@ export class MessagesService {
                     };
                 })
             );
-
-            // Now filter the resolved messages
-            this.allChatMessages = resolvedMessages.filter(message =>
-                this.channelsService.currentUserChannels.some(channel => channel.id === message.channelId) // Filter by channel IDs
-            );
-
-            if (this.selectedMessage) {
-                const selectedAnswers = this.allChatMessages.find(message => message.messageId === this.selectedMessage?.messageId);
-                this.selectedMessage = selectedAnswers || null;
-                console.log('Aktuelle Antworten:', this.selectedMessage);
-            }
+            this.filterResolvedMessages(resolvedMessages);
+            this.findSelectedAnswers();
 
             console.log('Real-time Messages:', this.allChatMessages);
         });
+    }
+
+
+    findSelectedAnswers() {
+        if (this.selectedMessage) {
+            const selectedAnswers = this.allChatMessages.find(message => message.messageId === this.selectedMessage?.messageId);
+            this.selectedMessage = selectedAnswers || null;
+            console.log('Aktuelle Antworten:', this.selectedMessage);
+        }
+    }
+
+
+    filterResolvedMessages(resolvedMessages: Message[]) {
+        this.allChatMessages = resolvedMessages.filter(message =>
+            this.channelsService.currentUserChannels.some(channel => channel.id === message.channelId) // Filter by channel IDs
+        );
     }
 
 
@@ -170,6 +176,17 @@ export class MessagesService {
         } else {
             // Format "13. September"
             return messageDate.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' });
+        }
+    }
+
+
+    formatLastAnswerTimestamp(messageData: Message) {
+        if (messageData.answers && messageData.answers.length > 0) {
+            const lastAnswerTimestamp = messageData.answers[messageData.answers.length - 1].timestamp.toDate();
+            const lastAnswerDate = this.formatTimestamp(lastAnswerTimestamp); // e.g., "Heute", "Gestern", or "13. September"
+            const lastAnswerTime = lastAnswerTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // e.g., "14:35"
+            messageData.lastAnswer = `${lastAnswerDate}, ${lastAnswerTime}`;
+            console.log('Letzte Antwort:', messageData.lastAnswer);
         }
     }
 

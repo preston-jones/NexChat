@@ -13,7 +13,7 @@ export class Message {
     displayDate: string | null;
     senderAvatar: string | null;
     parentMessageId: string | null;
-    lastAnswer: any | null;
+    lastAnswer: string | null;
     markedUser: { id: string; name: string }[] = [];
     timestamp: Timestamp;
 
