@@ -10,17 +10,6 @@
         <div class="thread-message-bubble">
           <p>
             {{ selectedMessage.message }}
-            <a *ngIf="sendMessageService.isImageFile(selectedMessage.fileURL)" [href]="selectedMessage.fileURL"
-              target="_blank">
-              <img class="image-preview" [src]="selectedMessage.fileURL" alt="Bildvorschau" width="100%" />
-            </a>
-            <a *ngIf="
-              selectedMessage.fileURL &&
-              !sendMessageService.isImageFile(selectedMessage.fileURL) &&
-              !selectedMessage.fileURL?.endsWith('.pdf')
-            " class="file-link" [href]="selectedMessage.fileURL" target="_blank">
-              {{sendMessageService.getFileNameFromURL(selectedMessage.fileURL)}}
-            </a>
           </p>
         </div>
         <div class="thread-show-reactions">
@@ -73,17 +62,6 @@
           <div class="user-message-bubble">
             <p>
               {{ selectedMessage.message }}
-              <a *ngIf="sendMessageService.isImageFile(selectedMessage.fileURL)" [href]="selectedMessage.fileURL"
-                target="_blank">
-                <img class="image-preview" [src]="selectedMessage.fileURL" alt="Bildvorschau" width="100%" />
-              </a>
-              <a *ngIf="
-                selectedMessage.fileURL &&
-                !sendMessageService.isImageFile(selectedMessage.fileURL) &&
-                !selectedMessage.fileURL?.endsWith('.pdf')
-              " class="file-link" [href]="selectedMessage.fileURL" target="_blank">
-                {{sendMessageService.getFileNameFromURL(selectedMessage.fileURL)}}
-              </a>
             </p>
           </div>
           <div class="thread-show-reactions">
@@ -153,12 +131,6 @@
           <div class="thread-message-bubble">
             <p class="thread-message-text">
               {{ message.message }}
-              <a *ngIf="sendMessageService.isImageFile(message.fileURL)" [href]="message.fileURL" target="_blank">
-                <img class="image-preview" [src]="message.fileURL" alt="Bildvorschau" width="100%" />
-              </a>
-              <a *ngIf="message.fileURL && !sendMessageService.isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
-                class="file-link" [href]="message.fileURL" target="_blank">
-                {{ sendMessageService.getFileNameFromURL(message.fileURL) }}</a>
             </p>
           </div>
           <div class="thread-show-reactions">
@@ -198,12 +170,6 @@
           <div class="user-message-bubble">
             <p>
               {{ message.message }}
-              <a *ngIf="sendMessageService.isImageFile(message.fileURL)" [href]="message.fileURL" target="_blank">
-                <img class="image-preview" [src]="message.fileURL" alt="Bildvorschau" width="100%" />
-              </a>
-              <a *ngIf="message.fileURL && !sendMessageService.isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
-                class="file-link" [href]="message.fileURL" target="_blank">
-                {{ sendMessageService.getFileNameFromURL(message.fileURL) }}</a>
             </p>
           </div>
           <div class="thread-show-reactions">

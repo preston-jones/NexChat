@@ -15,14 +15,10 @@ import { User } from '../../../shared/models/user.class';
 import { Channel } from '../../../shared/models/channel.class';
 import { UserService } from '../../../shared/services/firestore/user-service/user.service';
 import { AuthService } from '../../../shared/services/authentication/auth-service/auth.service';
-import { UploadFileService } from '../../../shared/services/firestore/storage-service/upload-file.service';
 import { ChannelsService } from '../../../shared/services/channels/channels.service';
 import { MessagesService } from '../../../shared/services/messages/messages.service';
-import { AddMemberDialogComponent } from '../../../dialogs/add-member-dialog/add-member-dialog.component';
 import { ChannelDescriptionDialogComponent } from '../../../dialogs/channel-description-dialog/channel-description-dialog.component';
 import { Message } from '../../../shared/models/message.class';
-import { SafeUrlPipe } from '../../../shared/pipes/safe-url.pipe';
-import { MembersDialogComponent } from '../../../dialogs/members-dialog/members-dialog.component';
 import { ChannelNavigationService } from '../../../shared/services/chat/channel-navigation.service';
 import { ChatUtilityService } from '../../../shared/services/messages/chat-utility.service';
 import { WelcomePageComponent } from '../../../shared/templates/welcome-page/welcome-page.component';
@@ -66,8 +62,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   editingMessageId: string | null = null;
   senderAvatar: string | null = null;
   senderName: string | null = null;
-  selectedFile: File | null = null;// Service für den Datei-Upload
-  filePreviewUrl: string | null = null;
   searchQuery: string = '';
   isSearching: boolean = false;
   isUserSelect: boolean = false;
@@ -83,7 +77,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
   constructor(private firestore: Firestore, private auth: Auth,
     public userService: UserService, private cd: ChangeDetectorRef,
-    private authService: AuthService, private uploadFileService: UploadFileService,
+    private authService: AuthService,
     public channelsService: ChannelsService, public dialog: MatDialog,
     public messageService: MessagesService, private channelNavigationService: ChannelNavigationService, private chatUtilityService: ChatUtilityService) { }
 
@@ -130,7 +124,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
     }
     console.log('TEST');
-    
+
   }
 
 
@@ -509,7 +503,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     this.showThreadEvent.emit(message); // Emit the updated message
     // console.log(message);
     console.log('Selected message:', this.messageService.selectedMessage.messageId);
-    
+
   }
 
 
@@ -523,11 +517,8 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.channelChatMessage.trim() || this.selectedFile) {
+    if (this.channelChatMessage.trim()) {
       const currentUser = this.authService.currentUser();
-      // console.log('channelChatMessage:', this.channelChatMessage);
-      // console.log('selectedFile:', this.selectedFile);
-
       if (currentUser) {
         const messagesRef = collection(this.firestore, 'messages');
 
@@ -543,7 +534,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
           channelId: this.channelsService.currentChannelId, // Verwende die gespeicherte channelId
           reactions: [],
           answers: [],
-          fileURL: this.selectedFile ? '' : null,
           markedUser: markedUserDetails || [],
         });
 
@@ -551,7 +541,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
           senderID: newMessage.senderID,
           senderName: newMessage.senderName,
           message: newMessage.message,
-          fileURL: newMessage.fileURL,
           channelId: newMessage.channelId,
           reaction: newMessage.reactions,
           answers: newMessage.answers,
@@ -559,26 +548,10 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
           markedUser: newMessage.markedUser,
         });
 
-        if (this.selectedFile && this.currentUser()?.id) {
-          // console.log('File:', this.selectedFile);
-          // console.log('currentUserUid:', this.currentUser()?.id);
-          try {
-            const fileURL = await this.uploadFileService.uploadFileWithIds(this.selectedFile, this.currentUser()?.id || '', messageDocRef.id); // Verwende die ID des neuen Dokuments
-            newMessage.fileURL = fileURL; // Setze die Download-URL in der Nachricht
-            await updateDoc(messageDocRef, { fileURL: newMessage.fileURL }); // Aktualisiere das Dokument mit der Datei-URL
-            // console.log('Datei erfolgreich hochgeladen:', fileURL);
-
-          } catch (error) {
-            console.error('Datei-Upload fehlgeschlagen:', error);
-          }
-        }
-
         this.channelChatMessage = ''; // Eingabefeld leeren
-        this.selectedFile = null; // Reset selectedFile
         this.messageService.loadMessages(this.authService.currentUser()?.id, this.channelsService.currentChannelId);
         // Übergebe die channelId
         // this.scrollToBottom();
-        this.deleteUpload();
       } else {
         console.error('Kein Benutzer angemeldet');
       }
@@ -621,67 +594,4 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     }
     return 'haben reagiert';
   }
-
-
-  /// Auslagern ???
-  onFileSelected(event: Event) {
-    const fileInput = event.target as HTMLInputElement;
-    const file = fileInput.files?.[0];
-
-    if (file) {
-      this.selectedFile = file; // Speichere die ausgewählte Datei
-
-      // Datei als base64 speichern, um sie im localStorage zu speichern
-      const reader = new FileReader();
-      reader.onload = () => {
-        const fileData = reader.result as string;
-        this.filePreviewUrl = fileData; // Speichere die Vorschau-URL für die Datei
-        localStorage.setItem('selectedFile', JSON.stringify({ fileName: file.name, fileData }));
-        // console.log('File saved to localStorage');
-
-      };
-      reader.readAsDataURL(file);
-    } else {
-      console.error('No file selected');
-    }
-  }
-
-  deleteUpload() {
-    this.selectedFile = null;
-    this.filePreviewUrl = null;
-    localStorage.removeItem('selectedFile');
-  }
-
-  // Trigger für verstecktes File-Input
-  triggerFileInput() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    fileInput.click();
-  }
-
-  isImageFile(fileURL: string | null): boolean {
-    if (!fileURL) return false;
-
-    // Extrahiere die Datei-Informationen aus der Firebase-URL und prüfe den Dateinamen
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
-    const url = new URL(fileURL);
-    const fileName = url.pathname.split('/').pop(); // Hole den Dateinamen aus dem Pfad
-
-    if (!fileName) return false;
-
-    // Prüfe, ob der Dateiname mit einem der Bildformate endet
-    const fileExtension = fileName.split('.').pop()?.toLowerCase();
-    return imageExtensions.includes(fileExtension || '');
-  }
-
-  getFileNameFromURL(url: string | null): string {
-    if (!url) {
-      return 'Datei'; // Fallback, falls die URL null ist
-    }
-
-    const decodedUrl = decodeURIComponent(url);
-    const fileName = decodedUrl.split('?')[0].split('/').pop();
-    return fileName || 'Datei'; // Wenn kein Dateiname gefunden wird, 'Datei' als Fallback anzeigen
-  }
-
-  // ----------------
 }

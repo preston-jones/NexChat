@@ -12,7 +12,6 @@ import { collection, doc, Firestore, onSnapshot, updateDoc } from '@angular/fire
 import { Auth } from '@angular/fire/auth';
 import { UserService } from '../../shared/services/firestore/user-service/user.service';
 import { AuthService } from '../../shared/services/authentication/auth-service/auth.service';
-import { UploadFileService } from '../../shared/services/firestore/storage-service/upload-file.service';
 import { arrayUnion, getDoc, getDocs } from 'firebase/firestore';
 import { ChannelsService } from '../../shared/services/channels/channels.service';
 import { Channel } from '../../shared/models/channel.class';
@@ -60,8 +59,6 @@ export class ThreadComponent implements OnInit {
   typedMessage = '';
   senderAvatar: string | null = null;
   senderName: string | null = null;
-  selectedFile: File | null = null;
-  filePreviewUrl: string | null = null;
   selectedMessageId: string | null = null;
   showUserList = false;
 
@@ -71,7 +68,6 @@ export class ThreadComponent implements OnInit {
     private userService: UserService,
     private cd: ChangeDetectorRef,
     private authService: AuthService,
-    private uploadFileService: UploadFileService,
     public channelsService: ChannelsService,
     public sendMessageService: SendMessageService,
     public messagesService: MessagesService
@@ -198,7 +194,7 @@ export class ThreadComponent implements OnInit {
   }
 
   async sendMessage() {
-    if (this.typedMessage.trim() || this.selectedFile) {
+    if (this.typedMessage.trim()) {
       const currentUser = this.authService.currentUser;
 
       if (currentUser()) {
@@ -209,7 +205,6 @@ export class ThreadComponent implements OnInit {
           message: this.typedMessage,
           reactions: [],
           parentMessageId: this.selectedMessage ? this.selectedMessage.messageId : null,
-          fileURL: '',
           messageId: newMessageId
         });
 
@@ -217,30 +212,15 @@ export class ThreadComponent implements OnInit {
           await this.uploadMessage(newMessage, this.selectedMessage);
         }
 
-        await this.handleFileUpload(newMessage, newMessageId);
-
         this.typedMessage = '';
-        this.selectedFile = null;
         this.loadAnswers();
-        this.sendMessageService.scrollToBottom();
-        this.sendMessageService.deleteUpload();        
+        this.sendMessageService.scrollToBottom();      
       } else {
         console.error('Kein Benutzer angemeldet');
       }
     }
   }
 
-  private async handleFileUpload(newMessage: Message, newMessageId: string) {
-    if (this.selectedFile && this.currentUserUid) {
-      try {
-        const fileURL = await this.uploadFileService.uploadFileWithIds(this.selectedFile, this.currentUserUid, newMessageId);
-        newMessage.fileURL = fileURL;
-        await updateDoc(doc(this.firestore, 'messages', newMessageId), { fileURL: newMessage.fileURL });
-      } catch (error) {
-        console.error('Datei-Upload fehlgeschlagen:', error);
-      }
-    }
-  }
 
   async uploadMessage(message: Message, selectedMessage: Message) {
     const messageRef = doc(this.firestore, 'messages', selectedMessage.messageId);

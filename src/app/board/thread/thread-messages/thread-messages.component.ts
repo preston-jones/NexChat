@@ -31,8 +31,6 @@ export class ThreadMessagesComponent {
 
   senderName: string | null = null;
   senderID: string | null = null;
-  selectedFile: File | null = null;
-  filePreviewUrl: string | null = null;
   reactions: { emoji: string, senderID: string, senderName: string, count: number }[] = [];
   selectedMessageId: string | null = null;
   showEmojiPicker = false;

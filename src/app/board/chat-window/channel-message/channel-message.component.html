@@ -63,23 +63,13 @@
                         <span class="message-time">{{ message.formattedTimestamp }}</span>
                     </span>
                     <span class="message-recieved">{{ message.message }}
-                        <!-- Bildvorschau für URLs, die Bilddateien sind -->
-                        <a *ngIf="isImageFile(message.fileURL)" [href]="message.fileURL" target="_blank">
-                            <img class="image-preview" [src]="message.fileURL" alt="Bildvorschau" width="100%" />
-                        </a>
-                        <!-- Datei-Link für alle anderen Dateitypen -->
-                        <a *ngIf="message.fileURL && !isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
-                            class="file-link" [href]="message.fileURL" target="_blank"> {{
-                            getFileNameFromURL(message.fileURL) }}</a>
-
-
                     </span>
 
                     <span *ngIf="message?.answers && message.answers.length > 0" (click)="showThread(message)"
                         class="answers-block">
                         {{ message.answers.length }} Antworten
                         <span class="message-time">Letzte Antwort:
-                            <span class="message-time">"{{ message.lastAnswer }}"</span>
+                            <span class="message-time">{{ message.lastAnswer }}</span>
                         </span>
                     </span>
                     <div class="show-reactions">
@@ -149,16 +139,6 @@
                             </span>
                         </span>
                         <span class="chat-message-sender">{{ message.message }}
-                            <!-- Bildvorschau für URLs, die Bilddateien sind -->
-                            <a *ngIf="isImageFile(message.fileURL)" [href]="message.fileURL" target="_blank">
-                                <img class="image-preview" [src]="message.fileURL" alt="Bildvorschau" width="100%" />
-                            </a>
-                            <!-- Datei-Link für alle anderen Dateitypen -->
-                            <a *ngIf="message.fileURL && !isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
-                                class="file-link" [href]="message.fileURL" target="_blank">{{
-                                getFileNameFromURL(message.fileURL)
-                                }}</a>
-
                         </span>
 
                         <span *ngIf="message?.answers && message.answers.length > 0" (click)="showThread(message)"
@@ -230,31 +210,16 @@
 
         <div class="message-icon-container">
             <div class="left-icon-container">
-                <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
-                <div class="message-icon" (click)="triggerFileInput()">
-                    <mat-icon fontIcon="add"></mat-icon>
-                </div>
-                <div class="separator"></div>
                 <div (click)="showEmoji()" class="message-icon"><mat-icon fontIcon="sentiment_satisfied"></mat-icon>
                 </div>
                 <div (click)="toggleSearch()" class="message-icon"><mat-icon fontIcon="alternate_email"></mat-icon>
                 </div>
-
-                <div *ngIf="filePreviewUrl" class="file-preview">
-                    <img *ngIf="selectedFile && selectedFile.type.startsWith('image/')" [src]="filePreviewUrl"
-                        alt="Dateivorschau" />
-                    <a *ngIf="selectedFile && selectedFile.type === 'application/pdf'" [href]="filePreviewUrl"
-                        target="_blank">PDF
-                        anzeigen</a>
-                    <mat-icon class="delete-upload" fontIcon="close" (click)="deleteUpload()"></mat-icon>
-                </div>
-
             </div>
 
 
             <div class="right-icon-container">
                 <button (click)="sendMessage()" id="sendMessage" class="message-icon send-btn send"
-                [disabled]="!channelChatMessage || channelChatMessage.trim().length === 0" [ngClass]="{
+                    [disabled]="!channelChatMessage || channelChatMessage.trim().length === 0" [ngClass]="{
                     disabled: !channelChatMessage || channelChatMessage.trim().length === 0
                   }">
                     <mat-icon fontIcon="send"></mat-icon>

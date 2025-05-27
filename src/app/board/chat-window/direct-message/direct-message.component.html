@@ -11,8 +11,7 @@
         <span *ngIf="directMessageService.selectedUser?.id === this.currentUser?.id" class="message-received-container"
             id="info-text">
             Dies ist dein <strong>persönlicher Space</strong>. Hier kannst du dir Notizen machen, To-Dos auflisten, oder
-            Links und Files
-            griffbereit ablegen.
+            Links griffbereit ablegen.
             Du kannst hier auch Dinge mit dir selbst besprechen.
         </span>
 
@@ -51,14 +50,6 @@
                             </span>
                             <span class="message-recieved">
                                 <p [innerHTML]="messagesService.formatMessageContent(note.note)"></p>
-                                <!-- Bildvorschau für URLs, die Bilddateien sind -->
-                                <a *ngIf="isImageFile(note.fileURL)" [href]="note.fileURL" target="_blank">
-                                    <img class="image-preview" [src]="note.fileURL" alt="Bildvorschau" width="100%" />
-                                </a>
-                                <!-- Datei-Link für alle anderen Dateitypen -->
-                                <a *ngIf="note.fileURL && !isImageFile(note.fileURL) && !note.fileURL?.endsWith('.pdf')"
-                                    class="file-link" [href]="note.fileURL" target="_blank"> {{
-                                    getFileNameFromURL(note.fileURL) }}</a>
                             </span>
 
                             <div class="show-reactions">
@@ -142,14 +133,6 @@
                         </span>
                         <span class="message-recieved">
                             <p [innerHTML]="messagesService.formatMessageContent(message.message)"></p>
-                            <!-- Bildvorschau für URLs, die Bilddateien sind -->
-                            <a *ngIf="isImageFile(message.fileURL)" [href]="message.fileURL" target="_blank">
-                                <img class="image-preview" [src]="message.fileURL" alt="Bildvorschau" width="100%" />
-                            </a>
-                            <!-- Datei-Link für alle anderen Dateitypen -->
-                            <a *ngIf="message.fileURL && !isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
-                                class="file-link" [href]="message.fileURL" target="_blank"> {{
-                                getFileNameFromURL(message.fileURL) }}</a>
                         </span>
 
                         <div class="show-reactions">
@@ -204,7 +187,8 @@
                                 </div>
                                 <div (click)="showMessageEditToggle()" class="reaction-icon edit-message-icon"><mat-icon
                                         fontIcon="more_vert"></mat-icon></div>
-                                <div *ngIf="message.messageId && directMessageService.showMessageEdit" class="edit-message">
+                                <div *ngIf="message.messageId && directMessageService.showMessageEdit"
+                                    class="edit-message">
                                     <span (click)="editMessage(message.messageId, message.message)">Nachricht
                                         bearbeiten</span>
                                 </div>
@@ -221,17 +205,6 @@
                             </span>
                             <span class="chat-message-sender">
                                 <p [innerHTML]="messagesService.formatMessageContent(message.message)"></p>
-                                <!-- Bildvorschau für URLs, die Bilddateien sind -->
-                                <a *ngIf="isImageFile(message.fileURL)" [href]="message.fileURL" target="_blank">
-                                    <img class="image-preview" [src]="message.fileURL" alt="Bildvorschau"
-                                        width="100%" />
-                                </a>
-                                <!-- Datei-Link für alle anderen Dateitypen -->
-                                <a *ngIf="message.fileURL && !isImageFile(message.fileURL) && !message.fileURL?.endsWith('.pdf')"
-                                    class="file-link" [href]="message.fileURL" target="_blank">{{
-                                    getFileNameFromURL(message.fileURL)
-                                    }}</a>
-
                             </span>
 
                             <div class="show-reactions">
@@ -296,29 +269,14 @@
 
             <div class="message-icon-container">
                 <div class="left-icon-container">
-                    <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden />
-                    <div class="message-icon" (click)="triggerFileInput()">
-                        <mat-icon fontIcon="add"></mat-icon>
-                    </div>
-                    <div class="separator"></div>
                     <div (click)="showEmoji()" class="message-icon"><mat-icon fontIcon="sentiment_satisfied"></mat-icon>
                     </div>
                     <div (click)="toggleSearch()" class="message-icon"><mat-icon fontIcon="alternate_email"></mat-icon>
                     </div>
-
-                    <div *ngIf="filePreviewUrl" class="file-preview">
-                        <img *ngIf="selectedFile && selectedFile.type.startsWith('image/')" [src]="filePreviewUrl"
-                            alt="Dateivorschau" />
-                        <a *ngIf="selectedFile && selectedFile.type === 'application/pdf'" [href]="filePreviewUrl"
-                            target="_blank">PDF
-                            anzeigen</a>
-                        <mat-icon class="delete-upload" fontIcon="close" (click)="clearUploadCache()"></mat-icon>
-                    </div>
-
                 </div>
                 <div class="right-icon-container">
                     <button (click)="sendMessage()" id="sendMessage" class="message-icon send-btn send"
-                    [disabled]="!directChatMessage || directChatMessage.trim().length === 0" [ngClass]="{
+                        [disabled]="!directChatMessage || directChatMessage.trim().length === 0" [ngClass]="{
                         disabled: !directChatMessage || directChatMessage.trim().length === 0
                       }">
                         <mat-icon fontIcon="send"></mat-icon>

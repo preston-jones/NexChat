@@ -13,7 +13,6 @@ import { Auth } from '@angular/fire/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { ChannelsService } from '../../../shared/services/channels/channels.service';
 import { MessagesService } from '../../../shared/services/messages/messages.service';
-import { UploadFileService } from '../../../shared/services/firestore/storage-service/upload-file.service';
 import { NoteService } from '../../../shared/services/notes/notes.service';
 import { AuthService } from '../../../shared/services/authentication/auth-service/auth.service';
 import { UserService } from '../../../shared/services/firestore/user-service/user.service';
@@ -63,8 +62,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   messageArea = true;
   senderAvatar: string | null = null;
   senderName: string | null = null;
-  selectedFile: File | null = null;// Service für den Datei-Upload
-  filePreviewUrl: string | null = null;
   messageId: string | null = null;
   searchQuery: string = '';
   isSearching: boolean = false;
@@ -86,7 +83,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     private auth: Auth,
     private cd: ChangeDetectorRef,
     public authService: AuthService,
-    private uploadFileService: UploadFileService,
     public channelsService: ChannelsService,
     public dialog: MatDialog,
     public messagesService: MessagesService,
@@ -541,24 +537,13 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       if (this.currentUser?.id === this.userService.selectedUser?.id) {
         await this.noteService.createNewNote(this.directChatMessage, this.currentUser!, this.markedUser);
         this.clearInputField();
-        this.clearUploadCache();
         this.markedUser = [];
       }
       else {
         await this.directMessageService.createNewMessage(this.directChatMessage, this.currentUser!, this.markedUser);
         this.clearInputField();
-        this.clearUploadCache();
         this.markedUser = [];
       }
-    }
-  }
-
-
-  async updateMessageFileURL(messageDocRef: any) {
-    if (this.selectedFile) {
-      await updateDoc(messageDocRef, {
-        fileURL: await this.uploadFileService.uploadFileWithIdsDirectMessages(this.selectedFile, messageDocRef.id),
-      });
     }
   }
 
@@ -576,66 +561,4 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       console.warn('directChatMessageTextarea is not initialized or view is not ready.');
     }
   }
-
-
-    /// Auslagern ???
-  onFileSelected(event: Event) {
-    const fileInput = event.target as HTMLInputElement;
-    const file = fileInput.files?.[0];
-
-    if (file) {
-      this.selectedFile = file; // Speichere die ausgewählte Datei
-
-      // Datei als base64 speichern, um sie im localStorage zu speichern
-      const reader = new FileReader();
-      reader.onload = () => {
-        const fileData = reader.result as string;
-        this.filePreviewUrl = fileData; // Speichere die Vorschau-URL für die Datei
-        localStorage.setItem('selectedFile', JSON.stringify({ fileName: file.name, fileData }));
-        console.log('File saved to localStorage');
-      };
-      reader.readAsDataURL(file);
-    } else {
-      console.error('No file selected');
-    }
-  }
-
-  clearUploadCache() {
-    this.selectedFile = null;
-    this.filePreviewUrl = null;
-    localStorage.removeItem('selectedFile');
-  }
-
-  // Trigger für verstecktes File-Input
-  triggerFileInput() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    fileInput.click();
-  }
-
-  isImageFile(fileURL: string | null): boolean {
-    if (!fileURL) return false;
-
-    // Extrahiere die Datei-Informationen aus der Firebase-URL und prüfe den Dateinamen
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
-    const url = new URL(fileURL);
-    const fileName = url.pathname.split('/').pop(); // Hole den Dateinamen aus dem Pfad
-
-    if (!fileName) return false;
-
-    // Prüfe, ob der Dateiname mit einem der Bildformate endet
-    const fileExtension = fileName.split('.').pop()?.toLowerCase();
-    return imageExtensions.includes(fileExtension || '');
-  }
-
-  getFileNameFromURL(url: string | null): string {
-    if (!url) {
-      return 'Datei'; // Fallback, falls die URL null ist
-    }
-
-    const decodedUrl = decodeURIComponent(url);
-    const fileName = decodedUrl.split('?')[0].split('/').pop();
-    return fileName || 'Datei'; // Wenn kein Dateiname gefunden wird, 'Datei' als Fallback anzeigen
-  }
-
-    // ----------------
 }

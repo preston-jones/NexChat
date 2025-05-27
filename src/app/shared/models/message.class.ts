@@ -13,8 +13,7 @@ export class Message {
     displayDate: string | null;
     senderAvatar: string | null;
     parentMessageId: string | null;
-    fileURL: string | null;
-    lastAnswer: string | null;
+    lastAnswer: any | null;
     markedUser: { id: string; name: string }[] = [];
     timestamp: Timestamp;
 
@@ -29,14 +28,10 @@ export class Message {
         this.formattedTimestamp = '';
         this.displayDate = null;
         this.parentMessageId = obj ? obj.parentMessageId : null;
-        this.fileURL = obj ? obj.fileURL : null;
         this.senderAvatar = obj ? obj.senderAvatar : null;
         this.markedUser = obj?.markedUser || [];
         this.timestamp = obj ? obj.timestamp : null;
         this.lastAnswer = obj ? obj.lastAnswer : null;
-
-        // Setze lastAnswer, wenn Antworten existieren
-        this.lastAnswer = this.answers.length > 0 ? this.answers[this.answers.length - 1].message : null;
 
         // Typensicherer Vergleich, um sowohl null als auch undefined abzudecken
         if (currentUserUid && this.senderID) {

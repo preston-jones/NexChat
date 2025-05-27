@@ -19,11 +19,6 @@
       required=""></textarea>
     <div class="message-icon-container">
       <div class="left-icon-container">
-        <input type="file" id="fileInput" (change)="sendMessageService.onFileSelected($event)" hidden />
-        <div class="message-icon" (click)="sendMessageService.triggerFileInput()">
-          <mat-icon fontIcon="add"></mat-icon>
-        </div>
-        <div class="separator"></div>
         <div class="thread-message-icon">
           <mat-icon (click)="showEmoji(typedMessage)" fontIcon="sentiment_satisfied"></mat-icon>
         </div>
@@ -35,13 +30,6 @@
             <img [src]="user.avatarPath" alt="{{ user.name }}" class="user-avatar" />
             <span class="user-name">{{ user.name }}</span>
           </div>
-        </div>
-        <div *ngIf="filePreviewUrl" class="file-preview">
-          <img *ngIf="selectedFile && selectedFile.type.startsWith('image/')" [src]="filePreviewUrl"
-            alt="Dateivorschau" />
-          <a *ngIf="selectedFile && selectedFile.type === 'application/pdf'" [href]="filePreviewUrl" target="_blank">PDF
-            anzeigen</a>
-          <mat-icon class="delete-upload" fontIcon="close" (click)="sendMessageService.deleteUpload()"></mat-icon>
         </div>
       </div>
       <div class="right-icon-container">

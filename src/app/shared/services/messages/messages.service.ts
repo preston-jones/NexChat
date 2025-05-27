@@ -1,14 +1,10 @@
 import { Injectable, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
 import { Firestore, collection, onSnapshot, query, orderBy, where, Timestamp, DocumentSnapshot, QuerySnapshot, DocumentData, doc, getDoc, collectionData, docData } from '@angular/fire/firestore';
-import { Auth } from '@angular/fire/auth';
 import { UserService } from '../firestore/user-service/user.service';
 import { Message } from '../../models/message.class';
-import { PickerComponent } from '@ctrl/ngx-emoji-mart';
-import { UploadFileService } from '../firestore/storage-service/upload-file.service';
 import { AuthService } from '../authentication/auth-service/auth.service';
 import { ChannelsService } from '../channels/channels.service';
 import { WorkspaceComponent } from '../../../board/workspace/workspace.component';
-import { ChatUtilityService } from './chat-utility.service';
 import { getDocs, updateDoc } from 'firebase/firestore';
 
 
@@ -29,8 +25,6 @@ export class MessagesService {
     channelId = this.channelsService.currentChannelId;
     senderAvatar: string | null = null;
     senderName: string | null = null;
-    selectedFile: File | null = null;// Service für den Datei-Upload
-    filePreviewUrl: string | null = null;
     lastAnswer: string = '';
     selectedMessage: Message | null = null;
 
@@ -39,12 +33,9 @@ export class MessagesService {
 
     constructor(
         private firestore: Firestore,
-        private auth: Auth,
         private userService: UserService,
-        private uploadFileService: UploadFileService,
         private authService: AuthService,
         public channelsService: ChannelsService,
-        private chatUtilityService: ChatUtilityService
     ) { }
 
 
@@ -136,8 +127,8 @@ export class MessagesService {
                     const senderAvatar = messageData.senderID
                         ? await this.userService.getSelectedUserAvatar(messageData.senderID)
                         : './assets/images/avatars/avatar5.svg'; // Default avatar
-                    const lastAnswer = messageData.answers.length > 0 ? messageData.answers[messageData.answers.length - 1].message : null;
-                    messageData.lastAnswer = lastAnswer?.slice(0, 20) + '...';
+                    const lastAnswer = messageData.answers.length > 0 ? messageData.answers[messageData.answers.length - 1].displayDate : null;
+                    messageData.lastAnswer = lastAnswer;
                     return {
                         ...messageData,
                         messageId: doc.id,
