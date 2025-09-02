@@ -1,52 +1,52 @@
-# 📌 NexChat – Ein moderner Slack-Clone
+# 📌 NexChat – A Modern Slack Clone
 
-**NexChat** ist eine moderne Webanwendung, die als Slack-Clone entwickelt wurde.  
-Die App bietet eine Echtzeit-Kommunikationsplattform mit Channels, Direktnachrichten, Threads und vielem mehr – optimiert für verschiedene Geräte und mit einem klaren Fokus auf sauberes UI/UX-Design.
-
----
-
-## 🚀 Funktionen
-
-### 🔐 Benutzeraccounts & Administration
-- Registrierung mit E-Mail & Passwort  
-- Validierte Formulare mit spezifischen Fehlermeldungen  
-- Anmeldung & Logout  
-- Passwort-zurücksetzen per E-Mail  
-- Profilbearbeitung (Name & Avatar)  
-- Menü für Channels & Direktnachrichten ein-/ausklappbar  
-- *Optional:* Online-Status in Echtzeit  
-
-### 💬 Kommunikation
-- Direktnachrichten zwischen Mitgliedern  
-- Öffentliche & private Channels  
-- Threads zu Nachrichten für fokussierte Diskussionen  
-- Reaktionen mit Emojis auf Nachrichten  
-- Emojis in Nachrichten einfügen  
-- Mentions via `@Benutzer` und `#Channel`  
-- Volltextsuche für Nachrichten  
-
-### 📂 Channel-Management
-- Channels erstellen mit Namen & Beschreibung  
-- Mitglieder zu Channels hinzufügen  
-- Channels verlassen  
-- Channel-Namen & Beschreibungen bearbeiten  
+**NexChat** is a chat application with real-time communication, inspired by Slack.  
+The app provides a real-time communication platform with channels, direct messages, threads, emoji reactions, mentions, and more for clear and structured team collaboration.
 
 ---
 
-## 🛠️ Technologien
-- **Frontend:** Angular version 17.0.3 
+## 🚀 Features
+
+### 🔐 User Accounts & Administration
+- Registration with email & password  
+- Validated forms with specific error messages  
+- Login & logout  
+- Password reset via email  
+- Profile editing (name & avatar)  
+- Expandable/collapsible menu for channels & direct messages  
+- *Optional:* Real-time online status  
+
+### 💬 Communication
+- Direct messages between members  
+- Public & private channels  
+- Threads for focused discussions  
+- Emoji reactions to messages  
+- Insert emojis into messages  
+- Mentions via `@User` and `#Channel`  
+- Full-text search for messages  
+
+### 📂 Channel Management
+- Create channels with name & description  
+- Add members to channels  
+- Leave channels  
+- Edit channel names & descriptions  
+
+---
+
+## 🛠️ Technologies
+- **Frontend:** Angular  
 - **Backend/Hosting:** Firebase (Firestore, Auth, Storage, Hosting)  
-- **Sprache:** TypeScript (Strict Mode, Clean Code Prinzipien)  
-- **Styling:** SCSS / CSS mit responsivem Grid/Flexbox  
-- **Tools:** GitHub, Compodoc (optionale Dokumentation)  
+- **Language:** TypeScript (Strict Mode, Clean Code principles)  
+- **Styling:** SCSS / CSS with responsive Grid/Flexbox  
+- **Tools:** GitHub, Compodoc (optional documentation)  
 
 
-<br />
-<br />
-<br />
-# How To Run
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
+---
+
+## How To Run the App
+
+Download the Repository Folder and open it in your IDE or Code Editor
 
 ## Development server
 
