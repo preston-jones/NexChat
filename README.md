@@ -41,11 +41,9 @@ Die App bietet eine Echtzeit-Kommunikationsplattform mit Channels, Direktnachric
 - **Tools:** GitHub, Compodoc (optionale Dokumentation)  
 
 
-
-
-
-
-
+<br />
+<br />
+<br />
 # How To Run
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
