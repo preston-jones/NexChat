@@ -43,7 +43,10 @@ Die App bietet eine Echtzeit-Kommunikationsplattform mit Channels, Direktnachric
 
 
 
-# How To RUn
+
+
+
+# How To Run
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
 
