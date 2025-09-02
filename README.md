@@ -43,8 +43,7 @@ Die App bietet eine Echtzeit-Kommunikationsplattform mit Channels, Direktnachric
 
 
 
-HOW TO RUN
-# NexChat
+# How To RUn
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
 
