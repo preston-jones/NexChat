@@ -16,7 +16,7 @@ header {
     position: relative;
     width: 40%;
     background: #fff;
-    border-radius: 50px;
+    border-radius: 16px;
     padding: 17.5px 55px 17.5px 45px;
 
     >input {
@@ -458,11 +458,6 @@ mat-toolbar-row {
 
     .chat-window-container {
         margin: 0;
-    }
-
-    .thread-content,
-    .chat-content {
-        margin-bottom: 0 !important;
     }
 
     .thread-header {

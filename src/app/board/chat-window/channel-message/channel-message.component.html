@@ -35,7 +35,7 @@
     <div class="welcome-page-container" *ngIf="channelsService.currentChannelName === 'Willkommen'">
         <app-welcome-page></app-welcome-page>
     </div>
-    <div #chatWindow class="chat-content" *ngIf="channelsService.currentChannelName != 'Willkommen'">
+    <div #chatWindow class="chat-content mrg-btm" *ngIf="channelsService.currentChannelName != 'Willkommen'">
         <!-- <div class="message-box"></div> -->
         <div class="max-width" *ngFor="let message of (messageService.currentChatMessages); let i = index">
             <div *ngIf="message.displayDate" class="posted-date-container">

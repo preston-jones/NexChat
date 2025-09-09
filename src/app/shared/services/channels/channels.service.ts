@@ -1,5 +1,5 @@
 import { Injectable, OnInit, signal, EventEmitter, Output } from '@angular/core';
-import { Firestore, doc, onSnapshot, collection, query, orderBy, arrayUnion } from '@angular/fire/firestore';
+import { Firestore, doc, collection, query, orderBy, arrayUnion } from '@angular/fire/firestore';
 import { Channel } from '../../models/channel.class';
 import { User } from '../../models/user.class';
 import { Observable } from 'rxjs';
@@ -7,6 +7,7 @@ import { AuthService } from '../authentication/auth-service/auth.service';
 import { UserService } from '../firestore/user-service/user.service';
 import { getDocs, updateDoc, where, getDoc } from 'firebase/firestore';
 import { MessagesService } from '../messages/messages.service';
+import { FirestoreConnectionManager } from '../firestore-connection-manager.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +42,7 @@ export class ChannelsService {
     private firestore: Firestore,
     private authService: AuthService,
     private userService: UserService,
+    private connectionManager: FirestoreConnectionManager,
     // private messagesService: MessagesService,
   ) { }
 
@@ -79,20 +81,27 @@ export class ChannelsService {
     let channelsRef = collection(this.firestore, 'channels');
     let channelsQuery = query(channelsRef, orderBy('name'));
 
-    onSnapshot(channelsQuery, async (snapshot) => {
-      this.currentUserChannels = snapshot.docs
-        .map(doc => {
-          const channelData = doc.data() as Channel;
-          return {
-            ...channelData, id: doc.id
-          };
-        })
-        .filter(userChannel =>
-          userChannel.memberUids.includes(this.authService.currentUserUid) || userChannel.channelAuthorId === this.authService.currentUserUid
-        );
-      this.orderChannels();
-      console.log('Real-time Channels:', this.currentUserChannels);
-    });
+    this.connectionManager.registerListener(
+      'channels-collection',
+      channelsQuery,
+      async (snapshot: any) => {
+        this.currentUserChannels = snapshot.docs
+          .map((doc: any) => {
+            const channelData = doc.data() as Channel;
+            return {
+              ...channelData, id: doc.id
+            };
+          })
+          .filter((userChannel: any) =>
+            userChannel.memberUids.includes(this.authService.currentUserUid) || userChannel.channelAuthorId === this.authService.currentUserUid
+          );
+        this.orderChannels();
+        console.log('Real-time Channels:', this.currentUserChannels);
+      },
+      (error: any) => {
+        console.error('Failed to load channels:', error);
+      }
+    );
   }
 
 

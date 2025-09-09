@@ -6,7 +6,7 @@
             <span *ngIf="userService.selectedUserId != this.currentUser?.id">{{ userService.selectedUser?.name }}</span>
         </div>
     </div>
-    <div #chatWindow class="chat-content">
+    <div #chatWindow class="chat-content mrg-btm ">
 
         <span *ngIf="directMessageService.selectedUser?.id === this.currentUser?.id" class="message-received-container"
             id="info-text">
@@ -17,7 +17,7 @@
 
         <!-- NOTES WINDOW -->
 
-        <div class="message-box" *ngIf="directMessageService.selectedUser?.id === this.currentUser?.id">
+        <div class="message-box chat-container" *ngIf="directMessageService.selectedUser?.id === this.currentUser?.id">
             <div class="message-content" *ngFor="let note of noteService.notes; let i = index">
                 <div *ngIf="note.displayDate" class="posted-date-container">
                     <span class="posted-date">{{ note.displayDate }}</span>

@@ -131,7 +131,10 @@
 .message-box {
     width: 100%;
     max-width: 1920px;
-    margin-bottom: 172px;
+}
+
+.mrg-btm {
+    margin-bottom: 200px;
 }
 
 .message-content {
@@ -242,9 +245,35 @@
     }
 }
 
+@media screen and (max-width: 1080px) {
+    .mrg-btm {
+        margin-bottom: 151px;
+    }
+
+    .chat-content {
+        margin-top: 77px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .mrg-btm {
+        margin-bottom: 240px;
+    }
+}
+
+@media screen and (max-width: 539px) {
+    .mrg-btm {
+        margin-bottom: 272px;
+    }
+}
+
 @media screen and (max-width: 480px) {
     .chat-header-button>span {
         font-size: 20px;
+    }
+
+    .mrg-btm {
+        margin-bottom: 240px;
     }
 }
 

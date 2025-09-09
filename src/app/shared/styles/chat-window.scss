@@ -3,7 +3,6 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    border-radius: 16px !important;
     overflow-x: hidden;
     box-sizing: border-box;
 }
@@ -130,9 +129,12 @@
     align-items: center;
     // justify-content: flex-end;
     margin-top: 130px;
-    margin-bottom: 12px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.mrg-btm {
+    margin-bottom: 200px;
 }
 
 .posted-date-container {
@@ -196,7 +198,6 @@
     flex-direction: column;
     gap: 8px;
     box-sizing: border-box;
-    // width: max-content;
     width: auto;
 
     >.message-infos-sender {
@@ -235,6 +236,7 @@
         font-size: 18px;
         display: flex;
         flex-direction: column;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     >.chat-message-sender {
@@ -247,6 +249,7 @@
         font-size: 18px;
         display: flex;
         flex-direction: column;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 }
 
@@ -394,12 +397,22 @@
     }
 }
 
+@media screen and (max-width: 1080px) {
+    .mrg-btm {
+        margin-bottom: 151px;
+    }
+
+    .chat-content {
+        margin-top: 77px;
+    }
+}
+
 @media screen and (max-width: 768px) {
     .chat-header {
         gap: 4px;
         height: auto;
         padding: 0 14px;
-        position: relative;
+        // position: relative;
     }
 
     .chat-header-button {
@@ -420,10 +433,11 @@
     }
 
     .chat-content {
-        margin-top: 0;
+        margin-top: 48px;
+    }
 
-        // Overwrite or change at board.component.scss
-        margin-bottom: 240px !important;
+    .mrg-btm {
+        margin-bottom: 240px;
     }
 
     .chat-container {
@@ -438,7 +452,7 @@
 
     .mat-mdc-card-content:first-child {
         padding-top: 0 !important;
-                // Change at styles.scss
+        // Change at styles.scss
     }
 
     // workspace.scss
@@ -450,5 +464,18 @@
     .message-box {
         // margin-bottom: 240px !important;
         margin-bottom: 0px !important;
+    }
+}
+
+
+@media screen and (max-width: 539px) {
+    .mrg-btm {
+        margin-bottom: 272px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .mrg-btm {
+        margin-bottom: 240px;
     }
 }

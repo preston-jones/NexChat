@@ -143,10 +143,15 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   async loadUsers() {
     let usersRef = collection(this.firestore, 'users');
     let usersQuery = query(usersRef, orderBy('name'));
+    let allUsers:any = [];
 
     onSnapshot(usersQuery, async (snapshot) => {
       this.users = await Promise.all(snapshot.docs.map(async (doc) => {
         let userData = doc.data() as User;
+        allUsers.push(userData);
+
+        
+        console.dir(allUsers)
 
         return { ...userData, id: doc.id };
       }));

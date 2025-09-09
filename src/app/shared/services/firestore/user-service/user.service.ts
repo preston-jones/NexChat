@@ -1,10 +1,11 @@
 // Service for all Functions related to the User Object in Firestore
 
 import { Injectable, signal } from '@angular/core';
-import { Firestore, collection, doc, getDoc, updateDoc, setDoc, query, orderBy, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDoc, updateDoc, setDoc, query, orderBy } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { User } from '../../../models/user.class';
 import { getDocs } from 'firebase/firestore';
+import { FirestoreConnectionManager } from '../../firestore-connection-manager.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,10 @@ export class UserService {
   selectedUser: User | null = null;
   selectedUserId: string = '';
 
-  constructor(private firestore: Firestore) {
+  constructor(
+    private firestore: Firestore,
+    private connectionManager: FirestoreConnectionManager
+  ) {
     this.loadUsers(); // Pass the user ID to loadChannels
   }
 
@@ -35,13 +39,19 @@ export class UserService {
     let usersRef = collection(this.firestore, 'users');
     let usersQuery = query(usersRef, orderBy('name'));
 
-    onSnapshot(usersQuery, async (snapshot) => {
-      this.users = await Promise.all(snapshot.docs.map(async (doc) => {
-        let userData = doc.data() as User;
-        return { ...userData, id: doc.id };
-      }));
-
-    });
+    this.connectionManager.registerListener(
+      'users-collection',
+      usersQuery,
+      async (snapshot: any) => {
+        this.users = await Promise.all(snapshot.docs.map(async (doc: any) => {
+          let userData = doc.data() as User;
+          return { ...userData, id: doc.id };
+        }));
+      },
+      (error: any) => {
+        console.error('Failed to load users:', error);
+      }
+    );
   }
 
 

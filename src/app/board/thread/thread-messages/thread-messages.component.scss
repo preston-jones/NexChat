@@ -5,16 +5,18 @@
   flex-direction: column;
   align-items: center;
   margin-top: 84px;
-  margin-bottom: 68px;
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: 26px;
 }
 
+.mrg-btm_thread {
+  margin-bottom: 242px;
+}
+
 .message-box {
   width: 100%;
   max-width: 1920px;
-  margin-bottom: 172px;
 }
 
 .thread-message-container {
@@ -72,6 +74,7 @@
   font-size: 18px;
   font-weight: 400;
   padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .thread-message-sender {
@@ -320,10 +323,26 @@
   }
 }
 
+@media screen and (max-width: 1080px) {
+  .mrg-btm_thread {
+    margin-bottom: 145px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .mrg-btm_thread {
+    margin-bottom: 126px;
+  }
+
+  .thread-content {
+    margin-top: 64px !important;
+  }
+}
+
 @media screen and (max-width: 375px) {
 
-  .thread-message-container{
-      padding: 15px !important;
+  .thread-message-container {
+    padding: 15px !important;
   }
 
   .answers {
