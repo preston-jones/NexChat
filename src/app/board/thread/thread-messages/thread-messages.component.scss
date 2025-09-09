@@ -67,7 +67,7 @@
 
 .thread-message-bubble {
   background-color: #ECEEFE;
-  border-radius: 30px;
+  border-radius: 16px;
   border-top-left-radius: 0;
   font-size: 18px;
   font-weight: 400;
@@ -118,7 +118,7 @@
 
 .user-message-bubble {
   background-color: #797EF3;
-  border-radius: 30px;
+  border-radius: 16px;
   border-top-right-radius: 0;
   color: white;
   font-size: 18px;
@@ -137,7 +137,7 @@
 }
 
 .emoji-mart {
-  border-radius: 30px 30px 30px 30px;
+  border-radius: 16px 16px 16px 16px;
   position: absolute;
   bottom: 212px;
   left: 86px;
@@ -150,7 +150,7 @@
   top: -24px;
   background-color: white;
   border: 0.5px solid #686868;
-  border-radius: 30px;
+  border-radius: 16px;
   border-bottom-right-radius: 0;
   padding: 3px 12px;
   visibility: hidden;
@@ -185,7 +185,7 @@
     gap: 10px;
     height: 34px;
     width: 64px;
-    border-radius: 30px;
+    border-radius: 16px;
     border: 1px solid rgba(173, 176, 217, 1);
     cursor: pointer;
 
@@ -203,7 +203,7 @@
   background-color: rgba(83, 90, 241, 1);
   height: 112px;
   width: 158px;
-  border-radius: 30px 30px 30px 0px;
+  border-radius: 16px 16px 16px 0px;
   position: absolute;
   bottom: 36px;
   left: 34px;
@@ -237,7 +237,7 @@
   >.thread-edit-textarea {
     background-color: white !important;
     border: 1px solid rgba(173, 176, 217, 1) !important;
-    border-radius: 20px;
+    border-radius: 16px;
     height: 100%;
     width: 100%;
     padding: 20px;
@@ -254,7 +254,7 @@
   background-color: white;
   padding: 8px 0;
   gap: 5px;
-  border-radius: 0px 30px 30px 30px;
+  border-radius: 0px 16px 16px 16px;
   border: 1px solid rgba(173, 176, 217, 1);
   display: flex;
   align-items: center;
@@ -265,7 +265,7 @@
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
 
   >span {
-    border-radius: 30px;
+    border-radius: 16px;
     padding: 10px;
     font-size: 18px;
     font-weight: 700;
@@ -309,7 +309,7 @@
   }
 
   >button {
-    border-radius: 30px;
+    border-radius: 16px;
     height: 38px;
     cursor: pointer;
     color: #444DF2;

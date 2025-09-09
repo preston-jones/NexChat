@@ -56,13 +56,13 @@
     border-color: $purple;
     border: 1px solid $purple;
     padding: 18px 20px;
-    border-radius: 30px;
+    border-radius: 16px;
     font-size: 18px;
 }
 
 .contacts-container {
     border: 1px solid $purple;
-    border-radius: 0px 30px 30px 30px;
+    border-radius: 0px 16px 16px 16px;
     padding: 8px;
     z-index: 1;
     display: flex;

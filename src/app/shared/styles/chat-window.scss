@@ -3,14 +3,14 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    border-radius: 30px !important;
+    border-radius: 16px !important;
     overflow-x: hidden;
     box-sizing: border-box;
 }
 
 .chat-header {
-    border-top-left-radius: 30px !important;
-    border-top-right-radius: 30px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
     position: absolute;
     top: 0;
     height: 96px;
@@ -89,7 +89,7 @@
     justify-content: flex-end;
     gap: 10px;
     padding: 3px 10px 3px 10px;
-    border-radius: 30px;
+    border-radius: 16px;
 
     &:hover {
         cursor: pointer;
@@ -152,7 +152,7 @@
         border: 1px solid rgba(173, 176, 217, 1);
         padding: 5px 15px 5px 15px;
         background: white;
-        border-radius: 30px;
+        border-radius: 16px;
         position: relative;
         bottom: 50%;
         z-index: 1;
@@ -230,7 +230,7 @@
         background: rgba(236, 238, 254, 1);
         padding: 15px;
         gap: 8px;
-        border-radius: 0px 30px 30px 30px;
+        border-radius: 0px 16px 16px 16px;
         box-sizing: border-box;
         font-size: 18px;
         display: flex;
@@ -241,7 +241,7 @@
         background: rgba(83, 90, 241, 1);
         padding: 15px;
         gap: 8px;
-        border-radius: 30px 0 30px 30px;
+        border-radius: 16px 0 16px 16px;
         color: white;
         box-sizing: border-box;
         font-size: 18px;
@@ -277,7 +277,7 @@
     background: white;
     padding: 8px;
     gap: 5px;
-    border-radius: 30px 30px 0px 30px;
+    border-radius: 16px 16px 0px 16px;
     border: 1px solid rgba(173, 176, 217, 1);
     display: flex;
     align-items: center;
@@ -341,7 +341,7 @@
     background-color: white;
     padding: 8px;
     gap: 18px;
-    border-radius: 30px 30px 0px 30px;
+    border-radius: 16px 16px 0px 16px;
     border: 1px solid rgba(173, 176, 217, 1);
     display: flex;
     align-items: center;
@@ -369,7 +369,7 @@
         gap: 10px;
         height: 34px;
         width: 64px;
-        border-radius: 30px;
+        border-radius: 16px;
         border: 1px solid rgba(173, 176, 217, 1);
 
         &:hover {

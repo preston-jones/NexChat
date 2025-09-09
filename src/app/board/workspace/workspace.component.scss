@@ -26,7 +26,7 @@ span {
     @include dFlex($fd: column, $g: 25px);
     box-shadow: none;
     width: 366px;
-    border-radius: 30px;
+    border-radius: 16px;
 }
 
 .mat-mdc-card-content {
@@ -277,11 +277,11 @@ span {
 }
 
 .mat-mdc-dialog-surface {
-    border-radius: 30px !important;
+    border-radius: 16px !important;
 }
 
 .dialog-container .mat-dialog-container {
-    border-radius: 30px !important;
+    border-radius: 16px !important;
 }
 
 .mat-mdc-card {
