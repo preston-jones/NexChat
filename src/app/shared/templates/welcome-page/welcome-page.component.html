@@ -9,24 +9,24 @@
         <h3>Das erwartet dich bei NexChat:</h3>
         <ul>
             <li class="channel">
-                <strong>Channels erstellen & organisieren</strong>
-                <br />Strukturiere deine Kommunikation mit Channels für Teams, Projekte oder bestimmte Themen und halte alle auf dem neuesten Stand.
+                <strong>Channels erstellen &amp; organisieren</strong>
+                <br />Strukturiere deine Kommunikation mit Channels für Teams, Projekte oder bestimmte Themen. Erstelle neue Channels, füge Mitglieder hinzu und halte alle auf dem neuesten Stand.
             </li>
             <li class="message">
-                <strong>Direktnachrichten</strong>
-                <br />Sende private Nachrichten an Kollegen oder Freunde und kommuniziere schnell & sicher.
+                <strong>Direktnachrichten &amp; Thread-Diskussionen</strong>
+                <br />Sende private Nachrichten an Kollegen oder Freunde. Starte Thread-Unterhaltungen zu bestimmten Nachrichten für strukturierte Diskussionen.
             </li>
             <li class="emoji">
-                <strong>Emoji-Reaktionen</strong>
-                <br />Verleihe deinen Nachrichten eine persönliche Note mit einer großen Auswahl an Emojis.
+                <strong>Emoji-Reaktionen &amp; &#64;-Erwähnungen</strong>
+                <br />Verleihe deinen Nachrichten eine persönliche Note mit einer großen Auswahl an Emojis. Erwähne andere Nutzer mit &#64;-Mentions für direkte Aufmerksamkeit.
             </li>
             <li class="search">
                 <strong>Smarte Suchfunktion</strong>
-                <br />Finde Nachrichten, Channels oder Kontakte blitzschnell und effizient.
+                <br />Finde Nachrichten, Channels oder Kontakte blitzschnell mit der erweiterten Suchfunktion. Durchsuche Inhalte nach Schlüsselwörtern oder Benutzern.
             </li>
-            <li class="file">
-                <strong>Dateien teilen</strong>
-                <br />Bilder, PDFs oder andere Dateien – tausche Ideen direkt im Chat aus.
+            <li class="user">
+                <strong>Benutzerprofile &amp; Channel-Management</strong>
+                <br />Bearbeite dein Profil, verwalte deine Channel-Mitgliedschaften und sieh dir Benutzerinformationen anderer Teilnehmer an.
             </li>
         </ul>
     </article>
@@ -34,28 +34,27 @@
     <article *ngIf="this.authService.currentUser()?.id === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02'">
         <ul>
             <li class="warning">
-                <strong>Bitte beachte:</strong>
+                <strong>Wichtige Hinweise für Gast-Nutzer:</strong>
                 <br />
-                Als Gast kannst du keine Dateien hochladen und kein eigenes Profilfoto hochladen.
-                <br />
-                <br />
-                Beim Ausloggen wird dein gesamter erstellter Content vollständig gelöscht. Stelle sicher, dass du
-                alles abgeschlossen hast, bevor du dich abmeldest.
+                Beim Ausloggen wird dein gesamter erstellter Content (Nachrichten, Channels, Reaktionen) vollständig gelöscht. Stelle sicher, dass du alles abgeschlossen hast, bevor du dich abmeldest.
             </li>
         </ul>
     </article>
     <hr />
     <article>
-        <p>
-            Nutze die Logout-Funktion oben rechts im Profil-Menü um dich abzumelden. ☝️
-        </p>
-        <p>
-            Nach 15 Minuten Inaktivität wird deine Session automatisch beendet und du wirst ausgeloggt.
-            <br />
-            <br />
-            Du kannst dich jederzeit wieder anmelden, um deine Nachrichten und Channels zu sehen.
-        </p>
+        <ul>
+            <li class="session">
+                <strong>Session-Management:</strong>
+                <br />
+                 Nach 15 Minuten Inaktivität wird deine Session automatisch beendet und du wirst ausgeloggt. Nutze die Logout-Funktion oben rechts im Profil-Menü um dich sicher abzumelden.
+            </li>
+            <li>
+                <strong>Tipp:</strong>
+                <br />
+                  Du kannst dich jederzeit wieder anmelden, um neue Nachrichten und Channels zu erstellen. Für den vollen Funktionsumfang mit dauerhafter Speicherung registriere dich mit einem Account!
+            </li>
+        </ul>
     </article>
-    <strong>Starte jetzt und entdecke NexChat</strong>
+    <strong class="rocket">Starte jetzt und entdecke NexChat – deine neue Art zu kommunizieren!</strong>
     <br />
 </main>

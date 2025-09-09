@@ -1,6 +1,56 @@
-# Dabubble
+# 📌 NexChat – A Modern Slack Clone
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
+**NexChat** is a chat application with real-time communication, inspired by Slack.  
+The app provides a real-time communication platform with channels, direct messages, threads, emoji reactions, mentions, and more for clear and structured team collaboration.
+
+---
+![neu03](https://github.com/user-attachments/assets/10677a61-fb10-49d8-a56f-c2e5926bc97d)
+![neu01](https://github.com/user-attachments/assets/a05b8ba2-c1ee-4205-bc7a-d05e316a5d25)
+
+---
+
+## 🚀 Features
+
+### 🔐 User Accounts & Administration
+- Registration with email & password  
+- Validated forms with specific error messages  
+- Login & logout  
+- Password reset via email  
+- Profile editing (name & avatar)  
+- Expandable/collapsible menu for channels & direct messages  
+- *Optional:* Real-time online status  
+
+### 💬 Communication
+- Direct messages between members  
+- Public & private channels  
+- Threads for focused discussions  
+- Emoji reactions to messages  
+- Insert emojis into messages  
+- Mentions via `@User` and `#Channel`  
+- Full-text search for messages  
+
+### 📂 Channel Management
+- Create channels with name & description  
+- Add members to channels  
+- Leave channels  
+- Edit channel names & descriptions  
+
+---
+
+## 🛠️ Technologies
+- **Frontend:** Angular  
+- **Backend/Hosting:** Firebase (Firestore, Auth, Storage, Hosting)  
+- **Language:** TypeScript (Strict Mode, Clean Code principles)  
+- **Styling:** SCSS / CSS with responsive Grid/Flexbox  
+- **Tools:** GitHub, Compodoc (optional documentation)  
+
+
+
+---
+
+## How To Run the App
+
+Download the Repository Folder and open it in your IDE or Code Editor
 
 ## Development server
 

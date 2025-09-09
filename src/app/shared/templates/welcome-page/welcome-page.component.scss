@@ -68,8 +68,20 @@ main {
     content: "🔍 ";
   }
 
+  .user::before {
+    content: "👥 ";
+  }
+
   .file::before {
     content: "📂 ";
+  }
+
+  .session::before {
+    content: "⏰ ";
+  }
+
+  .rocket::before {
+    content: "🚀 ";
   }
 
   .admin-div {
