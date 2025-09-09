@@ -14,7 +14,7 @@ import { FirestoreConnectionManager } from './shared/services/firestore-connecti
   ]
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'dabubble';
+  title = 'NexChat';
 
   constructor(private connectionManager: FirestoreConnectionManager) {}
 
