@@ -95,8 +95,18 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.directMessageService.clearAndFocusTextarea.subscribe(() => {
       this.clearAndFocusTextarea();
+      // Also trigger scroll to bottom when user is changed
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 0);
     });
 
+    // Subscribe to user clicks to trigger scroll
+    this.directMessageService.clickUserEvent.subscribe(() => {
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 50);
+    });
 
     this.chatUtilityService.messageId$.subscribe(id => {
       this.messageId = id;
@@ -107,8 +117,7 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
     setTimeout(() => {
       this.scrollToBottom();
-      console.log('Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
-    }, 0);
+    }, 100);
   }
 
 
@@ -131,8 +140,22 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       this.directMessageService.preventScroll = false; // Reset the flag
       return; // Prevent scrolling
     }
+    
     if (this.chatWindow && this.chatWindow.nativeElement) {
-      this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
+      try {
+        this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
+        console.log('DIRECT MESSAGE: Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
+      } catch (error) {
+        console.warn('Could not scroll to bottom:', error);
+        // Retry after a short delay if element is not ready
+        setTimeout(() => {
+          if (this.chatWindow && this.chatWindow.nativeElement) {
+            this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
+          }
+        }, 100);
+      }
+    } else {
+      console.warn('ChatWindow not available for scrolling');
     }
   }
 

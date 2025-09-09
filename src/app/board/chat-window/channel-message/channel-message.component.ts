@@ -85,19 +85,25 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.channelsService.clearAndFocusTextarea.subscribe(() => {
       this.clearAndFocusTextarea();
+      // Also trigger scroll to bottom when channel is changed
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 0);
+    });
+
+    // Subscribe to channel clicks to trigger scroll
+    this.channelsService.clickUserEvent.subscribe(() => {
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 50);
     });
 
     this.loadData();
-    // ???
-    // this.channelNavigationService.channelSelected$.subscribe(({ channel, index }) => {
-    //   this.openChanneFromDirectMessage(channel, index);
-    // });
-    if (this.chatWindow) {
-      setTimeout(() => {
-        this.scrollToBottom();
-        console.log('CHANNEL!!! Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
-      }, 0);
-    }
+    
+    // Schedule scroll to bottom after view is initialized
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 100);
   }
 
 
@@ -114,6 +120,12 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.isViewInitialized = true;
     this.clearAndFocusTextarea();
+    
+    // Ensure scrollToBottom is called after view is initialized
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 0);
+    
     if (this.chatWindow) {
       const observer = new MutationObserver(() => {
         console.log('MutationObserver triggered');
@@ -123,8 +135,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       });
       observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
     }
-    console.log('TEST');
-
   }
 
 
@@ -164,8 +174,22 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       this.channelsService.preventScroll = false; // Reset the flag
       return; // Prevent scrolling
     }
+    
     if (this.chatWindow && this.chatWindow.nativeElement) {
-      this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
+      try {
+        this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
+        console.log('CHANNEL: Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
+      } catch (error) {
+        console.warn('Could not scroll to bottom:', error);
+        // Retry after a short delay if element is not ready
+        setTimeout(() => {
+          if (this.chatWindow && this.chatWindow.nativeElement) {
+            this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
+          }
+        }, 100);
+      }
+    } else {
+      console.warn('ChatWindow not available for scrolling');
     }
   }
 
