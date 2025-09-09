@@ -127,11 +127,16 @@ export class BoardComponent {
 
   changeLogoInHeader(): void {
     if (!this.isSmallScreen) return;
-    const groupLogo = document.querySelector('hide-input-mobile') as HTMLElement;
+    const groupLogo = document.querySelector('.hide-input-mobile') as HTMLElement;
     const devLogo = document.querySelector('.logo-container') as HTMLElement;
 
-    groupLogo.style.display = 'flex';
-    devLogo.style.display = 'none';
+    // Check if elements exist before accessing their style properties
+    if (groupLogo) {
+      groupLogo.style.display = 'flex';
+    }
+    if (devLogo) {
+      devLogo.style.display = 'none';
+    }
   }
 
 
@@ -251,13 +256,21 @@ export class BoardComponent {
     const logoContainer = document.querySelector('.logo-container') as HTMLElement;
 
     if (drawerContainer) {
-
-      drawer.style.removeProperty('transform');
-      sidenavContent.style.display = 'flex';
-      mobileBackArrow.style.display = 'flex';
-      groupLogo.style.display = 'flex';
-      logoContainer.style.display = 'none';
-
+      if (drawer) {
+        drawer.style.removeProperty('transform');
+      }
+      if (sidenavContent) {
+        sidenavContent.style.display = 'flex';
+      }
+      if (mobileBackArrow) {
+        mobileBackArrow.style.display = 'flex';
+      }
+      if (groupLogo) {
+        groupLogo.style.display = 'flex';
+      }
+      if (logoContainer) {
+        logoContainer.style.display = 'none';
+      }
     } else {
       console.warn('Element mit der Klasse mat-drawer-container wurde nicht gefunden.');
     }
@@ -274,13 +287,21 @@ export class BoardComponent {
     const logoContainer = document.querySelector('.logo-container') as HTMLElement;
 
     if (drawerContainer) {
-
-      drawer.style.setProperty('transform: none', 'translateX(0)');
-      sidenavContent.style.display = 'none';
-      mobileBackArrow.style.display = 'none';
-      groupLogo.style.display = 'none';
-      logoContainer.style.display = 'flex';
-
+      if (drawer) {
+        drawer.style.setProperty('transform', 'translateX(0)');
+      }
+      if (sidenavContent) {
+        sidenavContent.style.display = 'none';
+      }
+      if (mobileBackArrow) {
+        mobileBackArrow.style.display = 'none';
+      }
+      if (groupLogo) {
+        groupLogo.style.display = 'none';
+      }
+      if (logoContainer) {
+        logoContainer.style.display = 'flex';
+      }
     } else {
       console.warn('Element mit der Klasse mat-drawer-container wurde nicht gefunden.');
     }
