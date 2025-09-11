@@ -2,7 +2,7 @@
 
 A modern, real-time chat application inspired by Slack, built with Angular 17 and Firebase. NexChat provides seamless team communication with channels, direct messages, threads, and rich features for professional collaboration.
 
-🌐 **[View Live Demo](https://your-nexchat-demo.web.app/)**
+🌐 **[View Live Demo](https://nexchat.projects.prestonjones.dev/)**
 
 ![Angular](https://img.shields.io/badge/Angular-17.0.0-red?style=for-the-badge&logo=angular)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue?style=for-the-badge&logo=typescript)
