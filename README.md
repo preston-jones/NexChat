@@ -18,7 +18,7 @@ The app provides a real-time communication platform with channels, direct messag
 - Password reset via email  
 - Profile editing (name & avatar)  
 - Expandable/collapsible menu for channels & direct messages  
-- *Optional:* Real-time online status  
+- Real-time online status  
 
 ### 💬 Communication
 - Direct messages between members  
@@ -38,7 +38,7 @@ The app provides a real-time communication platform with channels, direct messag
 ---
 
 ## 🛠️ Technologies
-- **Frontend:** Angular  
+- **Frontend:** Angular 17 
 - **Backend/Hosting:** Firebase (Firestore, Auth, Storage, Hosting)  
 - **Language:** TypeScript (Strict Mode, Clean Code principles)  
 - **Styling:** SCSS / CSS with responsive Grid/Flexbox  
