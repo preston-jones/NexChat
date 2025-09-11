@@ -87,7 +87,6 @@ export class AddPeopleDialog implements OnInit {
     if (form.valid) {
       this.createNewChannel();
     } else {
-      console.log('Form is invalid');
     }
   }
 
@@ -97,7 +96,6 @@ export class AddPeopleDialog implements OnInit {
         this.currentUserUid = user.uid;
         this.loadUsers(this.currentUserUid);
       } else {
-        console.log('Kein Benutzer angemeldet');
       }
     });
   }
@@ -217,9 +215,7 @@ export class AddPeopleDialog implements OnInit {
       this.selectedUsers = this.selectedUsers.filter(user => user.id !== userId);
 
       if (userToDelete) {
-        console.log(`User deleted: ${userToDelete.name} (ID: ${userToDelete.id})`);
       } else {
-        console.log(`User with ID: ${userId} not found.`);
       }
     }
   }

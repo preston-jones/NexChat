@@ -35,7 +35,6 @@ export class AppComponent implements OnInit, OnDestroy {
     // Add keyboard shortcut for manual connection cleanup (Ctrl+Shift+R)
     window.addEventListener('keydown', (event) => {
       if (event.ctrlKey && event.shiftKey && event.key === 'R') {
-        console.log('🔄 Manual Firestore connection cleanup triggered');
         this.connectionManager.cleanupAllListeners();
         // Brief delay then refresh
         setTimeout(() => {

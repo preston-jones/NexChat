@@ -64,8 +64,6 @@ export class AddMemberDialogComponent implements OnInit {
     this.currentChannelName = this.channelsService.currentChannelName
     this.currentChannelId = this.channelsService.currentChannelId
     this.currentChannelMembers = this.channelsService.currentChannelMemberUids
-    console.log(this.selectedUsers);
-    console.log(this.currentChannelMembers);
   }
 
   async loadData() {
@@ -74,7 +72,6 @@ export class AddMemberDialogComponent implements OnInit {
         this.currentUserUid = user.uid;
         this.loadUsers(this.currentUserUid);
       } else {
-        console.log('Kein Benutzer angemeldet');
       }
     });
   }
@@ -100,61 +97,9 @@ export class AddMemberDialogComponent implements OnInit {
     if (form.valid) {
       this.channelsService.addUserToChannel(this.selectedUsers, this.currentChannelId);
     } else {
-        console.log('Form is invalid');
     }
   }
 
-  // async addUserToChannel() {
-  //   let channelsRef = collection(this.firestore, 'channels');
-  //   let currentChannelId = this.currentChannelId;
-  //   let selectedUsers = this.selectedUsers;
-  //   let channelDocRef = doc(channelsRef, currentChannelId);
-  //     try {
-
-  //       let channelDoc = await getDoc(channelDocRef);
-
-  //           if (channelDoc.exists()) {
-  //             } 
-  //               await updateDoc(channelDocRef, {
-  //                 members: arrayUnion(...selectedUsers),
-  //                 memberUids: arrayUnion(...selectedUsers.map(user => user.id))
-  //               });
-        
-  //       this.channelsService.closeAddMemberDialog();
-  //       this.channelsService.closeMembersDialog();
-  //       this.channelsService.memberAddedInfo = true;
-  //       setTimeout(() => {
-  //         this.channelsService.memberAddedInfo = false;
-  //       }, 3000);    
-
-  //     } catch (error) {
-  //       console.error("Fehler beim Aktualisieren des Channels:", error);
-  //   }
-    
-  // }
-
-
-//   async addUserToChannel() {
-//     let channelsRef = collection(this.firestore, 'channels');
-//     let currentChannelName = this.currentChannelName;
-//     let currentChannelDescription = this.currentChannelDescription;
-//     let currentChannelId = this.currentChannel.id;
-//     let channelDocRef = doc(channelsRef, currentChannelId);
-  
-//     try {
-//       let channelDoc = await getDoc(channelDocRef);
-  
-//       if (channelDoc.exists()) {
-    
-          
-//         } 
-//           await updateDoc(channelDocRef, {
-//             description: currentChannelDescription
-//           });
-          
-//         }
-//   }
-// }
 
   deleteUser(userId: string | null) {
     if (userId) {
@@ -162,16 +107,13 @@ export class AddMemberDialogComponent implements OnInit {
       this.selectedUsers = this.selectedUsers.filter(user => user.id !== userId);
       
       if (userToDelete) {
-        console.log(`User deleted: ${userToDelete.name} (ID: ${userToDelete.id})`);
       } else {
-        console.log(`User with ID: ${userId} not found.`);
       }
     }
   }
 
 
   filterUsers() {
-    console.log(this.users);
     if (!this.memberName) {
       this.filteredUsers = this.users;
     } else {
@@ -200,7 +142,6 @@ export class AddMemberDialogComponent implements OnInit {
             this.ownUserError = false;
         }
     }
-    console.log(this.selectedUsers)
   
     this.memberName = '';
     this.searchTermControl.reset();

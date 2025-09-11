@@ -163,7 +163,6 @@ export class DirectMessagesService {
         this.setMessageDisplayDate(msg);
         // await this.loadSenderAvatar(msg);
       });
-      console.log('Real-time Direct Messages:', this.directMessages);
       await this.loadCurrentConversation(this.selectedUser);
     });
   }

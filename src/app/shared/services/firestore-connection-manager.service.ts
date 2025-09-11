@@ -16,7 +16,6 @@ export class FirestoreConnectionManager implements OnDestroy {
   constructor() {
     // Monitor connection count
     this.connectionCount$.subscribe(count => {
-      console.log(`🔄 Active Firestore listeners: ${count}`);
       if (count > this.maxConcurrentConnections) {
         console.warn(`⚠️ Too many Firestore connections (${count}). Consider cleanup.`);
       }
@@ -56,7 +55,6 @@ export class FirestoreConnectionManager implements OnDestroy {
       this.activeListeners.set(listenerId, unsubscribe);
       this.updateConnectionCount();
 
-      console.log(`✅ Registered Firestore listener: ${listenerId}`);
     } catch (error) {
       console.error(`❌ Failed to register listener ${listenerId}:`, error);
     }
@@ -71,7 +69,6 @@ export class FirestoreConnectionManager implements OnDestroy {
       unsubscribe();
       this.activeListeners.delete(listenerId);
       this.updateConnectionCount();
-      console.log(`🗑️ Cleaned up listener: ${listenerId}`);
     }
   }
 
@@ -79,12 +76,10 @@ export class FirestoreConnectionManager implements OnDestroy {
    * Clean up all listeners
    */
   cleanupAllListeners(): void {
-    console.log(`🧹 Cleaning up ${this.activeListeners.size} Firestore listeners...`);
     
     this.activeListeners.forEach((unsubscribe, listenerId) => {
       try {
         unsubscribe();
-        console.log(`✅ Cleaned up: ${listenerId}`);
       } catch (error) {
         console.error(`❌ Error cleaning up ${listenerId}:`, error);
       }
@@ -111,8 +106,6 @@ export class FirestoreConnectionManager implements OnDestroy {
       console.error(`❌ Max retries reached for listener: ${listenerId}`);
       return;
     }
-
-    console.log(`🔄 Retrying listener ${listenerId} in ${backoffTime}ms (attempt ${retryCount + 1})`);
     
     setTimeout(() => {
       try {
@@ -153,10 +146,7 @@ export class FirestoreConnectionManager implements OnDestroy {
    * Debug method to list all active listeners
    */
   debugListeners(): void {
-    console.log('🔍 Active Firestore Listeners:');
     this.activeListeners.forEach((_, listenerId) => {
-      console.log(`   - ${listenerId}`);
     });
-    console.log(`Total: ${this.activeListeners.size} listeners`);
   }
 }

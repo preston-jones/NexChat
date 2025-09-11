@@ -127,8 +127,6 @@ export class UserService {
 
 
   async getSelectedUserById(userId: string): Promise<User | null> {
-    // this.showUserInfo.set(true);
-    // console.log(this.showUserInfo);
 
     const userRef = this.getUserDocReference(userId);
     const userDoc = await getDoc(userRef);

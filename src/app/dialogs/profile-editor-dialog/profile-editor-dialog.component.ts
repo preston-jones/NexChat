@@ -44,8 +44,6 @@ export class ProfileEditorDialogComponent {
       this.avatarPath = this.authService.currentUser()?.avatarPath;
       this.selectedAvatar = this.avatarPath;
     }
-    // console.log(this.mail);
-    // console.log(this.fullname);
   }
 
 
@@ -63,14 +61,10 @@ export class ProfileEditorDialogComponent {
           // check if email is used
           await this.authService.updateEmail(this.mail!);
         }
-        // console.log(updatedUser!.id!);
 
         await this.userService.updateUserInFirestore(updatedUser!.id!, updatedUser!)
         this.authService.currentUser.set(updatedUser)
         this.changesSuccessful.set(true);
-
-        // console.log(this.mail);
-        // console.log(this.fullname);
       }
       this.closeAllDialogs();
     }

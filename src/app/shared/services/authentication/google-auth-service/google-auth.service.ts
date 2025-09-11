@@ -39,14 +39,12 @@ export class GoogleAuthService {
         await this.userService.createFirestoreUser(firestoreUser)
         await this.userService.updateUserLoginState(result.user.uid, 'loggedIn')
           .then(() => {
-            console.log('User successfully created /logged in, in Firestore');
           })
           .catch((error) => {
             console.error('Error creating user in Firestore:', error.message);
           });
 
         this.router.navigateByUrl('board');
-        console.log('Logged in as:', result.user.displayName, result.user.email);
       }
     } catch (err: any) {
       console.error(err);

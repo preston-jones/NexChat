@@ -128,7 +128,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     
     if (this.chatWindow) {
       const observer = new MutationObserver(() => {
-        console.log('MutationObserver triggered');
         if (!this.channelsService.preventScroll) {
           this.scrollToBottom();
         }
@@ -144,7 +143,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
         this.loadUsers();
         this.channelsService.loadChannels();
       } else {
-        console.log('Kein Benutzer angemeldet');
       }
     });
   }
@@ -159,9 +157,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
       this.users = await Promise.all(snapshot.docs.map(async (doc) => {
         let userData = doc.data() as User;
         allUsers.push(userData);
-
-        
-        console.dir(allUsers)
 
         return { ...userData, id: doc.id };
       }));
@@ -178,7 +173,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     if (this.chatWindow && this.chatWindow.nativeElement) {
       try {
         this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
-        console.log('CHANNEL: Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
       } catch (error) {
         console.warn('Could not scroll to bottom:', error);
         // Retry after a short delay if element is not ready
@@ -440,7 +434,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
     const messageDocRef = doc(this.firestore, `messages/${message.messageId}`);
     updateDoc(messageDocRef, { reactions: message.reactions })
       .then(() => {
-        console.log('Reaktionen erfolgreich aktualisiert.');
         this.cd.markForCheck(); // Komponenten-Update anstoßen
       })
       .catch(error => {
@@ -530,9 +523,6 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
     this.selectedMessage = message;
     this.showThreadEvent.emit(message); // Emit the updated message
-    // console.log(message);
-    console.log('Selected message:', this.messageService.selectedMessage.messageId);
-
   }
 
 

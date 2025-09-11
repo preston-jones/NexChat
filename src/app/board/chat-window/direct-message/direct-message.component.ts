@@ -126,7 +126,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     this.clearAndFocusTextarea();
 
     const observer = new MutationObserver(() => {
-      console.log('MutationObserver triggered');
       if (!this.directMessageService.preventScroll) {
         this.scrollToBottom();
       }
@@ -144,7 +143,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
     if (this.chatWindow && this.chatWindow.nativeElement) {
       try {
         this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;
-        console.log('DIRECT MESSAGE: Scroll to bottom triggered', this.chatWindow.nativeElement.scrollTop);
       } catch (error) {
         console.warn('Could not scroll to bottom:', error);
         // Retry after a short delay if element is not ready
@@ -165,7 +163,6 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
         await this.loadUsers();
         await this.loadChannels();
       } else {
-        console.log('Kein Benutzer angemeldet');
       }
     });
   }

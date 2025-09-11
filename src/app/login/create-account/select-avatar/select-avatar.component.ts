@@ -86,10 +86,8 @@ export class SelectAvatarComponent implements OnInit {
       const avatarRef = ref(storage, `avatar_images/custom/${new Date().getTime()}_${file.name}`);
 
       uploadBytes(avatarRef, file).then(() => {
-        console.log('Upload successful!');
         return getDownloadURL(avatarRef);
       }).then((downloadURL) => {
-        console.log('File available at', downloadURL);
         this.selectedAvatar = downloadURL;
       }).catch((error) => {
         console.error('Upload failed', error);

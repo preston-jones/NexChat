@@ -120,12 +120,8 @@ export class SearchDialogComponent implements OnChanges {
 
 
   showSearchDialogAndFilterItems(): void {
-    // console.log('allData =', this.allData);
-
     this.showSearchDialog = true;
     this.mainSearchList = this.filterSearchItems();
-    // console.log('searchitems =', this.filterSearchItems());
-    // console.log('mainSearchList =', this.mainSearchList);
   }
 
 

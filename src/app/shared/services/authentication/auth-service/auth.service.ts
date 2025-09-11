@@ -36,15 +36,6 @@ export class AuthService {
     this.initializeAuthState();
     this.userUpdated.subscribe((user) => {
       this.userService.setUser(user);
-
-      // if (user != null && user != undefined && user.loginState === 'loggedIn') {
-      //   this.startSessionTimer();
-      //   this.resetSessionTimer();
-      // }
-
-      console.log('auth.service.currentUser() =', this.currentUser());
-      console.log(this.currentUser()?.id);
-      console.log('User =', user);
     });
   }
 
@@ -54,7 +45,6 @@ export class AuthService {
       fromEvent(document, 'mousemove')
         .subscribe(e => {
           clearTimeout(this.sessionTimer);
-          // console.log('Reset Timout');
           this.startSessionTimer();
         });
   }
@@ -68,8 +58,6 @@ export class AuthService {
 
 
   startSessionTimer() {
-    // this.subscription?.unsubscribe();
-    // console.log('Start Timout');
     this.sessionTimer = setTimeout(() => {
       this.logout();
       this.subscription?.unsubscribe();
@@ -100,12 +88,10 @@ export class AuthService {
           const currentUserObject = this.setCurrentUserObject(firestoreUserData);
           this.setUser(currentUserObject);
         } else {
-          console.log(`No Firestore User with id: ${authUserID} found`);
           this.setUser(null);
         }
       });
     } else {
-      console.log(`No Firestore User with id: ${authUserID} found`);
       this.setUser(null);
     }
   }
@@ -157,9 +143,6 @@ export class AuthService {
         await signOut(this.auth);
         window.open('sign-in', '_self');
       }
-      else {
-        console.log('No user is currently logged in');
-      }
     } catch (err: any) {
       console.error(err);
       throw err;
@@ -192,7 +175,6 @@ export class AuthService {
       const docId = docSnap.id; // Get the document ID
       const docRef = doc(this.firestore, firebaseCollection, docId); // Create a reference to the document
       await deleteDoc(docRef); // Use the document reference to delete
-      console.log(`Deleted document with ID: ${docId}`);
     }
   }
 

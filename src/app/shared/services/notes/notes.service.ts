@@ -40,7 +40,6 @@ export class NoteService {
       this.notes.forEach(async note => {
         this.setNoteDisplayDate(note);
       });
-      console.log('Real-time Notes:', this.notes);
     });
   }
 

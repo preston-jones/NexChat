@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation  } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormsModule, Validators } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -56,8 +56,8 @@ export class ChannelDescriptionDialogComponent {
     public iconsService: IconsService,
     public firestore: Firestore,
     private auth: Auth
-  ) { 
-    
+  ) {
+
   }
 
   ngOnInit(): void {
@@ -72,23 +72,22 @@ export class ChannelDescriptionDialogComponent {
     let usersQuery = query(usersRef, orderBy('name'));
 
     onSnapshot(usersQuery, async (snapshot) => {
-        this.users = await Promise.all(snapshot.docs.map(async (doc) => {
-            let userData = doc.data() as User;
-            return { ...userData, id: doc.id };
-        }));
+      this.users = await Promise.all(snapshot.docs.map(async (doc) => {
+        let userData = doc.data() as User;
+        return { ...userData, id: doc.id };
+      }));
 
-        let currentUser = this.auth.currentUser;
-        if (currentUser) {
-            this.currentUser = this.findUserById(currentUser.uid);
-            } else {
-                console.log('Logged-in user not found in the users list.');
-            }
-        });
+      let currentUser = this.auth.currentUser;
+      if (currentUser) {
+        this.currentUser = this.findUserById(currentUser.uid);
+      } else {
+      }
+    });
   }
 
   findUserById(userId: string): User | undefined {
     return this.users.find(user => user.id === userId);
-}
+  }
 
   editDescription() {
     this.editChannelDescription = !this.editChannelDescription;
@@ -99,10 +98,10 @@ export class ChannelDescriptionDialogComponent {
   }
 
   emptyInput(type: string) {
-    if(type === 'description') {
-    this.currentChannelDescription = '';
-  } else if(type === 'name') {
-    this.currentChannelName = '';
+    if (type === 'description') {
+      this.currentChannelDescription = '';
+    } else if (type === 'name') {
+      this.currentChannelName = '';
     }
   }
 
@@ -120,10 +119,10 @@ export class ChannelDescriptionDialogComponent {
     let currentChannelDescription = this.currentChannelDescription;
     let currentChannelId = this.currentChannel.id;
     let channelDocRef = doc(channelsRef, currentChannelId);
-  
+
     try {
       let channelDoc = await getDoc(channelDocRef);
-  
+
       if (channelDoc.exists()) {
         if (type === 'name' && currentChannelName) {
           await updateDoc(channelDocRef, {
@@ -131,17 +130,16 @@ export class ChannelDescriptionDialogComponent {
           });
           this.editChannelName = false;
           this.channelsService.currentChannelName = currentChannelName;
-          
+
         } else if (type === 'description' && currentChannelDescription) {
           await updateDoc(channelDocRef, {
             description: currentChannelDescription
           });
           this.editChannelDescription = false;
-          
+
         }
 
       } else {
-        console.log("Channel existiert nicht");
       }
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Channels:", error);
@@ -153,50 +151,44 @@ export class ChannelDescriptionDialogComponent {
     let currentChannelId = this.currentChannel.id;
     let channelsRef = collection(this.firestore, 'channels');
     let channelDocRef = doc(channelsRef, currentChannelId);
-  
+
     try {
       let channelDoc = await getDoc(channelDocRef);
       if (channelDoc.exists()) {
         let channelData = channelDoc.data();
-        
+
         let updatedMembers = channelData['members'].filter((member: any) => member.uid !== currentUserId);
         let updatedMemberUids = channelData['memberUids'].filter((uid: any) => uid !== currentUserId);
-  
+
         await updateDoc(channelDocRef, {
           members: updatedMembers,
           memberUids: updatedMemberUids
         });
-        
-        console.log(`User ${currentUserId} hat den Channel ${currentChannelId} verlassen.`);
-      } else {
-        console.log("Channel existiert nicht.");
       }
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Channels:", error);
     }
   }
-  
-  
+
+
   subscribeToChannelUpdates(channelId: string) {
     let channelsRef = collection(this.firestore, 'channels');
     let channelDocRef = doc(channelsRef, channelId);
-  
+
     onSnapshot(channelDocRef, (doc) => {
       if (doc.exists()) {
         let channelData = doc.data();
-  
+
         if (channelData) {
           this.currentChannelName = channelData['name'] || this.currentChannelName;
           this.currentChannelDescription = channelData['description'] || this.currentChannelDescription;
         }
-      } else {
-        console.log("Channel existiert nicht");
       }
     });
   }
 
-  
-  
+
+
 }
 
 

@@ -73,7 +73,6 @@ export class MessagesService {
 
     addEmoji(event: any) {
         this.chatMessage += event.emoji.native;
-        console.log(event.emoji.native);
     }
 
 
@@ -112,7 +111,6 @@ export class MessagesService {
                 return m;
             });
         this.currentChatMessages = selectedChatMessages;
-        console.log('Aktuelle Nachrichten:', this.currentChatMessages);
     }
 
 
@@ -139,8 +137,6 @@ export class MessagesService {
             );
             this.filterResolvedMessages(resolvedMessages);
             this.findSelectedAnswers();
-
-            console.log('Real-time Messages:', this.allChatMessages);
         });
     }
 
@@ -149,7 +145,6 @@ export class MessagesService {
         if (this.selectedMessage) {
             const selectedAnswers = this.allChatMessages.find(message => message.messageId === this.selectedMessage?.messageId);
             this.selectedMessage = selectedAnswers || null;
-            console.log('Aktuelle Antworten:', this.selectedMessage);
         }
     }
 
@@ -186,7 +181,6 @@ export class MessagesService {
             const lastAnswerDate = this.formatTimestamp(lastAnswerTimestamp); // e.g., "Heute", "Gestern", or "13. September"
             const lastAnswerTime = lastAnswerTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // e.g., "14:35"
             messageData.lastAnswer = `${lastAnswerDate}, ${lastAnswerTime}`;
-            console.log('Letzte Antwort:', messageData.lastAnswer);
         }
     }
 
@@ -202,7 +196,6 @@ export class MessagesService {
                 const answers = message['answers'] || []; // Antworten abrufen
                 for (let i = 0; i < answers.length; i++) {
                     if (answers[i].senderID === this.authService.currentUserUid) {
-                        console.log(answers[i]);
                         this.updateSendernameOfAnswer(doc.id, this.authService.currentUser()?.name as string, i);
                     }
                 }

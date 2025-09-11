@@ -29,7 +29,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 @Component({
   selector: 'app-create-account',
   standalone: true,
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatCheckboxModule, MatButtonModule, SelectAvatarComponent, RouterModule,],
+  imports: [FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatCheckboxModule, MatButtonModule, RouterModule,],
   templateUrl: './create-account.component.html',
   styleUrl: './create-account.component.scss',
   encapsulation: ViewEncapsulation.None
@@ -105,7 +105,6 @@ export class CreateAccountComponent {
           // Speichert den Benutzer in Firestore
           this.userService.createFirestoreUser(firestoreUser)
             .then(() => {
-              console.log('User successfully created in Firestore');
               this.router.navigate(['select-avatar'], { queryParams: { name: name, email: email, password: password } });
             })
             .catch((error) => {

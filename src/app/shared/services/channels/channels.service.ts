@@ -96,7 +96,6 @@ export class ChannelsService {
             userChannel.memberUids.includes(this.authService.currentUserUid) || userChannel.channelAuthorId === this.authService.currentUserUid
           );
         this.orderChannels();
-        console.log('Real-time Channels:', this.currentUserChannels);
       },
       (error: any) => {
         console.error('Failed to load channels:', error);
