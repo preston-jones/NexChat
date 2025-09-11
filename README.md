@@ -4,8 +4,8 @@
 The app provides a real-time communication platform with channels, direct messages, threads, emoji reactions, mentions, and more for clear and structured team collaboration.
 
 ---
-![neu03](https://github.com/user-attachments/assets/10677a61-fb10-49d8-a56f-c2e5926bc97d)
-![neu01](https://github.com/user-attachments/assets/a05b8ba2-c1ee-4205-bc7a-d05e316a5d25)
+![login](src/assets/images/screenshots/login.JPG)
+![chat](src/assets/images/screenshots/chat.JPG)
 
 ---
 
