@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,7 +42,7 @@ import { EmojiReaction } from '../../../shared/models/emoji-reaction.model';
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
 })
-export class ChannelMessageComponent implements OnInit, AfterViewInit {
+export class ChannelMessageComponent implements OnInit, AfterViewInit, OnDestroy {
   messages: Message[] = [];
   selectedMessage: Message | null = null;
   users: User[] = [];
@@ -69,6 +69,7 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
   markedUser: { id: string; name: string }[] = [];
   markedChannel: { id: string; name: string }[] = [];
   private isViewInitialized = false;
+  private isDestroyed = false;
 
   @Output() showThreadEvent = new EventEmitter<Message>();
   @Output() openChannelEvent = new EventEmitter<void>();
@@ -108,18 +109,40 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit {
 
 
   clearAndFocusTextarea() {
+    if (this.isDestroyed) {
+      return; // Component is destroyed, don't try to access ViewChild
+    }
+    
     if (this.isViewInitialized && this.chatMessageTextarea && this.chatMessageTextarea.nativeElement) {
       this.channelChatMessage = ''; // Clear the input field
       this.chatMessageTextarea.nativeElement.focus(); // Set focus on the input field
     } else {
-      console.warn('chatMessageTextarea is not initialized or view is not ready.');
+      // If view is not ready, retry after a short delay
+      setTimeout(() => {
+        if (!this.isDestroyed && this.isViewInitialized && this.chatMessageTextarea && this.chatMessageTextarea.nativeElement) {
+          this.channelChatMessage = ''; // Clear the input field
+          this.chatMessageTextarea.nativeElement.focus(); // Set focus on the input field
+        }
+      }, 100);
     }
+  }
+
+
+  ngOnDestroy() {
+    this.isDestroyed = true;
   }
 
 
   ngAfterViewInit() {
     this.isViewInitialized = true;
-    this.clearAndFocusTextarea();
+    
+    // Use ChangeDetectorRef to ensure the view is properly initialized
+    this.cd.detectChanges();
+    
+    // Clear and focus with a small delay to ensure everything is ready
+    setTimeout(() => {
+      this.clearAndFocusTextarea();
+    }, 0);
     
     // Ensure scrollToBottom is called after view is initialized
     setTimeout(() => {

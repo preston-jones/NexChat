@@ -66,7 +66,12 @@ export class ChannelsService {
 
   clickChannelContainer(channel: Channel, i: number) {
     this.resetSrollPrevent();
-    this.triggerClearAndFocus();
+    
+    // Delay the trigger to ensure the view is ready
+    setTimeout(() => {
+      this.triggerClearAndFocus();
+    }, 50);
+    
     this.clickedChannels.fill(false);
     this.clickedUsers.fill(false);
     this.clickedChannels[i] = true;
