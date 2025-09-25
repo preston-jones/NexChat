@@ -273,9 +273,9 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
   }
 
   openUserInfoDialog(): void {
-    if (this.selectedUser) {
+    if (this.userService.selectedUser) {
       this.userService.showUserInfo.set(true);
-      this.userService.getSelectedUserById(this.selectedUser.id);
+      this.userService.getSelectedUserById(this.userService.selectedUser.id);
     }
   }
 
