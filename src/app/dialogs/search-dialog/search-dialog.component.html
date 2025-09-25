@@ -6,14 +6,14 @@
         @for(result of mainSearchList; track result; let index = $index){
         @if(result.channelAuthor && result.name){
         <div id="{{index}}" class="filtered-channel" (click)="this.openChannel(result, index)">
-            <span>Dein Kanal :</span>
+            <span>Channel :</span>
             <span class="filtered-channel-name">#{{result.name}}</span>
             <span class="separator-bar"></span>
         </div>
         }
         @else if(result.name && result.avatarPath){
-        <div id="{{index}}" class="filtered-user-container" (click)="this.getSelectedUserInfo(result.uid)">
-            <span>Benutzer :</span>
+        <div id="{{index}}" class="filtered-user-container" (click)="this.openDirectMessage(result)">
+            <span>User :</span>
             <div class="filtered-user">
                 <img src="{{result.avatarPath}}" alt="">
                 <span>{{result.name}}</span>
@@ -21,9 +21,31 @@
             <span class="separator-bar"></span>
         </div>
         }
+        @else if(result.message && result.senderName){
+        @if(result.channelId){
+        <div id="{{index}}" class="filtered-message-container" (click)="this.openChannelMessage(result)">
+            <span>Message :</span>
+            <div class="filtered-message">
+                <span class="channel-name">#{{getChannelName(result.channelId)}}</span>
+                <span class="message-preview">{{result.message}}</span>
+            </div>
+            <span class="separator-bar"></span>
+        </div>
+        }
+        @else {
+        <div id="{{index}}" class="filtered-message-container" (click)="this.openDirectMessageFromMessage(result)">
+            <span>Konversation :</span>
+            <div class="filtered-message">
+                <span class="sender-name">{{result.senderName}}</span>
+                <span class="message-preview">{{result.message}}</span>
+            </div>
+            <span class="separator-bar"></span>
+        </div>
+        }
+        }
         @else if(result.conversation){
         @if (result.senderId === this.authService.currentUserUid){
-        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessage(result)">
+        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessageConversation(result)">
             <span>Direkt Nachricht :</span>
             <div class="filtered-user">
                 <img src="{{filterUserById(result.receiverId)?.avatarPath}}" alt="">
@@ -33,7 +55,7 @@
         </div>
         }
         @else if (result.receiverId === this.authService.currentUserUid){
-        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessage(result.senderId)">
+        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessageConversation(result)">
             <span>Direkt Nachricht:</span>
             <div class="filtered-user">
                 <img src="{{filterUserById(result.senderId)?.avatarPath}}" alt="">

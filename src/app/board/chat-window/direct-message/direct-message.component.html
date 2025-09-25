@@ -1,6 +1,6 @@
 <div class="chat-container max-width">
     <div class="chat-header">
-        <div class="selected-user" (click)="userService.getSelectedUserById(userService.selectedUser?.id!)"><img
+        <div class="selected-user" (click)="openUserInfoDialog()"><img
                 [src]="userService.selectedUser?.avatarPath" alt="">
             <span *ngIf="userService.selectedUserId === this.currentUser?.id">{{ currentUser?.name + ' (Du)' }}</span>
             <span *ngIf="userService.selectedUserId != this.currentUser?.id">{{ userService.selectedUser?.name }}</span>
@@ -105,7 +105,8 @@
         <!-- CHAT WINDOW -->
         <div class="message-box" *ngIf="directMessageService.selectedUser?.id != this.currentUser?.id">
             <div class="message-content"
-                *ngFor="let message of directMessageService.currentConversation; let i = index">
+                *ngFor="let message of directMessageService.currentConversation; let i = index"
+                id="direct-message-{{message.messageId}}">
                 <div *ngIf="message.displayDate" class="posted-date-container">
                     <span class="posted-date">{{ message.displayDate }}</span>
                 </div>
@@ -283,29 +284,29 @@
                     </button>
                 </div>
             </div>
-            <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
+            <emoji-mart class="emoji-mart-chat" *ngIf="emojiService.showEmojiPicker()" (emojiSelect)="addEmoji($event)"
                 [darkMode]="false" title="Pick your emoji…" emoji="point_up">
             </emoji-mart>
-            <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPickerEdit" (emojiSelect)="addEmojiForEdit($event)"
+            <emoji-mart class="emoji-mart-chat" *ngIf="emojiService.showEmojiPickerEdit()" (emojiSelect)="addEmojiForEdit($event)"
                 [darkMode]="false" title="Pick your emoji…" emoji="point_up">
             </emoji-mart>
-            <emoji-mart class="emoji-mart-chat" *ngIf="showEmojiPickerReact" (emojiSelect)="addEmojiForReact($event)"
+            <emoji-mart class="emoji-mart-chat" *ngIf="emojiService.showEmojiPickerReact()" (emojiSelect)="addEmojiForReact($event)"
                 [darkMode]="false" title="Pick your emoji…" emoji="point_up">
             </emoji-mart>
         </div>
 
         <div class="search-block"
-            *ngIf="(isSearching && filteredUsers.length > 0) || (isUserSelect && filteredUsers.length > 0)">
+            *ngIf="(searchService.isSearching() && searchService.filteredUsers().length > 0) || (searchService.isUserSelect() && searchService.filteredUsers().length > 0)">
             <div class="found-block">
-                <div class="found-users" *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+                <div class="found-users" *ngFor="let user of searchService.filteredUsers()" (click)="selectUser(user)">
                     <img [src]="user.avatarPath" alt="">{{ user.name }}
                 </div>
             </div>
         </div>
 
-        <div class="search-block" *ngIf="isSearching && filteredChannels.length > 0">
+        <div class="search-block" *ngIf="searchService.isSearching() && searchService.filteredChannels().length > 0">
             <div class="found-block">
-                <div class="found-users" *ngFor="let channel of filteredChannels; let i = index"
+                <div class="found-users" *ngFor="let channel of searchService.filteredChannels(); let i = index"
                     (click)="selectChannel(channel)">
                     <span>#</span>{{ channel.name }}
                 </div>

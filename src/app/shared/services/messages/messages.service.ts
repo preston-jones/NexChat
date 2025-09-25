@@ -27,6 +27,7 @@ export class MessagesService {
     senderName: string | null = null;
     lastAnswer: string = '';
     selectedMessage: Message | null = null;
+    scrollToMessageId: string | null = null;
 
     @Output() showThreadEvent = new EventEmitter<void>();
     @ViewChild(WorkspaceComponent) workspaceComponent!: WorkspaceComponent;
@@ -111,6 +112,11 @@ export class MessagesService {
                 return m;
             });
         this.currentChatMessages = selectedChatMessages;
+        
+        // Scroll to specific message if requested
+        if (this.scrollToMessageId) {
+            this.scrollToMessage();
+        }
     }
 
 
@@ -214,5 +220,28 @@ export class MessagesService {
     updateSendernameOfMessage(messageId: string, senderName: string) {
         const messageRef = doc(this.firestore, 'messages', messageId);
         updateDoc(messageRef, { senderName: senderName });
+    }
+
+
+    setScrollToMessage(messageId: string | null) {
+        this.scrollToMessageId = messageId;
+    }
+
+
+    scrollToMessage() {
+        if (this.scrollToMessageId) {
+            setTimeout(() => {
+                const messageElement = document.getElementById(`message-${this.scrollToMessageId}`);
+                if (messageElement) {
+                    messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Add highlight effect
+                    messageElement.classList.add('message-highlight');
+                    setTimeout(() => {
+                        messageElement.classList.remove('message-highlight');
+                    }, 3000);
+                }
+                this.scrollToMessageId = null;
+            }, 100);
+        }
     }
 }
