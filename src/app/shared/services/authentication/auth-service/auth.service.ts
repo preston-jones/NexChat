@@ -130,6 +130,12 @@ export class AuthService {
     if (authUserID) {
       const userDocRef = doc(this.firestore, `users/${authUserID}`);
       onSnapshot(userDocRef, async (docSnap) => {
+        // If we're already in the process of logging out, don't process further
+        if (this.isLoggingOut) {
+          console.log('🚫 Skipping Firestore data processing - already logging out');
+          return;
+        }
+        
         if (docSnap.exists()) {
           const firestoreUserData = docSnap.data() as User;
           // Hier wird die ID manuell hinzugefügt
@@ -138,12 +144,21 @@ export class AuthService {
           console.log('🔍 Firestore Data:', {
             loginState: firestoreUserData.loginState,
             justLoggedIn: this.justLoggedIn,
+            isLoggingOut: this.isLoggingOut,
             userId: firestoreUserData.id
           });
           
           // Check if user should be logged out due to loginState being 'loggedOut'
-          if (firestoreUserData.loginState === 'loggedOut' && !this.justLoggedIn && !this.isLoggingOut) {
-            console.log('🚪 LoginState is loggedOut - forcing logout and redirect to login');
+          // Only trigger forced logout if:
+          // 1. loginState is 'loggedOut' 
+          // 2. User didn't just log in
+          // 3. We're not already in the logout process
+          // 4. Firebase Auth still shows user as authenticated (to prevent loops)
+          if (firestoreUserData.loginState === 'loggedOut' && 
+              !this.justLoggedIn && 
+              !this.isLoggingOut && 
+              this.auth.currentUser) {
+            console.log('🚪 LoginState is loggedOut but Firebase user still authenticated - forcing logout and redirect');
             await this.forceLogoutAndRedirect();
             return;
           }
@@ -159,7 +174,10 @@ export class AuthService {
             console.log('✅ Reset justLoggedIn flag - Firestore now shows loggedIn');
           }
         } else {
-          this.setUser(null);
+          // If user document doesn't exist and we're not logging out, set user to null
+          if (!this.isLoggingOut) {
+            this.setUser(null);
+          }
         }
       });
     } else {
@@ -282,23 +300,28 @@ export class AuthService {
         this.subscription = null;
       }
       
+      // Clear the user state immediately to prevent further processing
+      this.setUser(null);
+      
       // Sign out from Firebase Auth without updating Firestore (already loggedOut)
       await signOut(this.auth);
+      console.log('🔓 Firebase signOut completed');
       
-      // Reset flags
-      this.isLoggingOut = false;
+      // Reset flags after successful signOut
       this.justLoggedIn = false;
       
-      // Redirect to login page
-      this.router.navigate(['/sign-in']);
+      // Use immediate redirect instead of setTimeout to prevent race conditions
+      console.log('🔄 Redirecting to login page...');
+      window.location.href = '/sign-in';
       
-      console.log('✅ Force logout completed - redirected to login page');
     } catch (err: any) {
-      this.isLoggingOut = false; // Reset flag on error
       console.error('Error during force logout:', err);
-      // Even if there's an error, still redirect to login page
-      this.router.navigate(['/sign-in']);
+      // Even if there's an error, still redirect to login page immediately
+      this.isLoggingOut = false; // Reset flag on error
+      window.location.href = '/sign-in';
     }
+    
+    // Note: Don't reset isLoggingOut here as the page will be redirected anyway
   }
 
 

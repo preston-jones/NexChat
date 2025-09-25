@@ -98,6 +98,10 @@ footer {
     margin-top: 16px;
     padding: 32px 64px;
     max-width: 628px;
+    width: auto; /* Ensure responsive width behavior */
+    box-sizing: border-box; /* Ensure padding is included in width calculations */
+    /* Force recalculation of responsive styles */
+    transform: translateZ(0);
 }
 
 
@@ -107,6 +111,9 @@ footer {
         min-width: 280px;
         padding: 32px 16px 32px 16px;
         margin-top: 32px;
+        /* Ensure responsive behavior after forced logout */
+        max-width: calc(100vw - 32px);
+        box-sizing: border-box;
     }
 
     .create-account-container {
@@ -121,6 +128,7 @@ footer {
 
     header {
         justify-content: center;
+        padding: 32px 16px 0; /* Reduce header padding on mobile */
     }
 
     @media screen and (max-width: 768px) {
@@ -134,12 +142,18 @@ footer {
     .login-container {
         width: 90%;
         min-width: 280px;
+        max-width: calc(100vw - 32px);
+        margin: 32px 16px 0;
+        box-sizing: border-box;
     }
 }
 
 @media (max-width: 375px) {
     .login-container {
         min-width: 280px;
+        width: calc(100vw - 32px);
+        margin: 32px 16px 0;
+        padding: 24px 16px;
+        box-sizing: border-box;
     }
-
 }
