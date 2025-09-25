@@ -202,7 +202,7 @@
 
     </div>
     <div *ngIf="channelsService.currentChannelName != 'Willkommen'" class="chat-message-input-container">
-        <textarea class="message-input" id="channelChatMessage" [(ngModel)]="channelChatMessage"
+        <textarea #chatMessageTextarea class="message-input" id="channelChatMessage" [(ngModel)]="channelChatMessage"
             (input)="updateSearchQuery($event)" type="text" placeholder="Schreiben Sie Ihre Nachricht"></textarea>
 
         <!-- Datei-Vorschau -->
