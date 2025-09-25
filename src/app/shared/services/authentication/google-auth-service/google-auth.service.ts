@@ -3,6 +3,7 @@ import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { GoogleAuthProvider, signInWithRedirect, signInWithPopup, getRedirectResult } from 'firebase/auth';
 import { UserService } from '../../firestore/user-service/user.service';
+import { AuthService } from '../auth-service/auth.service';
 
 
 @Injectable({
@@ -13,6 +14,7 @@ export class GoogleAuthService {
   router = inject(Router);
   provider = new GoogleAuthProvider();
   userService = inject(UserService);
+  authService = inject(AuthService);
 
   constructor() { }
 
@@ -37,8 +39,10 @@ export class GoogleAuthService {
         };
 
         await this.userService.createFirestoreUser(firestoreUser)
+        this.authService.markAsJustLoggedIn(); // Set flag before updating login state
         await this.userService.updateUserLoginState(result.user.uid, 'loggedIn')
           .then(() => {
+            this.authService.startSessionManagement(); // Start session timer after Google login
           })
           .catch((error) => {
             console.error('Error creating user in Firestore:', error.message);
@@ -57,6 +61,8 @@ export class GoogleAuthService {
     try {
       const result = await getRedirectResult(this.auth);
       if (result?.user) {
+        this.authService.markAsJustLoggedIn(); // Set flag for redirect login
+        this.authService.startSessionManagement(); // Start session timer after redirect login
         this.router.navigateByUrl('board');
       }
     } catch (err: any) {

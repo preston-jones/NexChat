@@ -20,6 +20,9 @@ export class AuthService {
   subscription: Subscription | null = null;
   sessionTimer: any = null;
   userIsActive: boolean = true;
+  private justLoggedIn: boolean = false; // Flag to track recent login
+  private isLoggingOut: boolean = false; // Flag to track logout process
+  private appStartTime: number = Date.now(); // Track when app started
   auth = inject(Auth);
   router = inject(Router);
   userService = inject(UserService);
@@ -40,6 +43,16 @@ export class AuthService {
   }
 
 
+  startSessionManagement(): void {
+    this.resetSessionTimer();
+  }
+
+  
+  markAsJustLoggedIn(): void {
+    this.justLoggedIn = true;
+  }
+
+
   resetSessionTimer() {
     this.subscription =
       fromEvent(document, 'mousemove')
@@ -53,6 +66,42 @@ export class AuthService {
   ngOnDestroy(): void {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
+    }
+    if (this.sessionTimer) {
+      clearTimeout(this.sessionTimer);
+    }
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+
+  /**
+   * Handle browser/tab close events to update user login state
+   * This method is called when user closes browser/tab without explicit logout
+   */
+  async handleBrowserClose(): Promise<void> {
+    // Don't update login state if user just logged in or is in logout process
+    if (this.justLoggedIn || this.isLoggingOut) {
+      console.log('🔍 Skipping handleBrowserClose - user just logged in or logging out');
+      return;
+    }
+    
+    // Don't update login state if app just started (within 10 seconds)
+    const timeSinceAppStart = Date.now() - this.appStartTime;
+    if (timeSinceAppStart < 10000) {
+      console.log('🔍 Skipping handleBrowserClose - app just started, likely page refresh');
+      return;
+    }
+    
+    if (this.auth.currentUser) {
+      try {
+        console.log('🚪 handleBrowserClose called - updating loginState to loggedOut');
+        // Update loginState to 'loggedOut' in Firebase when browser/tab is closed
+        await this.userService.updateUserLoginState(this.auth.currentUser.uid, 'loggedOut');
+      } catch (error) {
+        console.error('Error updating login state on browser close:', error);
+      }
     }
   }
 
@@ -85,8 +134,23 @@ export class AuthService {
           const firestoreUserData = docSnap.data() as User;
           // Hier wird die ID manuell hinzugefügt
           firestoreUserData.id = docSnap.id;  // ID hinzufügen
-          const currentUserObject = this.setCurrentUserObject(firestoreUserData);
+          
+          console.log('🔍 Firestore Data:', {
+            loginState: firestoreUserData.loginState,
+            justLoggedIn: this.justLoggedIn,
+            userId: firestoreUserData.id
+          });
+          
+          // Only reset justLoggedIn flag if the Firestore data actually shows 'loggedIn'
+          const shouldForceLoggedIn = this.justLoggedIn && firestoreUserData.loginState !== 'loggedIn';
+          const currentUserObject = this.setCurrentUserObject(firestoreUserData, shouldForceLoggedIn);
           this.setUser(currentUserObject);
+          
+          // Reset the flag only when Firestore data is actually updated to 'loggedIn'
+          if (this.justLoggedIn && firestoreUserData.loginState === 'loggedIn') {
+            this.justLoggedIn = false;
+            console.log('✅ Reset justLoggedIn flag - Firestore now shows loggedIn');
+          }
         } else {
           this.setUser(null);
         }
@@ -102,13 +166,30 @@ export class AuthService {
     this.userUpdated.emit(user);
   }
 
-  setCurrentUserObject(user: User): User {
+  setCurrentUserObject(user: User, forceLoggedIn: boolean = false): User {
+    // If user is authenticated in Firebase Auth but Firestore shows loggedOut,
+    // and we're not in a logout process, assume they should be loggedIn
+    const isFirebaseAuthenticated = !!this.auth.currentUser;
+    const firestoreShowsLoggedOut = user.loginState === 'loggedOut';
+    const shouldOverrideToLoggedIn = forceLoggedIn || (isFirebaseAuthenticated && firestoreShowsLoggedOut);
+    
+    const finalLoginState = shouldOverrideToLoggedIn ? 'loggedIn' : user.loginState;
+    
+    console.log('🔄 setCurrentUserObject:', {
+      originalLoginState: user.loginState,
+      forceLoggedIn,
+      isFirebaseAuthenticated,
+      shouldOverrideToLoggedIn,
+      finalLoginState,
+      userId: user.id
+    });
+    
     return {
       id: user.id,
       email: user.email,
       name: user.name,
       avatarPath: user.avatarPath,
-      loginState: 'loggedIn',
+      loginState: finalLoginState,
       channels: user.channels
     } as User;
   }
@@ -122,7 +203,20 @@ export class AuthService {
   async login(email: string, password: string): Promise<void> {
     try {
       let result: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
+      console.log('🚀 Login successful, setting justLoggedIn flag');
+      this.justLoggedIn = true; // Set flag to force loginState to 'loggedIn'
+      
+      // Reset justLoggedIn flag after 5 seconds to prevent indefinite protection
+      setTimeout(() => {
+        this.justLoggedIn = false;
+        console.log('⏰ Auto-reset justLoggedIn flag after timeout');
+      }, 5000);
+      
+      // Wait for the loginState update to complete before proceeding
+      console.log('⏳ Updating loginState to loggedIn...');
       await this.userService.updateUserLoginState(result.user.uid, 'loggedIn');
+      console.log('✅ LoginState update completed');
+      this.resetSessionTimer(); // Start session timer after successful login
       this.router.navigateByUrl('board');
     }
     catch (err: any) {
@@ -133,6 +227,7 @@ export class AuthService {
 
 
   async logout(): Promise<void> {
+    this.isLoggingOut = true; // Set flag to prevent interference
     if (this.auth.currentUser?.uid === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02') {
       await this.resetGuestUserProfile();
       await this.resetGuestUserData();
@@ -140,10 +235,21 @@ export class AuthService {
     try {
       if (this.auth.currentUser) {
         await this.userService.updateUserLoginState(this.auth.currentUser.uid, 'loggedOut');
+        // Clean up session timer and activity listener
+        if (this.sessionTimer) {
+          clearTimeout(this.sessionTimer);
+          this.sessionTimer = null;
+        }
+        if (this.subscription) {
+          this.subscription.unsubscribe();
+          this.subscription = null;
+        }
         await signOut(this.auth);
+        this.isLoggingOut = false; // Reset flag
         window.open('sign-in', '_self');
       }
     } catch (err: any) {
+      this.isLoggingOut = false; // Reset flag on error
       console.error(err);
       throw err;
     }
@@ -154,7 +260,9 @@ export class AuthService {
     const guestEmail = 'guest@test.de';
     const guestPassword = 'guestUser';
     let result: UserCredential = await signInWithEmailAndPassword(this.auth, guestEmail, guestPassword);
+    this.justLoggedIn = true; // Set flag to force loginState to 'loggedIn'
     await this.userService.updateUserLoginState(result.user.uid, 'loggedIn');
+    this.resetSessionTimer(); // Start session timer after successful guest login
   }
 
 
