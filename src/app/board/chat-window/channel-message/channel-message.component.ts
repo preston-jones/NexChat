@@ -146,7 +146,12 @@ export class ChannelMessageComponent implements OnInit, AfterViewInit, OnDestroy
     
     // Ensure scrollToBottom is called after view is initialized
     setTimeout(() => {
-      this.scrollToBottom();
+      // Check if we need to scroll to a specific message, otherwise scroll to bottom
+      if (this.messageService.scrollToMessageId) {
+        this.messageService.scrollToMessage();
+      } else {
+        this.scrollToBottom();
+      }
     }, 0);
     
     if (this.chatWindow) {
