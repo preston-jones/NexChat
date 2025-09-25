@@ -129,7 +129,7 @@ export class AuthService {
   getFirestoreUserData(authUserID: string) {
     if (authUserID) {
       const userDocRef = doc(this.firestore, `users/${authUserID}`);
-      onSnapshot(userDocRef, (docSnap) => {
+      onSnapshot(userDocRef, async (docSnap) => {
         if (docSnap.exists()) {
           const firestoreUserData = docSnap.data() as User;
           // Hier wird die ID manuell hinzugefügt
@@ -140,6 +140,13 @@ export class AuthService {
             justLoggedIn: this.justLoggedIn,
             userId: firestoreUserData.id
           });
+          
+          // Check if user should be logged out due to loginState being 'loggedOut'
+          if (firestoreUserData.loginState === 'loggedOut' && !this.justLoggedIn && !this.isLoggingOut) {
+            console.log('🚪 LoginState is loggedOut - forcing logout and redirect to login');
+            await this.forceLogoutAndRedirect();
+            return;
+          }
           
           // Only reset justLoggedIn flag if the Firestore data actually shows 'loggedIn'
           const shouldForceLoggedIn = this.justLoggedIn && firestoreUserData.loginState !== 'loggedIn';
@@ -252,6 +259,45 @@ export class AuthService {
       this.isLoggingOut = false; // Reset flag on error
       console.error(err);
       throw err;
+    }
+  }
+
+
+  /**
+   * Force logout and redirect when loginState is 'loggedOut' in Firestore
+   * This ensures users are automatically logged out when their session is invalidated
+   */
+  async forceLogoutAndRedirect(): Promise<void> {
+    console.log('🔒 Force logout triggered - loginState is loggedOut');
+    this.isLoggingOut = true; // Set flag to prevent interference
+    
+    try {
+      // Clean up session timer and activity listener
+      if (this.sessionTimer) {
+        clearTimeout(this.sessionTimer);
+        this.sessionTimer = null;
+      }
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+        this.subscription = null;
+      }
+      
+      // Sign out from Firebase Auth without updating Firestore (already loggedOut)
+      await signOut(this.auth);
+      
+      // Reset flags
+      this.isLoggingOut = false;
+      this.justLoggedIn = false;
+      
+      // Redirect to login page
+      this.router.navigate(['/sign-in']);
+      
+      console.log('✅ Force logout completed - redirected to login page');
+    } catch (err: any) {
+      this.isLoggingOut = false; // Reset flag on error
+      console.error('Error during force logout:', err);
+      // Even if there's an error, still redirect to login page
+      this.router.navigate(['/sign-in']);
     }
   }
 
