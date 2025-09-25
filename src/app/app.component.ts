@@ -38,15 +38,25 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     // Handle visibility change (tab switching, minimizing browser) 
-    // Only after app has been running for a while to avoid refresh issues
+    // Only trigger logout for extended periods of inactivity, not brief tab switches
+    let visibilityTimer: any = null;
     document.addEventListener('visibilitychange', async () => {
       if (document.visibilityState === 'hidden') {
-        // Delay to distinguish from navigation/refresh
-        setTimeout(async () => {
+        // Start timer for extended absence (5 minutes)
+        visibilityTimer = setTimeout(async () => {
+          // Only trigger if still hidden after extended period
           if (document.visibilityState === 'hidden') {
+            console.log('🕒 Extended visibility hidden detected - triggering handleBrowserClose');
             await this.authService.handleBrowserClose();
           }
-        }, 3000); // 3 second delay
+        }, 300000); // 5 minutes (300000ms) instead of 3 seconds
+      } else if (document.visibilityState === 'visible') {
+        // Cancel timer if user returns quickly
+        if (visibilityTimer) {
+          clearTimeout(visibilityTimer);
+          visibilityTimer = null;
+          console.log('👁️ User returned - cancelling handleBrowserClose timer');
+        }
       }
     });
 

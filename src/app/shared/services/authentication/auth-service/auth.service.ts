@@ -50,16 +50,35 @@ export class AuthService {
   
   markAsJustLoggedIn(): void {
     this.justLoggedIn = true;
+    // Extended protection period to handle slow Firestore updates
+    setTimeout(() => {
+      this.justLoggedIn = false;
+      console.log('⏰ Auto-reset justLoggedIn flag after extended timeout');
+    }, 15000); // Increased from 5 to 15 seconds
   }
 
 
   resetSessionTimer() {
-    this.subscription =
-      fromEvent(document, 'mousemove')
-        .subscribe(e => {
-          clearTimeout(this.sessionTimer);
-          this.startSessionTimer();
-        });
+    // Clean up existing subscription
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    
+    // Listen to multiple activity types to better capture user interaction
+    const activityEvents = ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+    
+    const resetTimer = () => {
+      clearTimeout(this.sessionTimer);
+      this.startSessionTimer();
+    };
+    
+    // Use the first event for RxJS subscription (mousemove is most frequent)
+    this.subscription = fromEvent(document, 'mousemove').subscribe(resetTimer);
+    
+    // Add additional event listeners for better activity detection
+    activityEvents.slice(1).forEach(eventType => {
+      document.addEventListener(eventType, resetTimer, { passive: true });
+    });
   }
 
 
@@ -87,10 +106,18 @@ export class AuthService {
       return;
     }
     
-    // Don't update login state if app just started (within 10 seconds)
+    // Extended protection window to prevent race conditions during navigation
     const timeSinceAppStart = Date.now() - this.appStartTime;
-    if (timeSinceAppStart < 10000) {
-      console.log('🔍 Skipping handleBrowserClose - app just started, likely page refresh');
+    if (timeSinceAppStart < 30000) { // Increased from 10 to 30 seconds
+      console.log('🔍 Skipping handleBrowserClose - app recently started, likely navigation/refresh');
+      return;
+    }
+    
+    // Additional check: don't update if we're in the middle of authentication flow
+    if (window.location.pathname.includes('/sign-in') || 
+        window.location.pathname.includes('/create-account') || 
+        window.location.pathname.includes('/reset-password')) {
+      console.log('🔍 Skipping handleBrowserClose - in authentication flow');
       return;
     }
     
@@ -108,9 +135,13 @@ export class AuthService {
 
   startSessionTimer() {
     this.sessionTimer = setTimeout(() => {
+      // Don't show alert for automatic forced logout - user is already being redirected
       this.logout();
       this.subscription?.unsubscribe();
-      alert('Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.');
+      // Only show alert if this is a genuine session timeout, not a forced logout
+      if (!this.isLoggingOut) {
+        alert('Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.');
+      }
     }, 900000); // logout after 15 minutes of inactivity 900000
   }
 
@@ -159,6 +190,13 @@ export class AuthService {
               !this.isLoggingOut && 
               this.auth.currentUser) {
             console.log('🚪 LoginState is loggedOut but Firebase user still authenticated - forcing logout and redirect');
+            console.log('🕰️ Debug timing info:', {
+              timeSinceAppStart: Date.now() - this.appStartTime,
+              justLoggedIn: this.justLoggedIn,
+              isLoggingOut: this.isLoggingOut,
+              currentPath: window.location.pathname,
+              firestoreLoginState: firestoreUserData.loginState
+            });
             await this.forceLogoutAndRedirect();
             return;
           }
@@ -230,12 +268,6 @@ export class AuthService {
       let result: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
       console.log('🚀 Login successful, setting justLoggedIn flag');
       this.justLoggedIn = true; // Set flag to force loginState to 'loggedIn'
-      
-      // Reset justLoggedIn flag after 5 seconds to prevent indefinite protection
-      setTimeout(() => {
-        this.justLoggedIn = false;
-        console.log('⏰ Auto-reset justLoggedIn flag after timeout');
-      }, 5000);
       
       // Wait for the loginState update to complete before proceeding
       console.log('⏳ Updating loginState to loggedIn...');
