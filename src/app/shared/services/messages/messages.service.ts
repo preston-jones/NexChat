@@ -107,11 +107,17 @@ export class MessagesService {
         const selectedChatMessages = this.allChatMessages.filter(message => message.channelId === channelId)
             .map(m => {
                 m.isOwnChatMessage = m.senderID === this.authService.currentUserUid; // Recalculate isOwnMessage
-                m.displayDate = this.formatTimestamp(m.timestamp.toDate());
                 m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 return m;
             });
-        this.currentChatMessages = selectedChatMessages;
+        
+        // Sort messages by timestamp before setting display dates
+        const sortedMessages = selectedChatMessages.sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
+        
+        // Set display dates with proper grouping logic
+        this.setDisplayDatesForMessages(sortedMessages);
+        
+        this.currentChatMessages = sortedMessages;
         
         // Scroll to specific message if requested
         if (this.scrollToMessageId) {
@@ -243,5 +249,26 @@ export class MessagesService {
                 this.scrollToMessageId = null;
             }, 100);
         }
+    }
+
+    /**
+     * Sets display dates for an array of messages, ensuring only the first message 
+     * of each day shows the date header
+     */
+    setDisplayDatesForMessages(messages: Message[]) {
+        let lastDisplayedDate: string | null = null;
+        
+        messages.forEach(message => {
+            const messageDate = message.timestamp.toDate();
+            const formattedDate = this.formatTimestamp(messageDate);
+            
+            // Only show date header if this is a different date than the previous message
+            if (formattedDate !== lastDisplayedDate) {
+                message.displayDate = formattedDate;
+                lastDisplayedDate = formattedDate;
+            } else {
+                message.displayDate = null;
+            }
+        });
     }
 }

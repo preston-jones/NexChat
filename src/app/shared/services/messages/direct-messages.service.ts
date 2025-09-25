@@ -104,11 +104,17 @@ export class DirectMessagesService {
         .map(m => {
           m.isOwnMessage = m.senderId === this.authService.currentUserUid; // Recalculate isOwnMessage
           m.senderAvatar = targetUser?.avatarPath;
-          m.displayDate = this.messagesService.formatTimestamp(m.timestamp.toDate());
           m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           return m;
         });
-      this.currentConversation = selectedMessages;
+      
+      // Sort messages by timestamp before setting display dates
+      const sortedMessages = this.orderedDirectMessages(selectedMessages);
+      
+      // Set display dates with proper grouping logic
+      this.setDisplayDatesForMessages(sortedMessages);
+      
+      this.currentConversation = sortedMessages;
       
       // Scroll to specific message if requested
       if (this.scrollToMessageId) {
@@ -119,21 +125,37 @@ export class DirectMessagesService {
 
 
   setMessageDisplayDate(msg: DirectMessage | Note) {
-    let lastDisplayedDate: string | null = null;
-
     const messageDate = msg.timestamp.toDate();
     const formattedDate = this.messagesService.formatTimestamp(messageDate);
-
-    // Setze das Anzeigen-Datum
-    if (formattedDate !== lastDisplayedDate) {
-      msg.displayDate = formattedDate;
-      lastDisplayedDate = formattedDate;
-    } else {
-      msg.displayDate = null;
-    }
-
-    // Setze formattedTimestamp für die Nachricht
+    
+    // This method is now mainly used for individual message processing
+    // For conversation display, use setDisplayDatesForMessages instead
+    msg.displayDate = formattedDate;
     msg.formattedTimestamp = messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  /**
+   * Sets display dates for an array of messages, ensuring only the first message 
+   * of each day shows the date header
+   */
+  setDisplayDatesForMessages(messages: (DirectMessage | Note)[]) {
+    let lastDisplayedDate: string | null = null;
+    
+    messages.forEach(msg => {
+      const messageDate = msg.timestamp.toDate();
+      const formattedDate = this.messagesService.formatTimestamp(messageDate);
+      
+      // Only show date header if this is a different date than the previous message
+      if (formattedDate !== lastDisplayedDate) {
+        msg.displayDate = formattedDate;
+        lastDisplayedDate = formattedDate;
+      } else {
+        msg.displayDate = null;
+      }
+      
+      // Always set the formatted timestamp for individual messages
+      msg.formattedTimestamp = messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    });
   }
 
 

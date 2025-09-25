@@ -37,9 +37,14 @@ export class NoteService {
         })
         .filter(note =>
           note.noteAuthorId === this.authService.currentUserUid);
-      this.notes.forEach(async note => {
-        this.setNoteDisplayDate(note);
-      });
+      
+      // Sort notes by timestamp before setting display dates
+      const sortedNotes = this.notes.sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
+      
+      // Set display dates with proper grouping logic
+      this.setDisplayDatesForNotes(sortedNotes);
+      
+      this.notes = sortedNotes;
     });
   }
 
@@ -96,21 +101,37 @@ export class NoteService {
 
 
   setNoteDisplayDate(note: Note | Note) {
-    let lastDisplayedDate: string | null = null;
-
     const noteDate = note.timestamp.toDate();
     const formattedDate = this.formatTimestamp(noteDate);
-
-    // Setze das Anzeigen-Datum
-    if (formattedDate !== lastDisplayedDate) {
-      note.displayDate = formattedDate;
-      lastDisplayedDate = formattedDate;
-    } else {
-      note.displayDate = null;
-    }
-
-    // Setze formattedTimestamp für die Nachricht
+    
+    // This method is now mainly used for individual note processing
+    // For notes display, use setDisplayDatesForNotes instead
+    note.displayDate = formattedDate;
     note.formattedTimestamp = noteDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  /**
+   * Sets display dates for an array of notes, ensuring only the first note 
+   * of each day shows the date header
+   */
+  setDisplayDatesForNotes(notes: Note[]) {
+    let lastDisplayedDate: string | null = null;
+    
+    notes.forEach(note => {
+      const noteDate = note.timestamp.toDate();
+      const formattedDate = this.formatTimestamp(noteDate);
+      
+      // Only show date header if this is a different date than the previous note
+      if (formattedDate !== lastDisplayedDate) {
+        note.displayDate = formattedDate;
+        lastDisplayedDate = formattedDate;
+      } else {
+        note.displayDate = null;
+      }
+      
+      // Always set the formatted timestamp for individual notes
+      note.formattedTimestamp = noteDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    });
   }
 
 
