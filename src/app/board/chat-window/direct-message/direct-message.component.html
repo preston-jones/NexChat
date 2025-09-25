@@ -1,6 +1,6 @@
 <div class="chat-container max-width">
     <div class="chat-header">
-        <div class="selected-user" (click)="userService.getSelectedUserById(userService.selectedUser?.id!)"><img
+        <div class="selected-user" (click)="openUserInfoDialog()"><img
                 [src]="userService.selectedUser?.avatarPath" alt="">
             <span *ngIf="userService.selectedUserId === this.currentUser?.id">{{ currentUser?.name + ' (Du)' }}</span>
             <span *ngIf="userService.selectedUserId != this.currentUser?.id">{{ userService.selectedUser?.name }}</span>

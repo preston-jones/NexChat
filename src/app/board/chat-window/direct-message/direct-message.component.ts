@@ -586,4 +586,12 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
       console.warn('directChatMessageTextarea is not initialized or view is not ready.');
     }
   }
+
+
+  async openUserInfoDialog() {
+    if (this.userService.selectedUser?.id) {
+      this.userService.showUserInfo.set(true);
+      await this.userService.getSelectedUserById(this.userService.selectedUser.id);
+    }
+  }
 }
