@@ -32,6 +32,7 @@ export class DirectMessagesService {
   currentUserUid = this.authService.currentUser()?.id;
 
   directMessages: DirectMessage[] = [];
+  scrollToMessageId: string | null = null;
 
   @Output() clearAndFocusTextarea = new EventEmitter<void>();
 
@@ -108,6 +109,11 @@ export class DirectMessagesService {
           return m;
         });
       this.currentConversation = selectedMessages;
+      
+      // Scroll to specific message if requested
+      if (this.scrollToMessageId) {
+        this.scrollToMessage();
+      }
     }
   }
 
@@ -228,5 +234,28 @@ export class DirectMessagesService {
       await updateDoc(messageDocRef, {
         messageId: messageDocRef.id,
       });
+    }
+
+
+    setScrollToMessage(messageId: string | null) {
+      this.scrollToMessageId = messageId;
+    }
+
+
+    scrollToMessage() {
+      if (this.scrollToMessageId) {
+        setTimeout(() => {
+          const messageElement = document.getElementById(`direct-message-${this.scrollToMessageId}`);
+          if (messageElement) {
+            messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Add highlight effect
+            messageElement.classList.add('message-highlight');
+            setTimeout(() => {
+              messageElement.classList.remove('message-highlight');
+            }, 3000);
+          }
+          this.scrollToMessageId = null;
+        }, 100);
+      }
     }
 }

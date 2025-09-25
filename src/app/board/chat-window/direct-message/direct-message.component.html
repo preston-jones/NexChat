@@ -105,7 +105,8 @@
         <!-- CHAT WINDOW -->
         <div class="message-box" *ngIf="directMessageService.selectedUser?.id != this.currentUser?.id">
             <div class="message-content"
-                *ngFor="let message of directMessageService.currentConversation; let i = index">
+                *ngFor="let message of directMessageService.currentConversation; let i = index"
+                id="direct-message-{{message.messageId}}">
                 <div *ngIf="message.displayDate" class="posted-date-container">
                     <span class="posted-date">{{ message.displayDate }}</span>
                 </div>

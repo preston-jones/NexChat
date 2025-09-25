@@ -12,7 +12,7 @@
         </div>
         }
         @else if(result.name && result.avatarPath){
-        <div id="{{index}}" class="filtered-user-container" (click)="this.getSelectedUserInfo(result.uid)">
+        <div id="{{index}}" class="filtered-user-container" (click)="this.openDirectMessage(result)">
             <span>User :</span>
             <div class="filtered-user">
                 <img src="{{result.avatarPath}}" alt="">
@@ -45,7 +45,7 @@
         }
         @else if(result.conversation){
         @if (result.senderId === this.authService.currentUserUid){
-        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessage(result)">
+        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessageConversation(result)">
             <span>Direkt Nachricht :</span>
             <div class="filtered-user">
                 <img src="{{filterUserById(result.receiverId)?.avatarPath}}" alt="">
@@ -55,7 +55,7 @@
         </div>
         }
         @else if (result.receiverId === this.authService.currentUserUid){
-        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessage(result.senderId)">
+        <div id="{{index}}" class="filtered-user-container" (click)="openDirectMessageConversation(result)">
             <span>Direkt Nachricht:</span>
             <div class="filtered-user">
                 <img src="{{filterUserById(result.senderId)?.avatarPath}}" alt="">

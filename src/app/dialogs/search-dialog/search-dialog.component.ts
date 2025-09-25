@@ -221,38 +221,58 @@ export class SearchDialogComponent implements OnChanges {
   }
 
 
-  openDirectMessageFromMessage(message: Message) {
+  openDirectMessageFromMessage(message: any) {
     this.closeSearchDialog();
     // This is a direct message, so find the other user
-    const otherUserId = message.senderID === this.authService.currentUserUid 
-      ? null // We need to determine the receiver somehow
-      : message.senderID;
+    // Use senderId (lowercase) for DirectMessage objects
+    const messageUserId = message.senderId || message.senderID; // Try both properties
+    const otherUserId = messageUserId === this.authService.currentUserUid 
+      ? message.receiverId // If current user is sender, use receiverId
+      : messageUserId; // If current user is receiver, use senderId
     
     if (otherUserId) {
-      const user = this.userService.users.find(u => u.id === otherUserId);
-      if (user) {
-        this.openDirectMessage(user);
+      // Find the user and index in userService.users
+      const userIndex = this.userService.users.findIndex(u => u.id === otherUserId);
+      const user = this.userService.users[userIndex];
+      
+      if (user && userIndex >= 0) {
+        // Use the existing clickUserContainer method to open the conversation
+        this.directMessagesService.clickUserContainer(user, userIndex);
+        this.clickUserEvent.emit();
       }
     }
   }
 
 
  async openDirectMessage(user: User) {
+    // Find the user index in userService.users
+    const userIndex = this.userService.users.findIndex(u => u.id === user.id);
+    
+    if (userIndex >= 0) {
+      this.closeSearchDialog();
+      // Use the existing clickUserContainer method to open the conversation
+      this.directMessagesService.clickUserContainer(user, userIndex);
+      this.clickUserEvent.emit();
+    }
+  }
 
-    this.userService.clickedUsers.fill(false);
 
-    // find the index of the clicked user
-    let index = this.userService.users.findIndex((user: User) => user.id === user.id);
-    this.userService.clickedUsers[index] = true;
-
+  openDirectMessageConversation(directMessage: DirectMessage) {
     this.closeSearchDialog();
-    this.chatUtilityService.directMessageUser = await this.userService.getSelectedUserById(user.id);
-    this.clickUserEvent.emit();
-
-    if (this.authService.currentUserUid && user.id) {
-      this.directMessagesService.loadCurrentConversation(user);
-      this.chatUtilityService.setMessageId(null);
-      // this.directMessagesService.setAllMessagesAsRead();
+    
+    // Determine which user to open conversation with
+    const otherUserId = directMessage.senderId === this.authService.currentUserUid 
+      ? directMessage.receiverId 
+      : directMessage.senderId;
+    
+    // Find the user and index in userService.users
+    const userIndex = this.userService.users.findIndex(u => u.id === otherUserId);
+    const user = this.userService.users[userIndex];
+    
+    if (user && userIndex >= 0) {
+      // Use the existing clickUserContainer method to open the conversation
+      this.directMessagesService.clickUserContainer(user, userIndex);
+      this.clickUserEvent.emit();
     }
   }
 }

@@ -127,7 +127,12 @@ export class DirectMessageComponent implements OnInit, AfterViewInit {
 
     const observer = new MutationObserver(() => {
       if (!this.directMessageService.preventScroll) {
-        this.scrollToBottom();
+        // Check if we need to scroll to a specific message, otherwise scroll to bottom
+        if (this.directMessageService.scrollToMessageId) {
+          this.directMessageService.scrollToMessage();
+        } else {
+          this.scrollToBottom();
+        }
       }
     });
     observer.observe(this.chatWindow.nativeElement, { childList: true, subtree: true });
