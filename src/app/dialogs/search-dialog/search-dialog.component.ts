@@ -192,31 +192,119 @@ export class SearchDialogComponent implements OnChanges {
 
   openChannel(channel: Channel, i: number) {
     this.closeSearchDialog();
-    this.channelsService.channelIsClicked = true;
-    this.channelsService.clickChannelContainer(channel, i);
-    this.openChannelEvent.emit();
-    if (this.authService.currentUserUid) {
-      this.messagesService.loadMessages(this.authService.currentUserUid, channel.id);
+    
+    // Find the correct index of this channel in the currentUserChannels array
+    const channelIndex = this.channelsService.currentUserChannels.findIndex(ch => ch.id === channel.id);
+    
+    if (channelIndex !== -1) {
+      this.channelsService.channelIsClicked = true;
+      this.channelsService.clickChannelContainer(channel, channelIndex);
+      
+      // Set the view state to show channel message
+      this.directMessagesService.showChannelMessage = true;
+      this.directMessagesService.showDirectMessage = false;
+      this.directMessagesService.showChatWindow = false;
+      
+      // Load messages first, then handle responsive mode
+      if (this.authService.currentUserUid) {
+        this.messagesService.loadMessages(this.authService.currentUserUid, channel.id)
+          .then(() => {
+            // Handle responsive mode directly instead of emitting to board component
+            const isSmallScreen = window.innerWidth < 1080;
+            if (isSmallScreen) {
+              this.directMessagesService.workspaceOpen = false;
+              // Use the same responsive handling as board component
+              this.handleResponsiveMode();
+            }
+            this.openChannelEvent.emit();
+          })
+          .catch((error) => {
+            console.error("Error loading messages:", error);
+            // Still handle responsive mode and emit event even if loading fails
+            const isSmallScreen = window.innerWidth < 1080;
+            if (isSmallScreen) {
+              this.directMessagesService.workspaceOpen = false;
+              this.handleResponsiveMode();
+            }
+            this.openChannelEvent.emit();
+          });
+      } else {
+        console.error("FAIL!!!");
+        this.openChannelEvent.emit();
+      }
     } else {
-      console.error("FAIL!!!");
+      console.error("Channel not found in currentUserChannels:", channel);
     }
+  }
+  
+  private handleResponsiveMode() {
+    // Set workspace closed to trigger proper drawer behavior
+    this.directMessagesService.workspaceOpen = false;
+    
+    // Apply responsive styles similar to board component's adjustDrawerStylesForSmallScreen
+    setTimeout(() => {
+      const drawerContainer = document.querySelector('.mat-drawer-container') as HTMLElement;
+      const drawerElement = document.querySelector('.mat-drawer') as HTMLElement;
+      const sidenavContent = document.querySelector('.sidenav-content') as HTMLElement;
+      const mobileBackArrow = document.querySelector('.mobile-back-arrow') as HTMLElement;
+      const groupLogo = document.querySelector('.group-logo') as HTMLElement;
+      const logoContainer = document.querySelector('.logo-container') as HTMLElement;
+      
+      if (drawerContainer && drawerElement && sidenavContent) {
+        drawerElement.style.removeProperty('transform');
+        sidenavContent.style.display = 'flex';
+        
+        if (mobileBackArrow) mobileBackArrow.style.display = 'flex';
+        if (groupLogo) groupLogo.style.display = 'flex';
+        if (logoContainer) logoContainer.style.display = 'none';
+      }
+    }, 100);
   }
 
 
   openChannelMessage(message: Message) {
     this.closeSearchDialog();
-    // Find the channel for this message
-    const channel = this.channelsService.channels.find(ch => ch.id === message.channelId);
+    // Find the channel for this message in currentUserChannels
+    const channel = this.channelsService.currentUserChannels.find(ch => ch.id === message.channelId);
     if (channel) {
-      const channelIndex = this.channelsService.channels.indexOf(channel);
+      const channelIndex = this.channelsService.currentUserChannels.findIndex(ch => ch.id === message.channelId);
       this.channelsService.channelIsClicked = true;
       this.channelsService.clickChannelContainer(channel, channelIndex);
-      this.openChannelEvent.emit();
+      
+      // Set the view state to show channel message
+      this.directMessagesService.showChannelMessage = true;
+      this.directMessagesService.showDirectMessage = false;
+      this.directMessagesService.showChatWindow = false;
+      
+      // Load messages first, then handle responsive mode
       if (this.authService.currentUserUid) {
         // Set the message to scroll to
         this.messagesService.setScrollToMessage(message.messageId);
-        this.messagesService.loadMessages(this.authService.currentUserUid, message.channelId!);
+        this.messagesService.loadMessages(this.authService.currentUserUid, message.channelId!)
+          .then(() => {
+            // Handle responsive mode directly instead of emitting to board component
+            const isSmallScreen = window.innerWidth < 1080;
+            if (isSmallScreen) {
+              this.directMessagesService.workspaceOpen = false;
+              this.handleResponsiveMode();
+            }
+            this.openChannelEvent.emit();
+          })
+          .catch((error) => {
+            console.error("Error loading messages:", error);
+            // Still handle responsive mode and emit event even if loading fails
+            const isSmallScreen = window.innerWidth < 1080;
+            if (isSmallScreen) {
+              this.directMessagesService.workspaceOpen = false;
+              this.handleResponsiveMode();
+            }
+            this.openChannelEvent.emit();
+          });
+      } else {
+        this.openChannelEvent.emit();
       }
+    } else {
+      console.error("Channel not found in currentUserChannels for message:", message);
     }
   }
 

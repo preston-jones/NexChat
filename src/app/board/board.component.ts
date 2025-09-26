@@ -110,6 +110,9 @@ export class BoardComponent {
     this.userService.loadUsers();
     this.channelsService.loadChannels();  
     this.messageService.loadAllChatMessages();
+    
+    // Initialize logo display based on current state
+    this.changeLogoInHeader();
   }
 
 
@@ -127,15 +130,27 @@ export class BoardComponent {
 
   changeLogoInHeader(): void {
     if (!this.isSmallScreen) return;
-    const groupLogo = document.querySelector('.hide-input-mobile') as HTMLElement;
-    const devLogo = document.querySelector('.logo-container') as HTMLElement;
+    
+    const groupLogo = document.querySelector('.group-logo') as HTMLElement;
+    const logoContainer = document.querySelector('.logo-container') as HTMLElement;
 
-    // Check if elements exist before accessing their style properties
-    if (groupLogo) {
-      groupLogo.style.display = 'flex';
-    }
-    if (devLogo) {
-      devLogo.style.display = 'none';
+    // Show appropriate logo based on workspace state
+    if (this.directMessagesService.workspaceOpen) {
+      // In workspace view, show NexChat logo
+      if (groupLogo) {
+        groupLogo.style.display = 'none';
+      }
+      if (logoContainer) {
+        logoContainer.style.display = 'flex';
+      }
+    } else {
+      // In chat view, show group logo
+      if (groupLogo) {
+        groupLogo.style.display = 'flex';
+      }
+      if (logoContainer) {
+        logoContainer.style.display = 'none';
+      }
     }
   }
 
@@ -158,10 +173,21 @@ export class BoardComponent {
 
   toggleWorkspaceMobile() {
     if (this.drawer) {
-      this.drawer.toggle(); // Toggle-Funktion des Drawers
-      this.goBack()
+      // When clicking mobile back arrow, we want to go from chat view back to workspace view
+      if (this.directMessagesService.workspaceOpen) {
+        // Currently showing workspace, should close and show chat (this shouldn't normally happen)
+        this.drawer.close();
+        this.adjustDrawerStylesForSmallScreen();
+        this.directMessagesService.workspaceOpen = false;
+      } else {
+        // Currently showing chat, should show workspace
+        this.drawer.open();
+        this.goBack(); // This hides chat content and shows workspace view
+        this.directMessagesService.workspaceOpen = true;
+      }
+      // Update logo based on new workspace state
+      this.changeLogoInHeader();
     }
-    this.directMessagesService.workspaceOpen = !this.directMessagesService.workspaceOpen; // Zustand umschalten
   }
 
   // Methode zum expliziten Schließen (optional)
@@ -195,28 +221,57 @@ export class BoardComponent {
   }
 
   openChannelMessage() {
-    this.closeWorkspace();
     this.directMessagesService.showChannelMessage = true;
     this.directMessagesService.showDirectMessage = false;
     this.directMessagesService.showChatWindow = false;
-    this.adjustDrawerStylesForSmallScreen();
+    
+    // Handle responsive mode properly
+    if (this.isSmallScreen) {
+      this.closeWorkspace();
+      // Add a small delay to ensure drawer closure is complete
+      setTimeout(() => {
+        this.adjustDrawerStylesForSmallScreen();
+        this.changeLogoInHeader();
+      }, 100);
+    } else {
+      this.closeWorkspace();
+    }
   }
 
   openChannelMessageFromChat(selectedChannel: Channel, index: number) {
-    this.closeWorkspace();
     this.directMessagesService.showChannelMessage = true;
     this.directMessagesService.showDirectMessage = false;
     this.directMessagesService.showChatWindow = false;
     this.openChannelMessageEvent.emit({ selectedChannel, index });
-    this.adjustDrawerStylesForSmallScreen();
+    
+    // Handle responsive mode properly
+    if (this.isSmallScreen) {
+      this.closeWorkspace();
+      // Add a small delay to ensure drawer closure is complete
+      setTimeout(() => {
+        this.adjustDrawerStylesForSmallScreen();
+      }, 100);
+    } else {
+      this.closeWorkspace();
+    }
   }
 
   openDirectMessage() {
-    this.closeWorkspace();
     this.directMessagesService.showDirectMessage = true;
     this.directMessagesService.showChannelMessage = false;
     this.directMessagesService.showChatWindow = false;
-    this.adjustDrawerStylesForSmallScreen();
+    
+    // Handle responsive mode properly
+    if (this.isSmallScreen) {
+      this.closeWorkspace();
+      // Add a small delay to ensure drawer closure is complete
+      setTimeout(() => {
+        this.adjustDrawerStylesForSmallScreen();
+        this.changeLogoInHeader();
+      }, 100);
+    } else {
+      this.closeWorkspace();
+    }
   }
 
   openDirectMessageFromChat(selectedUser: User, index: number) {
