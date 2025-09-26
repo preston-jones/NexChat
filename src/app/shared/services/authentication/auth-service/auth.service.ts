@@ -53,7 +53,6 @@ export class AuthService {
     // Extended protection period to handle slow Firestore updates
     setTimeout(() => {
       this.justLoggedIn = false;
-      console.log('⏰ Auto-reset justLoggedIn flag after extended timeout');
     }, 15000); // Increased from 5 to 15 seconds
   }
 
@@ -102,7 +101,6 @@ export class AuthService {
   async handleBrowserClose(): Promise<void> {
     // Don't update login state if user just logged in or is in logout process
     if (this.justLoggedIn || this.isLoggingOut) {
-      console.log('🔍 Skipping handleBrowserClose - user just logged in or logging out');
       return;
     }
     
@@ -189,8 +187,7 @@ export class AuthService {
               !this.justLoggedIn && 
               !this.isLoggingOut && 
               this.auth.currentUser) {
-            console.log('🚪 LoginState is loggedOut but Firebase user still authenticated - forcing logout and redirect');
-            console.log('🕰️ Debug timing info:', {
+            console.log('️ Debug timing info:', {
               timeSinceAppStart: Date.now() - this.appStartTime,
               justLoggedIn: this.justLoggedIn,
               isLoggingOut: this.isLoggingOut,
@@ -209,7 +206,6 @@ export class AuthService {
           // Reset the flag only when Firestore data is actually updated to 'loggedIn'
           if (this.justLoggedIn && firestoreUserData.loginState === 'loggedIn') {
             this.justLoggedIn = false;
-            console.log('✅ Reset justLoggedIn flag - Firestore now shows loggedIn');
           }
         } else {
           // If user document doesn't exist and we're not logging out, set user to null
@@ -266,11 +262,9 @@ export class AuthService {
   async login(email: string, password: string): Promise<void> {
     try {
       let result: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
-      console.log('🚀 Login successful, setting justLoggedIn flag');
       this.justLoggedIn = true; // Set flag to force loginState to 'loggedIn'
       
       // Wait for the loginState update to complete before proceeding
-      console.log('⏳ Updating loginState to loggedIn...');
       await this.userService.updateUserLoginState(result.user.uid, 'loggedIn');
       console.log('✅ LoginState update completed');
       this.resetSessionTimer(); // Start session timer after successful login
