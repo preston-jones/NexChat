@@ -278,28 +278,49 @@ export class SearchDialogComponent implements OnChanges {
       
       // Load messages first, then handle responsive mode
       if (this.authService.currentUserUid) {
+        const isSmallScreen = window.innerWidth < 1080;
+        
         // Set the message to scroll to
         this.messagesService.setScrollToMessage(message.messageId);
-        this.messagesService.loadMessages(this.authService.currentUserUid, message.channelId!)
-          .then(() => {
-            // Handle responsive mode directly instead of emitting to board component
-            const isSmallScreen = window.innerWidth < 1080;
-            if (isSmallScreen) {
+        
+        // If responsive mode, temporarily clear the scroll ID to prevent immediate scrolling
+        if (isSmallScreen) {
+          const messageId = message.messageId;
+          this.messagesService.setScrollToMessage(null); // Prevent auto-scroll
+          
+          this.messagesService.loadMessages(this.authService.currentUserUid, message.channelId!)
+            .then(() => {
               this.directMessagesService.workspaceOpen = false;
               this.handleResponsiveMode();
-            }
-            this.openChannelEvent.emit();
-          })
-          .catch((error) => {
-            console.error("Error loading messages:", error);
-            // Still handle responsive mode and emit event even if loading fails
-            const isSmallScreen = window.innerWidth < 1080;
-            if (isSmallScreen) {
+              // Restore and trigger scroll after responsive mode is applied
+              setTimeout(() => {
+                this.messagesService.setScrollToMessage(messageId);
+                this.messagesService.scrollToMessage();
+              }, 200);
+              this.openChannelEvent.emit();
+            })
+            .catch((error) => {
+              console.error("Error loading messages:", error);
               this.directMessagesService.workspaceOpen = false;
               this.handleResponsiveMode();
-            }
-            this.openChannelEvent.emit();
-          });
+              // Restore and trigger scroll after responsive mode even on error
+              setTimeout(() => {
+                this.messagesService.setScrollToMessage(messageId);
+                this.messagesService.scrollToMessage();
+              }, 200);
+              this.openChannelEvent.emit();
+            });
+        } else {
+          // Normal mode - let the service handle scrolling automatically
+          this.messagesService.loadMessages(this.authService.currentUserUid, message.channelId!)
+            .then(() => {
+              this.openChannelEvent.emit();
+            })
+            .catch((error) => {
+              console.error("Error loading messages:", error);
+              this.openChannelEvent.emit();
+            });
+        }
       } else {
         this.openChannelEvent.emit();
       }

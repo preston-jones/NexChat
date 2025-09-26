@@ -98,6 +98,15 @@ main {
 @media screen and (max-width: 768px) {
   main {
     padding: 0;
+    font-size: 16px;
+
+      >h2 {
+        font-size: 20px;
+      }
+
+      >h3 {
+        font-size: 18px;
+      }
   }
   
 }
