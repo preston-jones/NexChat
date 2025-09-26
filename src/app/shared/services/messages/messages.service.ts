@@ -104,15 +104,47 @@ export class MessagesService {
 
     async loadMessages(currentUserUid: string | null | undefined, channelId: string) {
         this.currentChatMessages = [];
-        const selectedChatMessages = this.allChatMessages.filter(message => message.channelId === channelId)
-            .map(m => {
-                m.isOwnChatMessage = m.senderID === this.authService.currentUserUid; // Recalculate isOwnMessage
-                m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                return m;
-            });
+        
+        // Filter from existing allChatMessages first
+        let selectedChatMessages = this.allChatMessages.filter(message => message.channelId === channelId);
+        
+        // If no messages found in allChatMessages, load them directly from Firestore
+        if (selectedChatMessages.length === 0) {
+            const messagesRef = collection(this.firestore, 'messages');
+            const messagesQuery = query(
+                messagesRef, 
+                where('channelId', '==', channelId), 
+                orderBy('timestamp')
+            );
+            
+            const snapshot = await getDocs(messagesQuery);
+            selectedChatMessages = await Promise.all(
+                snapshot.docs.map(async doc => {
+                    const messageData = doc.data() as Message;
+                    const senderAvatar = messageData.senderID
+                        ? await this.userService.getSelectedUserAvatar(messageData.senderID)
+                        : './assets/images/avatars/avatar5.svg'; // Default avatar
+                    this.formatLastAnswerTimestamp(messageData);
+                    return {
+                        ...messageData,
+                        messageId: doc.id,
+                        timestamp: messageData.timestamp || new Date(),
+                        isOwnChatMessage: messageData.senderID === this.authService.currentUserUid,
+                        senderAvatar,
+                    };
+                })
+            );
+        }
+        
+        // Process the messages
+        const processedMessages = selectedChatMessages.map(m => {
+            m.isOwnChatMessage = m.senderID === this.authService.currentUserUid; // Recalculate isOwnMessage
+            m.formattedTimestamp = m.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            return m;
+        });
         
         // Sort messages by timestamp before setting display dates
-        const sortedMessages = selectedChatMessages.sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
+        const sortedMessages = processedMessages.sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
         
         // Set display dates with proper grouping logic
         this.setDisplayDatesForMessages(sortedMessages);

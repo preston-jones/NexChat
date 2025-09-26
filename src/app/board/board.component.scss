@@ -355,6 +355,8 @@ mat-toolbar-row {
 .mobile-group-img {
     height: 54px;
     width: 54px;
+    border-radius: 100%;
+    background: #010147;
 }
 
 @media screen and (max-width: 768px) {
