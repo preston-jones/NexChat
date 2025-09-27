@@ -47,7 +47,7 @@ export class AuthService {
     this.resetSessionTimer();
   }
 
-  
+
   markAsJustLoggedIn(): void {
     this.justLoggedIn = true;
     // Extended protection period to handle slow Firestore updates
@@ -62,18 +62,18 @@ export class AuthService {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-    
+
     // Listen to multiple activity types to better capture user interaction
     const activityEvents = ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
-    
+
     const resetTimer = () => {
       clearTimeout(this.sessionTimer);
       this.startSessionTimer();
     };
-    
+
     // Use the first event for RxJS subscription (mousemove is most frequent)
     this.subscription = fromEvent(document, 'mousemove').subscribe(resetTimer);
-    
+
     // Add additional event listeners for better activity detection
     activityEvents.slice(1).forEach(eventType => {
       document.addEventListener(eventType, resetTimer, { passive: true });
@@ -103,22 +103,22 @@ export class AuthService {
     if (this.justLoggedIn || this.isLoggingOut) {
       return;
     }
-    
+
     // Extended protection window to prevent race conditions during navigation
     const timeSinceAppStart = Date.now() - this.appStartTime;
     if (timeSinceAppStart < 30000) { // Increased from 10 to 30 seconds
       console.log('🔍 Skipping handleBrowserClose - app recently started, likely navigation/refresh');
       return;
     }
-    
+
     // Additional check: don't update if we're in the middle of authentication flow
-    if (window.location.pathname.includes('/sign-in') || 
-        window.location.pathname.includes('/create-account') || 
-        window.location.pathname.includes('/reset-password')) {
+    if (window.location.pathname.includes('/sign-in') ||
+      window.location.pathname.includes('/create-account') ||
+      window.location.pathname.includes('/reset-password')) {
       console.log('🔍 Skipping handleBrowserClose - in authentication flow');
       return;
     }
-    
+
     if (this.auth.currentUser) {
       try {
         console.log('🚪 handleBrowserClose called - updating loginState to loggedOut');
@@ -164,29 +164,29 @@ export class AuthService {
           console.log('🚫 Skipping Firestore data processing - already logging out');
           return;
         }
-        
+
         if (docSnap.exists()) {
           const firestoreUserData = docSnap.data() as User;
           // Hier wird die ID manuell hinzugefügt
           firestoreUserData.id = docSnap.id;  // ID hinzufügen
-          
+
           console.log('🔍 Firestore Data:', {
             loginState: firestoreUserData.loginState,
             justLoggedIn: this.justLoggedIn,
             isLoggingOut: this.isLoggingOut,
             userId: firestoreUserData.id
           });
-          
+
           // Check if user should be logged out due to loginState being 'loggedOut'
           // Only trigger forced logout if:
           // 1. loginState is 'loggedOut' 
           // 2. User didn't just log in
           // 3. We're not already in the logout process
           // 4. Firebase Auth still shows user as authenticated (to prevent loops)
-          if (firestoreUserData.loginState === 'loggedOut' && 
-              !this.justLoggedIn && 
-              !this.isLoggingOut && 
-              this.auth.currentUser) {
+          if (firestoreUserData.loginState === 'loggedOut' &&
+            !this.justLoggedIn &&
+            !this.isLoggingOut &&
+            this.auth.currentUser) {
             console.log('️ Debug timing info:', {
               timeSinceAppStart: Date.now() - this.appStartTime,
               justLoggedIn: this.justLoggedIn,
@@ -197,12 +197,12 @@ export class AuthService {
             await this.forceLogoutAndRedirect();
             return;
           }
-          
+
           // Only reset justLoggedIn flag if the Firestore data actually shows 'loggedIn'
           const shouldForceLoggedIn = this.justLoggedIn && firestoreUserData.loginState !== 'loggedIn';
           const currentUserObject = this.setCurrentUserObject(firestoreUserData, shouldForceLoggedIn);
           this.setUser(currentUserObject);
-          
+
           // Reset the flag only when Firestore data is actually updated to 'loggedIn'
           if (this.justLoggedIn && firestoreUserData.loginState === 'loggedIn') {
             this.justLoggedIn = false;
@@ -231,9 +231,9 @@ export class AuthService {
     const isFirebaseAuthenticated = !!this.auth.currentUser;
     const firestoreShowsLoggedOut = user.loginState === 'loggedOut';
     const shouldOverrideToLoggedIn = forceLoggedIn || (isFirebaseAuthenticated && firestoreShowsLoggedOut);
-    
+
     const finalLoginState = shouldOverrideToLoggedIn ? 'loggedIn' : user.loginState;
-    
+
     console.log('🔄 setCurrentUserObject:', {
       originalLoginState: user.loginState,
       forceLoggedIn,
@@ -242,7 +242,7 @@ export class AuthService {
       finalLoginState,
       userId: user.id
     });
-    
+
     return {
       id: user.id,
       email: user.email,
@@ -263,7 +263,7 @@ export class AuthService {
     try {
       let result: UserCredential = await signInWithEmailAndPassword(this.auth, email, password);
       this.justLoggedIn = true; // Set flag to force loginState to 'loggedIn'
-      
+
       // Wait for the loginState update to complete before proceeding
       await this.userService.updateUserLoginState(result.user.uid, 'loggedIn');
       console.log('✅ LoginState update completed');
@@ -314,8 +314,14 @@ export class AuthService {
   async forceLogoutAndRedirect(): Promise<void> {
     console.log('🔒 Force logout triggered - loginState is loggedOut');
     this.isLoggingOut = true; // Set flag to prevent interference
-    
+
     try {
+      // Check if current user is guest and reset if needed
+      if (this.auth.currentUser?.uid === 'ZnyRrhtuIBhdU3EYhDw5DueQsi02') {
+        await this.resetGuestUserProfile();
+        await this.resetGuestUserData();
+      }
+
       // Clean up session timer and activity listener
       if (this.sessionTimer) {
         clearTimeout(this.sessionTimer);
@@ -325,28 +331,28 @@ export class AuthService {
         this.subscription.unsubscribe();
         this.subscription = null;
       }
-      
+
       // Clear the user state immediately to prevent further processing
       this.setUser(null);
-      
+
       // Sign out from Firebase Auth without updating Firestore (already loggedOut)
       await signOut(this.auth);
       console.log('🔓 Firebase signOut completed');
-      
+
       // Reset flags after successful signOut
       this.justLoggedIn = false;
-      
+
       // Use immediate redirect instead of setTimeout to prevent race conditions
       console.log('🔄 Redirecting to login page...');
       window.location.href = '/sign-in';
-      
+
     } catch (err: any) {
       console.error('Error during force logout:', err);
       // Even if there's an error, still redirect to login page immediately
       this.isLoggingOut = false; // Reset flag on error
       window.location.href = '/sign-in';
     }
-    
+
     // Note: Don't reset isLoggingOut here as the page will be redirected anyway
   }
 
